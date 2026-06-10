@@ -1,11 +1,13 @@
 import React from 'react';
 
 interface IconProps {
-    width?: number;
-    height?: number;
-    color?: string;
-    style?: React.CSSProperties;
     className?: string;
+    style?: React.CSSProperties;
+    size?: number | string;
+    color?: string;
+    onClick?: (event: React.MouseEvent<SVGSVGElement>) => void;
+    width?: number | string;
+    height?: number | string;
 }
 
 export const Chevrondown: React.FC<IconProps>;

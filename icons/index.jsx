@@ -1,60 +1,23 @@
-import {
-    MdExpandMore,
-    MdCheck,
-    MdClose,
-    MdOutlineCheckCircle,
-    MdOutlineSearch,
-    MdAdd,
-    MdOutlineBusiness,
-    MdOutlineInfo,
-    MdOutlineDelete,
-    MdOutlineUpload,
-    MdAttachFile,
-    MdMoreVert,
-    MdPhone,
-    MdOutlineMailOutline,
-    MdChevronLeft,
-    MdChevronRight,
-    MdOutlineDescription,
-    MdOutlineViewList,
-    MdHelpOutline,
-    MdOutlineNotificationsNone,
-} from 'react-icons/md';
-
-const iconWrapper = (MuiIcon) => ({ width, height, color, style, ...props }) => (
-    <MuiIcon size={width || height || 16} color={color} style={style} {...props} />
-);
-
-export const Chevrondown = iconWrapper(MdExpandMore);
-export const Tick = iconWrapper(MdCheck);
-export const Fail = iconWrapper(MdClose);
-export const Success = iconWrapper(MdOutlineCheckCircle);
-export const Search = iconWrapper(MdOutlineSearch);
-export const Add = iconWrapper(MdAdd);
-export const EditPencil = ({ width, height, color, style, ...props }) => (
-    <svg
-        xmlns="http://www.w3.org/2000/svg"
-        width={width || height || 16}
-        height={width || height || 16}
-        viewBox="0 -960 960 960"
-        fill={color || 'currentColor'}
-        style={style}
-        {...props}
-    >
-        <path d="M200-200h57l391-391-57-57-391 391v57Zm-80 80v-170l528-527q12-11 26.5-17t30.5-6q16 0 31 6t26 18l55 56q12 11 17.5 26t5.5 30q0 16-5.5 30.5T817-647L290-120H120Zm640-584-56-56 56 56Zm-141 85-28-29 57 57-29-28Z" />
-    </svg>
-);
-export const Building = iconWrapper(MdOutlineBusiness);
-export const InfoCircle = iconWrapper(MdOutlineInfo);
-export const Delete = iconWrapper(MdOutlineDelete);
-export const Upload = iconWrapper(MdOutlineUpload);
-export const Attachment = iconWrapper(MdAttachFile);
-export const MoreVert = iconWrapper(MdMoreVert);
-export const Phone = iconWrapper(MdPhone);
-export const MailOutline = iconWrapper(MdOutlineMailOutline);
-export const ChevronLeft = iconWrapper(MdChevronLeft);
-export const ChevronRight = iconWrapper(MdChevronRight);
-export const DocIcon = iconWrapper(MdOutlineDescription);
-export const ListIcon = iconWrapper(MdOutlineViewList);
-export const HelpIcon = iconWrapper(MdHelpOutline);
-export const NotificationIcon = iconWrapper(MdOutlineNotificationsNone);
+export {
+  Chevrondown,
+  Tick,
+  Fail,
+  Success,
+  Search,
+  Add,
+  Edit as EditPencil,
+  Facility as Building,
+  Info as InfoCircle,
+  Delete,
+  Upload,
+  Attachment,
+  Overflow as MoreVert,
+  Phone,
+  Email as MailOutline,
+  Back as ChevronLeft,
+  Chevronright as ChevronRight,
+  Doc as DocIcon,
+  List as ListIcon,
+  Help as HelpIcon,
+  Notifications as NotificationIcon,
+} from '@onehaul/ui/icons';
