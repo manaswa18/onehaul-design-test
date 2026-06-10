@@ -19,6 +19,7 @@ export {
   Doc as DocIcon,
   List as ListIcon,
   Help as HelpIcon,
+  Filter as FilterIcon,
   Notifications as NotificationIcon,
   Link,
   Linkoff,

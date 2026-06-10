@@ -1,0 +1,152 @@
+/* Shipments Page — layout & component styles */
+
+/* ── Page header ──────────────────────────────────── */
+.shipments-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  flex-shrink: 0;
+}
+
+.shipments-header-left {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.shipments-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+/* ── Needs Attention tray ─────────────────────────── */
+.shipments-attention-tray {
+  border: 1px solid var(--theme-color-orange-40);
+  border-radius: 8px;
+  background: var(--theme-color-orange-20);
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.shipments-attention-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 20px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.shipments-attention-header-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.shipments-attention-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--theme-color-orange-100);
+  flex-shrink: 0;
+}
+
+.shipments-attention-chevron {
+  color: var(--theme-color-orange-120);
+  display: flex;
+  align-items: center;
+  transition: transform 0.2s;
+}
+
+.shipments-attention-chevron.expanded {
+  transform: rotate(180deg);
+}
+
+.shipments-attention-cards {
+  padding: 0 20px 16px;
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.shipments-attention-card {
+  background: var(--theme-color-pure-100);
+  border: 1px solid var(--theme-color-orange-40);
+  border-radius: 6px;
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 220px;
+  max-width: 260px;
+  flex: 1;
+}
+
+.shipments-attention-card-route {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.shipments-attention-card-task {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+
+.shipments-table-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.shipments-toolbar-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.shipments-toolbar-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* 4px between chips, and 12px gap to search+filters (8px from parent + 4px margin) */
+.shipments-toolbar-right .onehaul-chip-group {
+  gap: 4px;
+}
+
+.shipments-toolbar-search-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: 8px;
+}
+
+.shipments-view-toggle {
+  display: flex;
+  border: 1px solid var(--theme-color-grey-10);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+/* modifier class applied to Button components inside the toggle group */
+.shipments-view-btn.onehaul-button {
+  color: var(--theme-color-grey-50);
+  border-radius: 0;
+}
+
+.shipments-view-btn.onehaul-button:first-child {
+  border-right: 1px solid var(--theme-color-grey-10);
+}
+
+.shipments-view-btn.active.onehaul-button {
+  background: var(--theme-color-primary-10) !important;
+  color: var(--theme-color-primary-60) !important;
+}

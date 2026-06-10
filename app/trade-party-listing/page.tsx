@@ -871,21 +871,15 @@ function AccountHeader() {
       <div style={{ display: 'flex', gap: 12 }}>
         {/* Logo */}
         <div style={{ padding: '4px 0' }}>
-          <div
-            style={{
-              width: 36,
-              height: 36,
-              background: 'var(--theme-color-primary-10)',
-              borderRadius: 8,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-          >
-            <Text variant="body" size="sm" weight="semibold" style={{ color: 'var(--theme-color-primary-60)' }}>
-              V
-            </Text>
-          </div>
+          <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink" style={{ borderRadius: 8, flexShrink: 0 }}>
+            <rect width="36" height="36" rx="8" fill="url(#pattern_voltas)"/>
+            <defs>
+              <pattern id="pattern_voltas" patternContentUnits="objectBoundingBox" width="1" height="1">
+                <use xlinkHref="#image_voltas" transform="scale(0.00444444)"/>
+              </pattern>
+              <image id="image_voltas" width="225" height="225" preserveAspectRatio="none" xlinkHref="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAOEAAADhCAMAAAAJbSJIAAAAjVBMVEUJa9P///8AYtEAZNEAZ9IAX9CxyO2xy+4AadMAYdEAcNVblN4AXdCTtuiUtOfa5Pbz+P05gNmjwOt2o+KFreUsetfg6/nM3fTv9fzo8PrS4vZRjdy90vFwn+EZctUmd9ZMitxomuBbkt7D1vKcvOqJsOZ9qeQAWM8wf9nR3vRyoOGpxexNkd6ApeLa6PiGUvVYAAAHj0lEQVR4nO2a2XbiOBCGbckOMhHEkLAvgbAkHabz/o83eJGqJMvG3Wdu5pz/u0pEbNVfKpVKRaIIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8B8hRYVqfCIsfFQl5RMyaT5g3yVE4ownohNJLw8NulTzy+D8YYHjp5Lt0H9CPBkGM/N2qYeH78v06TZ9O76nvhHyYp945RKT3eCpi6n54+RAfzgOSZRptHkdTW+38/U4ywKrEiBbxxVDX+AoNmyryVT2Pn6Jifmbcpcqos8+2CdKruJObjZIljT4kvmmKhFd1+yx1W3WR2ObQjWzb8orA7L3rW/acsMDOHmlDzQf/+gWGO9rOzWfoKEwEee84ZuGG/orTGm1DsV6JPIWMm4ngo+MeIili26Bi9od8shHfYXi0NB350dEj2hRKN7sS6Zp8fumJdImNk7UhEZnLHpYNIQ5VhGt9o4ET6F4DT88eCgxDSpUtKXm8m6tfgu/P47XqbXhbAcXKXsXGw+yrDeTdpfaVeiuL2fyaCuGFWY027uKVBqM0AqbUzQtwZFnIB2KLkYd0eLiDjsK1TvzyMsLj6fbo0VMfwIK5bd9weX+gvSpw0ATJiyfLLlbk5bwslR5phHLjkJBHn+N0lROKOn+8HgJKjTpwVlD6/YiCFM6N+5sL9fzD/vdpM2UEqHj1mQ3qhmTmcuLGRy9lkuohHmnsZ0rTA72yV0hSEkayB+l09Aasqx9d7CzBW4ilVJ+8m1ZFxdDGpk5WyORNZ9z+xdnbQZlFdDp1EoIKMxOvj+1XcT8L6KUxdtOuuHznNVZgcXtVzkkr3bgRwdnasu15ZQb88nF/MQUKmljKo9qA8qtmOf5fPEXa5hY/5w0S0V3DsZf3NpDOaemyL2GS0pB6erF93tmJCw/nwMK2WwvUelk9bGZzPaR0PrhmZ+a0LEKKXEWGUOygOTHOyXIMl1zI1pmIsc1fEB7eCOsQsogblF0mxUa1Z2oV13aUMh2dXEQJPTqAc9aZG6ZC4XdR/E2nNySZ3qTdE2TO3o2eajwbsgk63uxCCnU9rC5pY7lOXOZ2tN85a5jh94mCc0TpTZbxCc3slgxs1chheor9jjNehSkRpCnMLMVyEorR8kbi1FFCz0vFCZH+l2G/cty7bPrA213+lVEIYVR2iwZB8OwIx8qZPupKLglHYW5U4nR0pYnPqXzeBTO3izXLl0fUAlcOCuoUAaqhvzQdkf2FRr3VArpfjDKXOc5lgsaLyo0vtT+PdPMQ7nWrbNYCBY+DSqMxKApsbrz/KlCKg7XhUA6pugSV8CCssyckmrKRTjP8MLSqZWVsHVAse9bFEZ63FSY9xLoKmRr4WfIE5+QXQPKrJFStXIMO5ZdMNwrXWanqAxuURiJSfOWOX18OfQV0l31Wj6syfIdb0uwMqfIGizv5OEGEW9kOA0YdjZVBWqbwkjpD97CKCcLF08dCulKcdKVXfQ2HqQsr5SZU1AN1+JWHu7uJ/ZcXX9GnQrvH+mZtx33vRSaKYaRGppzKa8ab4rsmjPHc3NLx6f0e8t9NCPTnI3KLiT1ky0KVRkbKts71+mvPgc/U0hXiudKD6vYfrETliXSlXcYNgpOYyAVBN8s3KmYiaf1BJ7CJMu01mL49VEV60rs2dXt/c8USltWPZnWEJ2GzKO8I1bWL6wh8Dt8RiV0o875fqYqYGlbpo7C5LhYzysLTZmQsNLh0eXXU6jMTyszG0ulK5tBMhYng8Lx/CBo6V+ybtuABwMNH41rXIVsh5v4V9Kmv3m/TGPih7qF9iTlPaRjFX9Kswt/1a2QdFRt26pFeuZAPmD9vIW11VXIXGMeZAvf87QwCv8xz42smewgvxdJ92u50DOesb9KV2S0LQ+ZdKhdxXywooqNX7hoQ7kKM5puXIekpqTVK9GQQmMnW3r31lI0aJxTt7oussyaX8YOozqrCNa+sG5XrExgFWHrGsaFi2WWkMCWa5pP6vf6mGOUiDu4VhNkoZLR/In0F4uO1ZS2wIplH28f8pdvL78vA2Zur0zaVHjlsd1l/XclUGUdTqjCgbUv1rTf2KG6aVWY7OJWjj3vFp5Ct6/T3pDPn8351dEOrS4RirUv2GlCgyfnaxzvxG9tJ1/6xSjrAVV4rQ/R0s1f742p2a92hVWC5xcRe7XihyovCH2Fsu3rhGvvS75wFDZWPgvcWuL8qo1RXV+71EcAq2LtacKKGad30FzD8EZZHnodFE2Fg+bKp8el9/b8HJEfur52qS5SivWyTF3Cv2b6cW/8vkKVBWY4+1/Ndirkngn9gVRX3sRfXCPuPunrZ2+ryiAWZ0tTGAneg/W+8jcK58bb2WzqtGl+xvv+C1i88TawtLQFpE4+LufbbTr6/tLul/dqMmjltS7fR3bEtEnVYWvHLt5+sp+d7URK6GFpwN2C34csbWl1tcL+J6L1yfb/v1CiFeOuwD9odP3LhQp+kMjKAqn+UB4AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/j/8C1RlZxOGa+XSAAAAAElFTkSuQmCC"/>
+            </defs>
+          </svg>
         </div>
         {/* Name + chips */}
         <div style={{ display: 'flex', gap: 20 }}>

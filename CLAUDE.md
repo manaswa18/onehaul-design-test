@@ -31,6 +31,7 @@ These are non-negotiable constraints. Violating them breaks consistency.
 - Use Tailwind utility classes for colors or typography (layout utilities like `flex`, `gap`, `grid` are fine)
 - Import from `react-icons`, `@mui/icons-material`, or any other icon library directly in pages/components
 - Build custom UI elements (toggles, switches, chips, etc.) inline before checking `components/` — always check the components folder first
+- Use Tabulator's built-in native formatters for UI elements that have design system equivalents (e.g. `formatter: 'rowSelection'` for checkboxes) — these render unstyled raw HTML elements
 
 **ALWAYS:**
 - Import UI components exclusively from `@/components/<ComponentName>`
@@ -96,6 +97,64 @@ Components import icons from `@/icons` (e.g. `Chevrondown`, `Tick`, `Fail`, `Suc
 ### Font
 
 Inter is the primary font, loaded via Next.js Google Fonts and set as `--font-inter`. Geist and Geist Mono are also loaded but secondary. All Ant Design components inherit Inter via the theme token `fontFamily`.
+
+### Tabulator / Table (`components/Table`)
+
+The `Table` component wraps `tabulator-tables`. Tabulator column formatters return **HTML strings**, not React JSX — React components cannot be rendered inside them.
+
+**Rules for table cell UI elements:**
+
+- **Never** use Tabulator's built-in native formatters (e.g. `formatter: 'rowSelection'`, built-in `tickCross`, etc.) when a design system equivalent exists in `components/`. These render unstyled raw HTML.
+- **Always** write custom formatter functions that produce the same HTML markup as the design system component renders, so AntD/OneHaul CSS classes apply correctly.
+- **Import** the corresponding design system component in the page (e.g. `import Checkbox from '@/components/Checkbox'`) even if not directly used in JSX — this ensures the component's scoped CSS is included in the bundle.
+- **Handle interactions** via Tabulator column callbacks (`cellClick`, `headerClick`). Update cell visuals by directly mutating the DOM via `cell.getElement().querySelector(...)` — `cell.reformat()` does NOT exist in tabulator-tables@6.4.
+
+**Checkbox column pattern:**
+```typescript
+// Load Checkbox CSS by importing the component
+import CheckboxComponent from '@/components/Checkbox';
+
+// Helper — returns AntD checkbox HTML that onehaul-checkbox CSS targets
+function checkboxHTML(checked: boolean, indeterminate = false) {
+  const checkedClass = checked ? ' ant-checkbox-checked' : '';
+  const indeterminateClass = indeterminate ? ' ant-checkbox-indeterminate' : '';
+  return `<label class="ant-checkbox-wrapper onehaul-checkbox onehaul-checkbox-md" style="margin:0">
+    <span class="ant-checkbox${checkedClass}${indeterminateClass}">
+      <input type="checkbox" class="ant-checkbox-input" ${checked ? 'checked' : ''} />
+      <span class="ant-checkbox-inner"></span>
+    </span>
+  </label>`;
+}
+
+// Column definition
+{
+  formatter: (cell: any) => checkboxHTML(cell.getRow().isSelected()),
+  titleFormatter: (cell: any) => {
+    const rows = cell.getTable().getRows();
+    const sel = cell.getTable().getSelectedRows();
+    return checkboxHTML(sel.length === rows.length && rows.length > 0, sel.length > 0 && sel.length < rows.length);
+  },
+  cellClick: (e: any, cell: any) => {
+    e.stopPropagation();
+    const row = cell.getRow();
+    row.isSelected() ? row.deselect() : row.select();
+    // cell.reformat() does NOT exist in tabulator-tables@6.4 — update DOM directly
+    const cb = cell.getElement()?.querySelector('.oh-cb');
+    if (cb) cb.className = `oh-cb${row.isSelected() ? ' checked' : ''}`;
+    // update header via DOM
+  },
+  headerClick: (e: any, column: any) => {
+    const table = column.getTable();
+    const allSelected = table.getSelectedRows().length === table.getRows().length && table.getRows().length > 0;
+    allSelected ? table.deselectRow() : table.selectRow();
+    column.getCells().forEach((c: any) => {
+      const cb = c.getElement()?.querySelector('.oh-cb');
+      if (cb) cb.className = `oh-cb${c.getRow().isSelected() ? ' checked' : ''}`;
+    });
+    // update header via DOM
+  },
+}
+```
 
 ---
 

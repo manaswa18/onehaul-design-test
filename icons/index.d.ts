@@ -33,3 +33,4 @@ export const HelpIcon: React.FC<IconProps>;
 export const NotificationIcon: React.FC<IconProps>;
 export const Link: React.FC<IconProps>;
 export const Linkoff: React.FC<IconProps>;
+export const FilterIcon: React.FC<IconProps>;

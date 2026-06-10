@@ -1,0 +1,428 @@
+/* OneHaul Table — visual overrides on top of tabulator.min.css */
+
+.onehaul-table-wrapper {
+  width: 100%;
+  border: 1px solid var(--theme-color-grey-20);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+/* ── Core container ───────────────────────────────── */
+.onehaul-table-wrapper .tabulator {
+  border: none;
+  background: var(--theme-color-pure-100);
+  font-family: var(--font-inter), -apple-system, sans-serif;
+  font-size: 14px;
+  color: var(--theme-color-grey-100);
+}
+
+/* ── Header ───────────────────────────────────────── */
+.onehaul-table-wrapper .tabulator-header {
+  background: var(--theme-color-grey-5);
+  border-bottom: 1px solid var(--theme-color-grey-20);
+}
+
+.onehaul-table-wrapper .tabulator-col {
+  background: var(--theme-color-grey-5) !important;
+  border-right: 1px solid var(--theme-color-grey-20) !important;
+  height: 40px !important;
+}
+
+.onehaul-table-wrapper .tabulator-col:last-child {
+  border-right: none !important;
+}
+
+/* 4-class specificity to beat Tabulator's own .tabulator .tabulator-header .tabulator-col .tabulator-col-content rule */
+.onehaul-table-wrapper .tabulator-header .tabulator-col .tabulator-col-content {
+  padding: 8px 20px !important;
+  display: flex;
+  align-items: center;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+.onehaul-table-wrapper .tabulator-col-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--theme-color-grey-60);
+  text-transform: uppercase;
+}
+
+.onehaul-table-wrapper .tabulator-col-sorter {
+  display: none;
+}
+
+.onehaul-table-wrapper .tabulator-header-filter input {
+  display: none;
+}
+
+/* ── Rows ─────────────────────────────────────────── */
+.onehaul-table-wrapper .tabulator-row {
+  background: var(--theme-color-pure-100);
+  border-bottom: 1px solid var(--theme-color-grey-20);
+  min-height: 52px !important;
+}
+
+.onehaul-table-wrapper .tabulator-row:last-child {
+  border-bottom: none;
+}
+
+.onehaul-table-wrapper .tabulator-row:hover,
+.onehaul-table-wrapper .tabulator-row.tabulator-row-even:hover {
+  background: var(--theme-color-primary-10) !important;
+  cursor: pointer;
+}
+
+.onehaul-table-wrapper .tabulator-row.tabulator-row-even {
+  background: var(--theme-color-pure-100);
+}
+
+.onehaul-table-wrapper .tabulator-row.tabulator-selected {
+  background: var(--theme-color-primary-10) !important;
+}
+
+/* Cell borders on hover / selected */
+.onehaul-table-wrapper .tabulator-row:hover .tabulator-cell,
+.onehaul-table-wrapper .tabulator-row.tabulator-row-even:hover .tabulator-cell,
+.onehaul-table-wrapper .tabulator-row.tabulator-selected .tabulator-cell {
+  border-right-color: var(--theme-color-primary-20);
+}
+
+/* Row bottom border on hover / selected */
+.onehaul-table-wrapper .tabulator-row:hover,
+.onehaul-table-wrapper .tabulator-row.tabulator-row-even:hover,
+.onehaul-table-wrapper .tabulator-row.tabulator-selected {
+  border-bottom-color: var(--theme-color-primary-20) !important;
+}
+
+/* ── Cells ────────────────────────────────────────── */
+.onehaul-table-wrapper .tabulator-cell {
+  border-right: 1px solid var(--theme-color-grey-20);
+  padding: 8px 20px;
+  font-size: 14px;
+  color: var(--theme-color-grey-100);
+  overflow: hidden;
+  min-height: 52px;
+  display: inline-flex;
+  align-items: center;
+  box-sizing: border-box;
+}
+
+.onehaul-table-wrapper .tabulator-cell:last-child {
+  border-right: none;
+}
+
+/* row selection checkbox col */
+.onehaul-table-wrapper .tabulator-cell.tabulator-row-handle {
+  justify-content: center;
+}
+
+/* Checkbox column — zero padding so the 16px checkbox has room */
+.onehaul-table-wrapper .tabulator-cell.oh-col-checkbox {
+  padding: 0;
+}
+
+.onehaul-table-wrapper .tabulator-header .tabulator-col.oh-col-checkbox .tabulator-col-content {
+  padding: 0 !important;
+  justify-content: center;
+}
+
+.onehaul-table-wrapper .tabulator-col.oh-col-checkbox .tabulator-col-title {
+  width: 100%;
+  overflow: visible;
+}
+
+/* Design-system checkbox — standalone styles (AntD v5 CSS-in-JS not available in Tabulator formatters) */
+.oh-checkbox-cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+
+.oh-cb {
+  width: 16px;
+  height: 16px;
+  border: 1.5px solid var(--theme-color-grey-10);
+  border-radius: 2px;
+  background: var(--theme-color-pure-100);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  box-sizing: border-box;
+  flex-shrink: 0;
+}
+
+.oh-cb.checked {
+  background: var(--theme-color-primary-60);
+  border-color: var(--theme-color-primary-60);
+}
+
+.oh-cb.checked::after {
+  content: '';
+  position: absolute;
+  width: 4px;
+  height: 8px;
+  border: 1.5px solid white;
+  border-top: none;
+  border-left: none;
+  transform: rotate(45deg) translate(-0.5px, -1px);
+}
+
+.oh-cb.indeterminate {
+  background: var(--theme-color-primary-60);
+  border-color: var(--theme-color-primary-60);
+}
+
+.oh-cb.indeterminate::after {
+  content: '';
+  position: absolute;
+  width: 9px;
+  height: 2px;
+  background: white;
+  border-radius: 1px;
+}
+
+/* ── Footer / Pagination ──────────────────────────── */
+.onehaul-table-wrapper .tabulator-footer {
+  background: var(--theme-color-pure-100);
+  border-top: 1px solid var(--theme-color-grey-20);
+  padding: 0 20px;
+  min-height: 52px;
+  display: flex;
+  align-items: center;
+}
+
+.onehaul-table-wrapper .tabulator-footer-contents {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+/* hide "Showing X to Y of Z rows" */
+.onehaul-table-wrapper .tabulator-page-counter {
+  display: none;
+}
+
+/* Paginator — centered */
+.onehaul-table-wrapper .tabulator-paginator {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex: 1;
+  justify-content: center;
+}
+
+/* all page buttons base */
+.onehaul-table-wrapper .tabulator-footer .tabulator-page {
+  background: none;
+  border: none;
+  width: 32px;
+  height: 32px;
+  min-width: 32px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  font-weight: 400;
+  color: var(--theme-color-grey-50);
+  cursor: pointer;
+  border-radius: 8px;
+  font-family: inherit;
+  line-height: 1;
+}
+
+.onehaul-table-wrapper .tabulator-footer .tabulator-page:hover:not(:disabled) {
+  background: var(--theme-color-grey-5);
+  color: var(--theme-color-grey-70);
+}
+
+/* active page */
+.onehaul-table-wrapper .tabulator-footer .tabulator-page.active {
+  background: var(--theme-color-primary-5);
+  color: var(--theme-color-grey-100);
+  font-weight: 600;
+}
+
+.onehaul-table-wrapper .tabulator-footer .tabulator-page:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+/* prev/next: hide the "Prev"/"Next" text, show chevron via pseudo */
+.onehaul-table-wrapper .tabulator-footer .tabulator-page[data-page="prev"],
+.onehaul-table-wrapper .tabulator-footer .tabulator-page[data-page="next"] {
+  font-size: 0;
+  color: var(--theme-color-grey-60);
+}
+
+.onehaul-table-wrapper .tabulator-footer .tabulator-page[data-page="prev"]::before {
+  content: '‹';
+  font-size: 20px;
+  line-height: 1;
+  color: var(--theme-color-grey-60);
+}
+
+.onehaul-table-wrapper .tabulator-footer .tabulator-page[data-page="next"]::after {
+  content: '›';
+  font-size: 20px;
+  line-height: 1;
+  color: var(--theme-color-grey-60);
+}
+
+/* page-size selector */
+.onehaul-table-wrapper .tabulator-footer .tabulator-page-size {
+  border: 1px solid var(--theme-color-grey-10);
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--theme-color-grey-100);
+  background: var(--theme-color-pure-100);
+  font-family: inherit;
+  height: 36px;
+  cursor: pointer;
+  outline: none;
+}
+
+/* ── Custom cell helpers ─────────────────────────── */
+.oh-cell-shipment-no {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--theme-color-primary-60);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+.oh-cell-muted {
+  font-size: 12px;
+  color: var(--theme-color-grey-40);
+  font-style: italic;
+}
+
+.oh-cell-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.oh-cell-stack .primary {
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--theme-color-grey-100);
+  line-height: 1.43;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.oh-cell-stack .secondary {
+  font-size: 12px;
+  color: var(--theme-color-grey-50);
+  line-height: 1.33;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.oh-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 12px;
+  border-radius: 32px;
+  font-size: 12px;
+  font-weight: 400;
+  white-space: nowrap;
+  line-height: 1.33;
+}
+
+.oh-carrier-cell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.oh-carrier-cell > span {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+
+.oh-carrier-logo {
+  width: 26px;
+  height: 26px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 8px;
+  font-weight: 700;
+  color: white;
+  flex-shrink: 0;
+  letter-spacing: 0;
+}
+
+.oh-tasks-cell {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.oh-urgency-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* General cell centering helper (used by checkbox and actions columns) */
+.oh-cell-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+
+/* Actions column */
+.onehaul-table-wrapper .tabulator-cell.oh-col-actions {
+  padding: 0;
+}
+
+/* Restore link button color — cell's grey-100 overrides ant-btn-link via cascade */
+.onehaul-table-wrapper .tabulator-cell .ant-btn-link {
+  color: var(--theme-color-primary-60);
+}
+
+
+/* Sticky right column (frozen: true on last column) */
+.onehaul-table-wrapper .tabulator-col.tabulator-frozen.tabulator-frozen-right,
+.onehaul-table-wrapper .tabulator-cell.tabulator-frozen.tabulator-frozen-right {
+  box-shadow: -4px 0 16px rgba(136, 136, 136, 0.12);
+  clip-path: inset(0 0 0 -20px);
+  border-left: none !important;
+  border-right: none !important;
+}
+
+/* scrollbar */
+.onehaul-table-wrapper .tabulator-tableholder::-webkit-scrollbar {
+  height: 6px;
+}
+
+.onehaul-table-wrapper .tabulator-tableholder::-webkit-scrollbar-track {
+  background: var(--theme-color-grey-5);
+}
+
+.onehaul-table-wrapper .tabulator-tableholder::-webkit-scrollbar-thumb {
+  background: var(--theme-color-grey-30);
+  border-radius: 3px;
+}
