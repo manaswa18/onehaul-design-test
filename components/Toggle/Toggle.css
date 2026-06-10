@@ -24,3 +24,9 @@
         color: var(--theme-color-grey-100);
     }
 }
+
+.onehaul-toggle .ant-wave,
+.onehaul-toggle::after {
+    display: none !important;
+    animation: none !important;
+}

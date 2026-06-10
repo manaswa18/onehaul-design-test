@@ -20,4 +20,6 @@ export {
   List as ListIcon,
   Help as HelpIcon,
   Notifications as NotificationIcon,
+  Link,
+  Linkoff,
 } from '@onehaul/ui/icons';

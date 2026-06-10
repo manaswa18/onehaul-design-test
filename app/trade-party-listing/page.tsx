@@ -11,6 +11,7 @@ import CheckboxComponent from '@/components/Checkbox';
 import FileUploadComponent from '@/components/FileUpload';
 import DrawerComponent from '@/components/Drawer';
 import CollapseComponent from '@/components/Collapse';
+import ToggleComponent from '@/components/Toggle';
 import Avatar from '@/components/Avatar';
 import {
   Add,
@@ -29,6 +30,8 @@ import {
   NotificationIcon,
   Success,
   InfoCircle,
+  Link,
+  Linkoff,
 } from '@/icons';
 
 const Button = ButtonComponent as React.ComponentType<any>;
@@ -40,6 +43,7 @@ const Checkbox = CheckboxComponent as React.ComponentType<any>;
 const FileUpload = FileUploadComponent as React.ComponentType<any>;
 const Drawer = DrawerComponent as React.ComponentType<any>;
 const Collapse = CollapseComponent as React.ComponentType<any>;
+const Toggle = ToggleComponent as React.ComponentType<any>;
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -76,6 +80,26 @@ interface Contact {
   email: string;
   verified: boolean;
   roles: string[];
+}
+
+interface PartyContact {
+  id: string;
+  name: string;
+  linked: boolean;
+  phones: string[];
+  emails: string[];
+}
+
+interface PartyAddress {
+  id: string;
+  name: string;
+  types: string[];
+  line1: string;
+  line2?: string;
+  city: string;
+  state: string;
+  country: string;
+  isSEZ?: boolean;
 }
 
 // ─── Data ────────────────────────────────────────────────────────────────────
@@ -140,6 +164,31 @@ const CONTACTS: Contact[] = [
     roles: ['ADMIN', 'DECISION MAKER', 'AUTHORISED TO TR..'],
   },
 ];
+
+const PARTY_CONTACTS: Record<string, PartyContact[]> = {
+  sapphire: [
+    { id: 'c1', name: 'Rahul Mehta', linked: true, phones: ['+91 98765 43210', '+91 98111 22334'], emails: ['rahul.mehta@sapphirelogistics.com', 'operations@sapphirelogistics.com'] },
+    { id: 'c2', name: 'Akhil Sharma', linked: false, phones: ['+91 70545 54545'], emails: ['akhil.sharma@eagleinbrit.com'] },
+  ],
+  testparty: [],
+  studiopod: [],
+};
+
+const PARTY_ADDRESSES: Record<string, PartyAddress[]> = {
+  sapphire: [
+    { id: 'a1', name: 'Head Office', types: ['Billing', 'Registered'], line1: '14th Floor, Sunshine Tower', line2: 'Senapati Bapat Marg, Dadar West', city: 'Mumbai', state: 'Maharashtra', country: 'India' },
+    { id: 'a2', name: 'Warehouse – Nhava Sheva', types: ['Shipping'], line1: 'Plot No. 7, JNPT Road', city: 'Navi Mumbai', state: 'Maharashtra', country: 'India', isSEZ: true },
+    { id: 'a3', name: 'Delhi Branch', types: ['Billing'], line1: 'C-12, Connaught Place', city: 'New Delhi', state: 'Delhi', country: 'India' },
+  ],
+  testparty: [],
+  studiopod: [],
+};
+
+const PARTY_NOTES: Record<string, string> = {
+  sapphire: 'Preferred CHA for Mumbai Port.\nContact Rajesh for urgent bookings.',
+  testparty: '',
+  studiopod: '',
+};
 
 const SIDEBAR_TABS = [
   'Customer Profile',
@@ -309,6 +358,147 @@ function DetailsTabContent({ party }: { party: TradeParty }) {
 
 // ─── Trade Party Accordion ────────────────────────────────────────────────────
 
+// ─── Addresses & Contacts Tab Content ────────────────────────────────────────
+
+function LinkedChip({ linked }: { linked: boolean }) {
+  if (linked) {
+    return (
+      <div style={{ display: 'inline-flex', alignItems: 'center', gap: 4, height: 24, paddingLeft: 4, paddingRight: 12, borderRadius: 32, background: 'var(--theme-color-success-20)', flexShrink: 0 }}>
+        <div style={{ width: 16, height: 16, borderRadius: '50%', background: 'var(--theme-color-success-40)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+          <Link width={10} height={10} color="var(--theme-color-success-120)" />
+        </div>
+        <Text variant="body" size="sm" style={{ color: 'var(--theme-color-success-120)', whiteSpace: 'nowrap' }}>Linked</Text>
+      </div>
+    );
+  }
+  return (
+    <div style={{ display: 'inline-flex', alignItems: 'center', gap: 4, height: 24, paddingLeft: 4, paddingRight: 12, borderRadius: 32, background: 'var(--theme-color-error-20)', flexShrink: 0 }}>
+      <div style={{ width: 16, height: 16, borderRadius: '50%', background: 'var(--theme-color-error-40)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+        <Linkoff width={10} height={10} color="var(--theme-color-error-120)" />
+      </div>
+      <Text variant="body" size="sm" style={{ color: 'var(--theme-color-error-120)', whiteSpace: 'nowrap' }}>De-linked</Text>
+    </div>
+  );
+}
+
+function AddressesContactsTabContent({ partyId }: { partyId: string }) {
+  const [view, setView] = useState<'addresses' | 'contacts'>('contacts');
+  const contacts = PARTY_CONTACTS[partyId] || [];
+  const addresses = PARTY_ADDRESSES[partyId] || [];
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+      {/* Toggle header */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <Toggle
+          checked={view === 'contacts'}
+          onChange={(checked: boolean) => setView(checked ? 'contacts' : 'addresses')}
+          offLabel={`Addresses (${addresses.length})`}
+          onLabel={`Contacts (${contacts.length})`}
+          size="md"
+        />
+        <Button variant="secondary" size="sm" icon={<Add width={10} height={10} />}>
+          {view === 'contacts' ? 'Add Contact' : 'Add Address'}
+        </Button>
+      </div>
+
+      {/* Contacts list */}
+      {view === 'contacts' && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+          {contacts.length === 0 && (
+            <Text variant="body" size="md" style={{ color: 'var(--theme-color-grey-40)' }}>No contacts added yet.</Text>
+          )}
+          {contacts.map((c) => (
+            <div key={c.id} style={{ border: '1px solid var(--theme-color-grey-10)', borderRadius: 8, padding: 16, display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                {/* Name + chip */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                  <Text variant="body" size="md" weight="medium" style={{ color: 'var(--theme-color-grey-100)' }}>{c.name}</Text>
+                  <LinkedChip linked={c.linked} />
+                </div>
+                {/* Phone + Email */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <Phone width={12} height={12} color="var(--theme-color-grey-40)" />
+                    <Text variant="body" size="sm" style={{ color: 'var(--theme-color-grey-60)' }}>
+                      {c.phones.join(' | ')}
+                    </Text>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <MailOutline width={12} height={12} color="var(--theme-color-grey-40)" />
+                    <Text variant="body" size="sm" style={{ color: 'var(--theme-color-grey-60)' }}>
+                      {c.emails.join(' | ')}
+                    </Text>
+                  </div>
+                </div>
+              </div>
+              <button style={{ width: 28, height: 28, background: 'var(--theme-color-grey-2)', border: 'none', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', flexShrink: 0 }}>
+                <MoreVert width={12} height={12} color="var(--theme-color-grey-70)" />
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Addresses list */}
+      {view === 'addresses' && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+          {addresses.length === 0 && (
+            <Text variant="body" size="md" style={{ color: 'var(--theme-color-grey-40)' }}>No addresses added yet.</Text>
+          )}
+          {addresses.map((a) => (
+            <div key={a.id} style={{ border: '1px solid var(--theme-color-grey-10)', borderRadius: 8, padding: 16, display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <Text variant="body" size="md" weight="medium" style={{ color: 'var(--theme-color-grey-100)' }}>{a.name}</Text>
+                  {a.isSEZ && <Pill color="teal" theme="line" size="sm" showIcon={false}>SEZ</Pill>}
+                  <div style={{ display: 'flex', gap: 4 }}>
+                    {a.types.map((t) => (
+                      <Pill key={t} color="purple" theme="line" size="sm" showIcon={false}>{t}</Pill>
+                    ))}
+                  </div>
+                </div>
+                <Text variant="body" size="sm" style={{ color: 'var(--theme-color-grey-60)' }}>
+                  {[a.line1, a.line2, a.city, a.state, a.country].filter(Boolean).join(', ')}
+                </Text>
+              </div>
+              <button style={{ width: 28, height: 28, background: 'var(--theme-color-grey-2)', border: 'none', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', flexShrink: 0 }}>
+                <MoreVert width={12} height={12} color="var(--theme-color-grey-70)" />
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function OtherTabContent({ partyId }: { partyId: string }) {
+  const note = PARTY_NOTES[partyId] ?? '';
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+      {/* Notes section header */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <Text variant="body" size="md" weight="medium" style={{ color: 'var(--theme-color-grey-100)' }}>
+          Notes
+        </Text>
+        <Button variant="secondary" size="sm" icon={<EditPencil width={10} height={10} />}>
+          Edit
+        </Button>
+      </div>
+      {/* Notes card */}
+      <div style={{ border: '1px solid var(--theme-color-grey-10)', borderRadius: 8, padding: 16, display: 'flex', flexDirection: 'column', gap: 16 }}>
+        <Text variant="body" size="sm" style={{ color: 'var(--theme-color-grey-100)', textTransform: 'uppercase', letterSpacing: '0.02em' }}>
+          Notes
+        </Text>
+        <Text variant="body" size="md" style={{ color: 'var(--theme-color-grey-70)', whiteSpace: 'pre-line' }}>
+          {note || '—'}
+        </Text>
+      </div>
+    </div>
+  );
+}
+
 function TradePartyAccordion({
   party,
   expanded,
@@ -347,12 +537,12 @@ function TradePartyAccordion({
     {
       key: 'addresses',
       label: 'Addresses & Contacts',
-      children: null,
+      children: <AddressesContactsTabContent partyId={party.id} />,
     },
     {
       key: 'other',
       label: 'Other',
-      children: null,
+      children: <OtherTabContent partyId={party.id} />,
     },
   ];
 
@@ -363,7 +553,7 @@ function TradePartyAccordion({
         {/* Left: name + legal name + chips */}
         <div style={{ flex: 1, display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', minWidth: 0 }}>
           <div style={{ display: 'flex', flexDirection: 'column' }}>
-            <Text variant="body" size="lg" weight="medium" style={{ color: 'var(--theme-color-grey-100)' }}>
+            <Text variant="body" size="md" weight="medium" style={{ color: 'var(--theme-color-grey-100)' }}>
               {party.name}
             </Text>
             <Text variant="body" size="sm" style={{ color: 'var(--theme-color-grey-50)' }}>
@@ -401,7 +591,7 @@ function TradePartyAccordion({
               padding: 0,
             }}
           >
-            <MoreVert width={12} height={12} color="var(--theme-color-grey-50)" />
+            <MoreVert width={12} height={12} color="var(--theme-color-grey-100)" />
           </button>
           <button
             style={{
@@ -420,7 +610,7 @@ function TradePartyAccordion({
             <Chevrondown
               width={12}
               height={12}
-              color="var(--theme-color-grey-50)"
+              color="var(--theme-color-grey-100)"
               style={{ transform: expanded ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.2s' }}
             />
           </button>
@@ -476,39 +666,9 @@ function ContactCard({ contact }: { contact: Contact }) {
               <Tick width={10} height={10} color="var(--theme-color-primary-60)" />
             )}
           </div>
-          <div style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
-            <button
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                width: 18,
-                height: 18,
-                background: 'transparent',
-                border: 'none',
-                cursor: 'pointer',
-                padding: 2,
-                borderRadius: 4,
-              }}
-            >
-              <EditPencil width={10} height={10} color="var(--theme-color-grey-50)" />
-            </button>
-            <button
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                width: 18,
-                height: 18,
-                background: 'transparent',
-                border: 'none',
-                cursor: 'pointer',
-                padding: 2,
-                borderRadius: 4,
-              }}
-            >
-              <MoreVert width={10} height={10} color="var(--theme-color-grey-50)" />
-            </button>
+          <div style={{ display: 'flex', gap: 0, alignItems: 'center' }}>
+            <Button variant="link" size="sm" icon={<EditPencil width={12} height={12} />} />
+            <Button variant="link" size="sm" icon={<MoreVert width={12} height={12} />} />
           </div>
         </div>
 
@@ -572,7 +732,6 @@ function NavBar() {
         alignItems: 'center',
         justifyContent: 'space-between',
         padding: '18px 16px',
-        background: 'var(--theme-color-pure-100)',
         zIndex: 10,
       }}
     >
@@ -582,33 +741,36 @@ function NavBar() {
           style={{
             width: 36,
             height: 36,
-            border: '1px solid var(--theme-color-grey-10)',
-            borderRadius: 8,
-            background: 'var(--theme-color-pure-100)',
+            border: 'none',
+            background: 'none',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             cursor: 'pointer',
+            padding: 0,
           }}
         >
-          <Building width={16} height={16} color="var(--theme-color-grey-100)" />
+          <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="0.5" y="0.5" width="35" height="35" rx="7.5" fill="white"/>
+            <rect x="0.5" y="0.5" width="35" height="35" rx="7.5" stroke="#EEEEEE"/>
+            <path d="M14.5475 7.77799C15.6816 8.63951 16.3873 9.76104 16.6168 11.1717C16.8623 13.9193 14.7192 16.9331 13.1403 19.0351C13.113 19.0624 13.0857 19.0897 13.0575 19.1178C13.0494 19.2556 13.0468 19.3937 13.0472 19.5317C13.047 19.6068 13.0468 19.6819 13.0465 19.7593C13.0367 19.9431 13.0367 19.9431 13.1403 20.0283C13.3522 20.0385 13.5621 20.0437 13.7741 20.0458C13.9062 20.0481 14.0383 20.0505 14.1705 20.0529C14.3788 20.0563 14.5871 20.0594 14.7954 20.0616C15.8314 20.0735 16.7372 20.0884 17.5273 20.8561C18.0293 21.4943 18.1302 22.103 18.1294 22.8969C18.131 23.0703 18.1328 23.2438 18.1345 23.4172C18.1364 23.6891 18.1378 23.961 18.1383 24.2329C18.139 24.4963 18.1418 24.7597 18.1449 25.0232C18.1443 25.1446 18.1443 25.1446 18.1436 25.2685C18.1506 25.7556 18.2009 26.0284 18.5206 26.4018C18.8978 26.7333 19.2505 26.7477 19.7347 26.7526C19.8283 26.7537 19.8283 26.7537 19.9238 26.7547C20.0559 26.7558 20.188 26.7567 20.3201 26.7574C20.4544 26.7583 20.5887 26.76 20.723 26.7625C21.7475 26.8056 21.7475 26.8056 22.6593 26.4018C23.1187 25.7605 23.0247 24.8573 22.9575 24.1034C22.8373 23.4592 22.409 23.0133 21.9888 22.5344C21.7072 22.197 21.4717 21.8288 21.2314 21.4613C21.1828 21.3878 21.1342 21.3142 21.0841 21.2384C19.941 19.503 18.889 17.7561 19.3254 15.5932C19.402 15.3516 19.4901 15.1263 19.5967 14.8964C19.6257 14.8316 19.6547 14.7667 19.6846 14.6999C19.9513 14.1665 20.3404 13.7468 20.7555 13.3238C20.8004 13.2768 20.8453 13.2299 20.8916 13.1815C21.8906 12.2306 23.1814 12.026 24.4997 12.0511C25.7786 12.1094 26.7379 12.7898 27.6043 13.6875C28.5751 14.8077 28.7799 16.0348 28.7017 17.4624C28.4984 19.0751 27.3133 20.5954 26.4255 21.9011C26.3802 21.9687 26.335 22.0363 26.2884 22.1059C26.0867 22.4038 25.8887 22.6858 25.6378 22.9441C24.9505 23.6824 25.0805 24.2817 24.9645 24.5087C24.9816 25.5984 24.5368 27.1314 23.7992 27.9315C23.0454 28.6542 22.2728 28.978 21.2722 28.9875C21.2039 28.9882 21.1356 28.9888 21.0653 28.9895C20.9213 28.9907 20.7773 28.9916 20.6333 28.9922C20.488 28.9932 20.3427 28.9949 20.1975 28.9973C18.8852 29.0194 17.7939 28.9095 16.7824 27.9745C16.1279 27.2301 15.9054 26.3304 15.9042 25.361C15.9028 25.2741 15.9014 25.1872 15.9 25.0977C15.896 24.8237 15.8943 24.5497 15.8925 24.2756C15.8902 24.0883 15.8877 23.9011 15.8851 23.7138C15.879 23.2579 15.8747 22.8019 15.8718 22.346C15.7934 22.3443 15.715 22.3427 15.6342 22.341C15.3396 22.3345 15.0449 22.3273 14.7503 22.3197C14.6235 22.3166 14.4966 22.3137 14.3698 22.3111C12.3133 22.2681 12.3133 22.2681 11.663 21.6123C11.2272 21.1371 11.0477 20.5573 11.0217 19.9153C10.9829 19.1417 10.8415 18.9225 10.3234 18.3334C9.06287 16.3738 7.23647 13.5974 7.3317 11.0404C7.36322 10.6052 7.48936 10.2377 7.67727 9.8473C7.71557 9.76621 7.75388 9.68512 7.79334 9.60157C8.40433 8.44235 9.34183 7.64231 10.5711 7.19147C11.9396 6.79157 13.3476 7.03275 14.5475 7.77799Z" fill="#187C8A"/>
+            <path d="M10.3242 18.208C10.4335 18.2353 10.5427 18.2626 10.6553 18.2908C10.6656 18.342 10.6758 18.3932 10.6864 18.446C10.7275 18.6377 10.7275 18.6377 10.9036 18.7874C11.0692 19.0357 11.0692 19.0357 11.0692 19.2841C11.3736 19.3799 11.6621 19.3778 11.9797 19.3772C12.0804 19.3774 12.1811 19.3776 12.2849 19.3778C12.5952 19.3655 12.5952 19.3655 12.8902 19.2841C12.9175 19.2294 13.0386 19.1379 13.0667 19.0816C13.0718 19.1404 13.0436 19.0906 13.0488 19.1511C13.0557 19.2272 13.0394 19.4585 13.0466 19.5369C13.0469 19.7166 13.0377 19.6841 13.0446 19.7622C13.0368 19.917 13.0359 19.9431 13.1385 20.029C13.3504 20.0392 13.5603 20.0444 13.7723 20.0465C13.9044 20.0488 14.0365 20.0512 14.1687 20.0536C14.377 20.057 14.5853 20.06 14.7936 20.0622C15.8296 20.0741 16.7354 20.0891 17.5255 20.8567C18.0275 21.495 18.1284 22.1037 18.1276 22.8976C18.1292 23.071 18.131 23.2444 18.1327 23.4178C18.1346 23.6897 18.136 23.9616 18.1365 24.2336C18.1372 24.497 18.14 24.7604 18.1431 25.0238C18.1425 25.1453 18.1425 25.1453 18.1418 25.2692C18.1488 25.7562 18.1991 26.0291 18.5188 26.4025C18.896 26.734 19.2487 26.7484 19.7329 26.7533C19.8265 26.7543 19.8265 26.7543 19.922 26.7553C20.0541 26.7565 20.1862 26.7574 20.3183 26.758C20.4526 26.759 20.5869 26.7607 20.7212 26.7631C21.7457 26.8063 21.7783 26.7915 22.6065 26.4071C22.7891 26.2813 22.9385 25.8726 22.9481 25.4956C22.9511 25.4035 22.954 25.3115 22.957 25.2167C22.9598 25.0738 22.9598 25.0738 22.9627 24.9281C22.9655 24.8313 22.9684 24.7345 22.9713 24.6347C22.9781 24.3962 22.9831 24.2588 22.9003 23.8863C23.1051 24.1015 23.0829 24.0926 23.3488 24.2386C23.6607 24.3149 23.8119 24.3504 24.0646 24.3332C24.5408 24.2926 24.8223 24.0673 25.0938 23.8863C25.0524 24.2174 25.011 24.4244 24.9696 24.7968C24.9752 24.9111 24.9627 25.1793 24.9696 25.2935C25.0289 26.2769 24.9203 27.051 24.2809 27.8284C23.6227 28.5519 22.8104 28.9233 21.8266 28.9778C21.6411 28.9834 21.4559 28.9864 21.2704 28.9882C21.2021 28.9888 21.1338 28.9895 21.0635 28.9902C20.9195 28.9913 20.7755 28.9922 20.6315 28.9929C20.4862 28.9938 20.3409 28.9955 20.1957 28.998C18.8834 29.0201 17.7921 28.9101 16.7806 27.9752C16.1261 27.2307 15.9036 26.3311 15.9024 25.3617C15.901 25.2748 15.8996 25.1879 15.8982 25.0984C15.8942 24.8243 15.8925 24.5503 15.8907 24.2763C15.8884 24.089 15.8859 23.9018 15.8833 23.7145C15.8772 23.2585 15.8729 22.8026 15.87 22.3466C15.7916 22.345 15.7132 22.3434 15.6324 22.3417C15.3378 22.3352 15.0431 22.328 14.7485 22.3204C14.6217 22.3172 14.4948 22.3143 14.368 22.3117C12.3115 22.2688 12.3115 22.2688 11.6612 21.613C11.222 21.1342 11.064 20.779 11.0252 20.1333C10.9838 19.4669 10.9342 18.9935 10.4451 18.4974C10.3242 18.3736 10.3242 18.3736 10.3242 18.208Z" fill="url(#paint0_linear_navbar)"/>
+            <path d="M25.0641 15.0339C25.5194 15.3466 25.8109 15.7753 25.9691 16.3026C26.0427 16.9843 25.9444 17.5193 25.5811 18.0978C25.109 18.5698 24.6261 18.7936 23.9619 18.8117C23.3418 18.8034 22.9573 18.5969 22.5082 18.1805C22.0187 17.6497 21.9476 17.1902 21.9679 16.4808C22.0362 15.8474 22.3428 15.5021 22.8157 15.0979C23.4668 14.6493 24.3744 14.6745 25.0641 15.0339Z" fill="#FCFDFD"/>
+            <path d="M14.5459 7.77799C15.68 8.63951 16.3857 9.76104 16.6152 11.1717C16.8462 13.7573 14.9349 16.5133 13.5112 18.5436C13.4773 18.5925 13.4434 18.6413 13.4085 18.6916C13.2423 18.9228 13.174 19.0123 12.9944 19.22C12.9307 19.2872 12.936 19.2833 12.8944 19.32C12.5933 19.5097 12.3448 19.5723 11.994 19.5708C11.8933 19.5712 11.8536 19.5657 11.7498 19.5661C11.4917 19.5454 11.2784 19.4308 11.0694 19.2834C10.8939 19.1345 10.8393 19.1005 10.6623 18.7893C10.5635 18.6196 10.4866 18.5405 10.4866 18.5405C10.4729 18.5263 10.3975 18.4478 10.3678 18.4137C10.2459 18.2681 10.2924 18.3252 10.1684 18.1631C10.1092 18.0686 9.9476 17.8494 9.88714 17.753C9.84577 17.6844 9.57675 17.2668 9.53413 17.1962C9.49062 17.1255 9.19378 16.7114 9.14895 16.6386C6.89134 13.8252 7.25198 10.8142 7.39952 10.5496C7.47394 10.3024 7.56373 10.0798 7.67564 9.8473C7.71395 9.76621 7.75226 9.68512 7.79172 9.60157C8.40271 8.44235 9.3402 7.64231 10.5695 7.19147C11.9379 6.79157 13.346 7.03275 14.5459 7.77799Z" fill="#2ABB96"/>
+            <path d="M12.9683 9.82628C13.5259 10.1646 13.8789 10.528 14.0499 11.1717C14.1386 11.7969 14.048 12.367 13.7188 12.9099C13.2984 13.4037 12.8189 13.6808 12.1794 13.7664C11.5205 13.8025 11.0064 13.6215 10.5029 13.1934C10.0725 12.7387 9.90469 12.2033 9.875 11.5855C9.89872 10.9736 10.109 10.5217 10.5579 10.106C11.2926 9.52383 12.1219 9.3917 12.9683 9.82628Z" fill="#FDFEFE"/>
+            <defs>
+              <linearGradient id="paint0_linear_navbar" x1="24.3565" y1="26.5324" x2="12.1777" y2="19.9237" gradientUnits="userSpaceOnUse">
+                <stop stopColor="#74AC4C"/>
+                <stop offset="1" stopColor="#348070"/>
+              </linearGradient>
+            </defs>
+          </svg>
         </button>
         <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
-          <div
-            style={{
-              width: 32,
-              height: 32,
-              background: 'var(--theme-color-primary-10)',
-              borderRadius: 6,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-          >
-            <Text variant="body" size="sm" weight="semibold" style={{ color: 'var(--theme-color-primary-60)' }}>
-              EI
-            </Text>
-          </div>
+          <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ borderRadius: 8, flexShrink: 0 }}>
+            <rect width="32" height="32" rx="8" fill="#102B46"/>
+            <path d="M13.8649 7H20.6757L21.8108 7.19495L22.6216 7.45487L23.2703 7.77978L23.8108 8.16967L24.3514 8.75451L24.7297 9.46931L24.9459 10.2491L25 10.574V11.7437L24.7838 12.9134L24.4595 14.083L24.0811 14.9278H23.8649L23.5946 14.6679L23 14.343L22.4595 14.213H21.3784L20.5135 14.4079L19.6486 14.7978L18.8919 15.2527L18.027 15.9675L16.8378 16.9422L15.973 17.657L14.9459 18.5018L13.4324 19.7365L12.5676 20.4513L10.6757 22.0108L10.027 22.5307L9.16216 23.2455L7.27027 24.8051L7 25L7.05405 24.6751L8.08108 22.0108L8.72973 20.3213L9.64865 17.917L10.4054 15.9675L11.2162 13.8231L12.027 11.7437L12.6216 10.1841L13.5946 7.64982L13.8649 7ZM19.5946 9.1444L20.027 11.0939L20.1351 11.3538L20.4054 11.2238L21.5946 10.3791L21.4324 10.1841L20.4054 9.5343L19.7027 9.1444H19.5946Z" fill="white"/>
+          </svg>
           <div style={{ display: 'flex', flexDirection: 'column' }}>
             <Text variant="body" size="md" weight="medium" style={{ color: 'var(--theme-color-grey-100)', whiteSpace: 'nowrap' }}>
               Eagle Inbrit Group: Inbrit Logistics Limited
@@ -736,10 +898,10 @@ function AccountHeader() {
             </Text>
           </div>
           <div style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
-            <Pill color="success" theme="line" showIcon={false}>
+            <Pill color="success" theme="line" showIcon={false} size="sm">
               KYC Verified: Activated
             </Pill>
-            <Pill color="orange" theme="line" showIcon={false}>
+            <Pill color="orange" theme="line" showIcon={false} size="sm">
               Transacting
             </Pill>
           </div>
@@ -773,21 +935,15 @@ function SidebarTabs({ activeTab }: { activeTab: string }) {
       style={{
         width: 180,
         background: 'var(--theme-color-pure-100)',
-        borderRight: '2px solid var(--theme-color-grey-10)',
+        borderTop: '1px solid var(--theme-color-grey-10)',
+        borderRight: '1px solid var(--theme-color-grey-10)',
         display: 'flex',
         flexDirection: 'column',
         flexShrink: 0,
       }}
     >
       {/* Spacer tab at top */}
-      <div
-        style={{
-          height: 27,
-          borderRight: '2px solid var(--theme-color-grey-10)',
-          borderTop: '1px solid var(--theme-color-grey-10)',
-          background: 'var(--theme-color-pure-100)',
-        }}
-      />
+      <div style={{ height: 27, background: 'var(--theme-color-pure-100)' }} />
       {SIDEBAR_TABS.map((tab) => {
         const isActive = tab === activeTab;
         return (
@@ -795,18 +951,27 @@ function SidebarTabs({ activeTab }: { activeTab: string }) {
             key={tab}
             style={{
               height: 48,
+              position: 'relative',
               display: 'flex',
               alignItems: 'center',
               paddingLeft: 32,
               paddingRight: 12,
-              borderRight: isActive
-                ? '2px solid var(--theme-color-primary-60)'
-                : '2px solid var(--theme-color-grey-10)',
               cursor: 'pointer',
               background: 'var(--theme-color-pure-100)',
-              boxSizing: 'border-box',
             }}
           >
+            {isActive && (
+              <div
+                style={{
+                  position: 'absolute',
+                  right: -1,
+                  top: 0,
+                  bottom: 0,
+                  width: 2,
+                  background: 'var(--theme-color-primary-60)',
+                }}
+              />
+            )}
             <Text
               variant="body"
               size="md"
@@ -1293,7 +1458,7 @@ export default function TradePartyListingPage() {
               >
                 <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
                   <Building width={16} height={16} color="var(--theme-color-grey-100)" />
-                  <Text variant="body" size="lg" weight="semibold" style={{ color: 'var(--theme-color-grey-100)' }}>
+                  <Text variant="body" size="lg" weight="medium" style={{ color: 'var(--theme-color-grey-100)' }}>
                     {TRADE_PARTIES.length} Trade Parties
                   </Text>
                 </div>

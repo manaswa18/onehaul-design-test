@@ -31,3 +31,5 @@ export const DocIcon: React.FC<IconProps>;
 export const ListIcon: React.FC<IconProps>;
 export const HelpIcon: React.FC<IconProps>;
 export const NotificationIcon: React.FC<IconProps>;
+export const Link: React.FC<IconProps>;
+export const Linkoff: React.FC<IconProps>;

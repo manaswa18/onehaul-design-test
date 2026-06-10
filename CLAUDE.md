@@ -30,6 +30,7 @@ These are non-negotiable constraints. Violating them breaks consistency.
 - Create ad-hoc wrapper components or one-off styled elements
 - Use Tailwind utility classes for colors or typography (layout utilities like `flex`, `gap`, `grid` are fine)
 - Import from `react-icons`, `@mui/icons-material`, or any other icon library directly in pages/components
+- Build custom UI elements (toggles, switches, chips, etc.) inline before checking `components/` — always check the components folder first
 
 **ALWAYS:**
 - Import UI components exclusively from `@/components/<ComponentName>`
@@ -106,8 +107,9 @@ When given a Figma link:
 3. Identify all colors used and map them to tokens in `defaultTheme.js`
 4. For every text element, read its font size, weight, and line height from Figma, then find the matching `variant` + `size` + `weight` combination in the `Text` component (`components/Text/index.jsx`) — never hardcode font sizes or weights inline
 5. For every type style (e.g. Body 2/Medium, Overline, Heading), cross-reference it against the `FONT_MAP` in `Text` to pick the correct props; if no exact match exists, get as close as possible using available variants and flag the discrepancy
-6. Build using only those components and tokens
-7. If a required component doesn't exist in `components/`, flag it — don't improvise
+6. Before writing any custom UI element, **check `components/` first** — run `ls components/` mentally against what you need (Toggle, Switch, Chips, Slider, etc.)
+7. Build using only those components and tokens
+8. If a required component doesn't exist in `components/`, flag it — don't improvise
 
 ---
 
