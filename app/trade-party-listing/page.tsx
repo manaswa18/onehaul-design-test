@@ -648,7 +648,7 @@ function ContactCard({ contact }: { contact: Contact }) {
       style={{
         background: 'var(--theme-color-pure-100)',
         borderRadius: 8,
-        padding: 16,
+        padding: '12px 16px',
         display: 'flex',
         flexDirection: 'column',
         gap: 12,
