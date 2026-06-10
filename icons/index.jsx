@@ -23,4 +23,6 @@ export {
   Notifications as NotificationIcon,
   Link,
   Linkoff,
+  Shipment as ShipmentIcon,
+  Calendar,
 } from '@onehaul/ui/icons';

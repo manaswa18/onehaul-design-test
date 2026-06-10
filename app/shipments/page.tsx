@@ -10,6 +10,7 @@ import TabsComponent from '@/components/Tabs';
 import TableComponent from '@/components/Table';
 import ChipsComponent from '@/components/Chips';
 import { Search, Add, HelpIcon, NotificationIcon, DocIcon, Chevrondown, FilterIcon } from '@/icons';
+import CreateShipmentDrawer from './CreateShipmentDrawer';
 import './shipments.css';
 
 const Tabs = TabsComponent as React.ComponentType<any>;
@@ -709,6 +710,7 @@ export default function ShipmentsPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeTab, setActiveTab] = useState('fcl');
   const [shipmentView, setShipmentView] = useState('my');
+  const [createDrawerOpen, setCreateDrawerOpen] = useState(false);
 
   const filteredShipments = MOCK_SHIPMENTS.filter(s => {
     if (shipmentView === 'my' && !s.isMyShipment) return false;
@@ -830,7 +832,7 @@ export default function ShipmentsPage() {
             <div className="shipments-header-actions">
               <Button variant="tertiary" size="md" style={{ visibility: 'hidden' }}>Export CSV</Button>
               <Button variant="secondary" size="md" style={{ visibility: 'hidden' }}>Assign Team</Button>
-              <Button variant="primary" size="md" icon={<Add width={14} height={14} />}>
+              <Button variant="primary" size="md" icon={<Add width={14} height={14} />} onClick={() => setCreateDrawerOpen(true)}>
                 New Shipment
               </Button>
             </div>
@@ -869,6 +871,8 @@ export default function ShipmentsPage() {
 
         </div>
       </div>
+
+      <CreateShipmentDrawer open={createDrawerOpen} onClose={() => setCreateDrawerOpen(false)} />
     </div>
   );
 }

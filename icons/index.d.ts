@@ -34,3 +34,5 @@ export const NotificationIcon: React.FC<IconProps>;
 export const Link: React.FC<IconProps>;
 export const Linkoff: React.FC<IconProps>;
 export const FilterIcon: React.FC<IconProps>;
+export const ShipmentIcon: React.FC<IconProps>;
+export const Calendar: React.FC<IconProps>;
