@@ -1,0 +1,1334 @@
+.onehaul-select-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+.onehaul-select-wrapper .ant-select {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    opacity: 0;
+}
+
+.onehaul-select-wrapper .ant-select-selector {
+    height: 100% !important;
+}
+
+.onehaul-select-tags {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex: 1;
+    min-width: 0;
+    padding: 2px 0;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+.onehaul-select-display-value {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex: 1;
+    min-width: 0;
+    padding: 2px 0;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+/* Tag styles */
+.onehaul-select-tags .ant-tag {
+    margin: 2px;
+    background: var(--theme-color-primary-20);
+    border: none;
+    border-radius: 16px;
+    color: var(--theme-color-grey-100);
+    padding: 4px 12px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 12px;
+    line-height: 1.4;
+    font-weight: 500;
+}
+
+/* Tag text truncation */
+.onehaul-select-tag-content {
+    display: inline-block;
+    max-width: 150px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+/* Count tag when no individual tags fit */
+.onehaul-select-count-tag.ant-tag {
+    background: var(--theme-color-grey-10) !important;
+    border: 1px solid var(--theme-color-grey-20);
+    color: var(--theme-color-grey-80) !important;
+    font-size: 12px;
+    font-weight: 500;
+    padding: 4px 12px;
+    border-radius: 16px;
+    margin: 2px;
+    cursor: default;
+}
+
+.onehaul-select-count-tag.ant-tag:hover {
+    background: var(--theme-color-grey-20) !important;
+    border-color: var(--theme-color-grey-30);
+}
+
+/* Overflow wrapper and tag styles */
+.onehaul-select-overflow-wrapper {
+    display: inline-flex;
+    align-items: center;
+    flex-shrink: 0;
+    position: relative;
+    margin-left: 8px;
+}
+
+.onehaul-select-overflow-tag.ant-tag {
+    background: var(--theme-color-grey-10) !important;
+    color: var(--theme-color-grey-60) !important;
+    font-size: 12px;
+    padding: 2px 8px;
+    border-radius: 4px;
+    white-space: nowrap;
+    margin: 0;
+    position: relative;
+    z-index: 1;
+}
+
+.onehaul-select-tags .ant-tag .anticon {
+    color: var(--theme-color-grey-40);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+}
+
+.onehaul-select-tags .ant-tag .anticon:hover {
+    color: var(--theme-color-grey-60);
+}
+
+/* Style the dropdown */
+.ant-select-dropdown {
+    padding: 4px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* Group headers */
+.ant-select-tree-title,
+.ant-select-item-group {
+    color: var(--theme-color-grey-40);
+    font-size: 12px;
+    padding: 8px 12px;
+    margin-top: 4px;
+}
+
+/* Items */
+.ant-select-item {
+    padding: 8px 12px;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+    padding-right: 16px;
+}
+
+.ant-select-item-option-content {
+    display: flex;
+    align-items: center;
+}
+
+/* Multiple select option with checkbox */
+.onehaul-select-option {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.onehaul-select-option .ant-checkbox-wrapper {
+    margin-right: 0;
+}
+
+.onehaul-select-option .ant-checkbox {
+    top: 0;
+}
+
+/* Selected state - only change text color */
+.ant-select-item-option-selected {
+    background-color: transparent !important;
+}
+
+.ant-select-item-option-selected .ant-select-item-option-content {
+    color: var(--theme-color-primary-60);
+}
+
+/* Hover state */
+.ant-select-item-option:hover {
+    background-color: var(--theme-color-grey-2);
+}
+
+/* Search input in dropdown */
+.ant-select-dropdown .ant-select-item-empty {
+    padding: 0;
+}
+
+/* Group select indent */
+.ant-select-item-option-grouped {
+    padding-left: 24px;
+}
+
+/* Disabled state */
+.onehaul-select-wrapper.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Search icon */
+.onehaul-select-wrapper .ant-input-prefix {
+    margin-right: 8px;
+}
+
+/* Checkbox styles */
+.onehaul-select-option .ant-checkbox-checked .ant-checkbox-inner {
+    background-color: var(--theme-color-primary-60);
+    border-color: var(--theme-color-primary-60);
+}
+
+.onehaul-select-option .ant-checkbox-wrapper:hover .ant-checkbox-inner,
+.onehaul-select-option .ant-checkbox:hover .ant-checkbox-inner {
+    border-color: var(--theme-color-primary-60);
+}
+
+/* Input styles when has value */
+.onehaul-select-wrapper .ant-input-affix-wrapper {
+    padding-right: 30px; /* Space for the dropdown arrow */
+}
+
+/* Adjust input padding when has tags */
+.onehaul-select-wrapper .ant-input-affix-wrapper .ant-input {
+    padding: 0;
+}
+
+.onehaul-select-arrow {
+    display: flex;
+    align-items: center;
+    color: var(--theme-color-grey-40);
+    transition: transform 0.2s ease;
+}
+
+.onehaul-select-wrapper .ant-select-open + .onehaul-select-arrow {
+    transform: rotate(180deg);
+}
+
+/* Hide the original ant-select input but keep it functional */
+.onehaul-select-wrapper .ant-select-selection-search {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    opacity: 0;
+}
+
+/* Option prefix */
+.onehaul-select-option-prefix {
+    color: var(--theme-color-grey-40);
+    margin-right: 8px;
+    font-size: 12px;
+}
+
+/* Tag prefix */
+.onehaul-select-tag-prefix {
+    color: var(--theme-color-grey-60);
+    margin-right: 4px;
+    font-size: 12px;
+}
+
+/* Single value container styles */
+.onehaul-select-single-value {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    padding-right: 24px; /* Space for the dropdown arrow */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.onehaul-select-value-prefix {
+    color: var(--theme-color-grey-40);
+    font-size: 12px;
+}
+
+/* Prefix in suffix area */
+.onehaul-select-value-prefix {
+    color: var(--theme-color-grey-40);
+    font-size: 12px;
+    margin-right: 4px;
+}
+
+/* Input adjustments */
+.onehaul-select-wrapper .onehaul-input {
+    cursor: pointer;
+}
+
+.onehaul-select-wrapper .onehaul-input-wrapper.has-value .onehaul-input-label {
+    transform: translateY(-50%) scale(0.85);
+    top: 0;
+    background: var(--theme-color-pure-100);
+    padding: 0 4px;
+    color: var(--theme-color-grey-40);
+    z-index: 2;
+}
+
+.onehaul-select-wrapper .onehaul-input-wrapper.focused .onehaul-input-label {
+    color: var(--theme-color-primary-60);
+}
+
+/* Ensure the input maintains proper height when it has value */
+.onehaul-select-input.has-value {
+    min-height: 48px;
+}
+
+/* Adjust the input wrapper padding when it has value */
+.onehaul-select-wrapper .onehaul-input-wrapper.has-value .ant-input-affix-wrapper {
+    padding-top: 12px;
+    padding-bottom: 12px;
+}
+
+/* Handle long content */
+.onehaul-select-wrapper .ant-input-affix-wrapper {
+    height: auto;
+    min-height: 40px;
+}
+
+.onehaul-select-wrapper .ant-input {
+    height: auto;
+    min-height: 24px;
+}
+
+/* Dropdown styles */
+.onehaul-select-dropdown-wrapper {
+    min-width: 200px;
+    max-width: 400px;
+    z-index: 2001 !important;
+    max-height: 320px;
+}
+
+.onehaul-select-dropdown-wrapper .onehaul-select-dropdown {
+    padding: 0px;
+}
+
+.onehaul-display-selected-select-search {
+    padding: 0px;
+}
+
+.onehaul-select-dropdown {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 24px 0 rgba(136, 136, 136, 0.12);
+    padding: 8px;
+}
+
+.onehaul-select-dropdown.display-selected-content {
+    padding: 0px;
+}
+.onehaul-select-search-input-wrapper {
+    padding: 12px;
+}
+
+.onehaul-select-search-input-wrapper.onehaul-display-async-content-search-input-wrapper {
+    padding: 12px;
+}
+
+.onehaul-select-options-wrapper {
+    padding: 0px 8px;
+}
+
+.onehaul-select-options-wrapper.onehaul-display-async-content-options-wrapper {
+    padding: 0px 8px;
+}
+
+.onehaul-select-options-wrapper.onehaul-select-options-wrapper-md {
+    padding: 12px;
+}
+
+.onehaul-select-options-wrapper.onehaul-select-options-wrapper-lg {
+    padding: 16px;
+}
+
+/* Input wrapper styles */
+.onehaul-select-input-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+/* Label styles */
+.onehaul-select-input-wrapper .onehaul-input-label {
+    position: absolute;
+    left: 12px;
+    color: var(--theme-color-grey-40);
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+    transition: all 0.2s ease;
+    background: var(--theme-color-pure-100);
+    padding: 0 5px;
+    z-index: 2;
+    font-size: 16px;
+    font-weight: 400;
+    user-select: none;
+}
+
+/* Floated label styles */
+.onehaul-select-input-wrapper .onehaul-input-label.floated {
+    transform: translateY(-50%) scale(0.85);
+    top: 0;
+    background: var(--theme-color-pure-100);
+    padding: 0 4px;
+    color: var(--theme-color-grey-40);
+    z-index: 2;
+}
+
+/* Search input in dropdown */
+.onehaul-select-search {
+    padding: 0px;
+    border-bottom: none;
+    margin-bottom: 0px;
+    position: relative;
+}
+
+.onehaul-select-search::after {
+    display: none;
+}
+
+.onehaul-select-search .ant-input-affix-wrapper {
+    background: var(--theme-color-grey-2) !important;
+    border: none;
+    border-bottom: 1px solid var(--theme-color-grey-10);
+    border-radius: 4px;
+    height: 36px;
+}
+
+/* .onehaul-select-search .ant-input {
+background: var(--theme-color-grey-10) !important;
+} */
+
+/* .onehaul-select-search .ant-input-affix-wrapper:hover,
+.onehaul-select-search .ant-input-affix-wrapper:focus {
+border-color: var(--theme-color-primary-60);
+} */
+
+/* Options container */
+.onehaul-select-options {
+    max-height: 250px;
+    overflow-y: auto;
+}
+
+/* Group styles */
+.onehaul-select-group {
+    margin-bottom: 8px;
+}
+
+.onehaul-select-group:last-child {
+    margin-bottom: 0;
+}
+
+.onehaul-select-group-label {
+    color: var(--theme-color-grey-40);
+    font-size: 12px;
+    padding: 4px 12px;
+}
+
+/* Option items */
+.onehaul-select-option-item {
+    display: flex;
+    align-items: center;
+    padding: 8px 12px;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: all 0.2s;
+    gap: 8px;
+}
+
+.onehaul-select-option-item .ant-checkbox-wrapper {
+    margin-right: 8px;
+    margin-left: -4px;
+}
+
+.onehaul-select-option-item:hover {
+    background: var(--theme-color-grey-2);
+}
+
+.onehaul-select-option-item.selected {
+    color: var(--theme-color-primary-60);
+}
+
+.onehaul-select-option-sub-label {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+}
+
+.onehaul-select-option-label {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Option Prefix/Suffix */
+.onehaul-select-option-prefix,
+.onehaul-select-option-suffix {
+    display: inline-flex;
+    align-items: center;
+    color: var(--theme-color-grey-40);
+    font-size: 12px;
+    flex-shrink: 0;
+}
+
+.onehaul-select-option-prefix {
+    margin-right: 8px;
+}
+
+.onehaul-select-option-suffix {
+    margin-left: 8px;
+}
+
+/* Scrollbar styles */
+.onehaul-select-options::-webkit-scrollbar {
+    width: 6px;
+}
+
+.onehaul-select-options::-webkit-scrollbar-track {
+    background: var(--theme-color-grey-2);
+    border-radius: 3px;
+}
+
+.onehaul-select-options::-webkit-scrollbar-thumb {
+    background: var(--theme-color-grey-20);
+    border-radius: 3px;
+}
+
+.onehaul-select-options::-webkit-scrollbar-thumb:hover {
+    background: var(--theme-color-grey-40);
+}
+
+/* Input adjustments */
+.onehaul-select-wrapper .onehaul-input {
+    cursor: pointer;
+}
+
+/* Handle long content */
+.onehaul-select-wrapper .ant-input-affix-wrapper {
+    height: auto;
+    min-height: 40px;
+}
+
+.onehaul-select-wrapper .ant-input {
+    height: auto;
+    min-height: 24px;
+}
+
+/* Input adjustments for prefix content */
+.onehaul-select-wrapper .onehaul-input .ant-input-prefix {
+    margin-right: 8px;
+    margin-left: 0;
+}
+
+/* Ensure the input text doesn't overlap with tags */
+.onehaul-select-wrapper .onehaul-input .ant-input {
+    padding-left: 0;
+}
+
+/* Input adjustments */
+.onehaul-select-wrapper .onehaul-input {
+    cursor: pointer;
+}
+
+/* Handle long content */
+.onehaul-select-wrapper .ant-input-affix-wrapper {
+    height: auto;
+    min-height: 40px;
+}
+
+.onehaul-select-wrapper .ant-input {
+    height: auto;
+    min-height: 24px;
+}
+
+/* Input adjustments for prefix content */
+.onehaul-select-wrapper .onehaul-input .ant-input-prefix {
+    margin-right: 8px;
+    margin-left: 0;
+}
+
+/* Ensure the input text doesn't overlap with tags */
+.onehaul-select-wrapper .onehaul-input .ant-input {
+    padding-left: 0;
+}
+
+/* Ensure label stays floated when there are tags or the dropdown is open */
+.onehaul-select-wrapper .onehaul-input-wrapper.has-value .onehaul-input-label {
+    transform: translateY(-50%) scale(0.85);
+    top: 0;
+    background: var(--theme-color-pure-100);
+    padding: 0 4px;
+    color: var(--theme-color-grey-40);
+    z-index: 2;
+}
+
+/* Adjust input height when it contains tags */
+.onehaul-select-wrapper .onehaul-input-wrapper.has-value .ant-input-affix-wrapper {
+    min-height: 48px;
+    height: auto;
+    padding-top: 12px;
+    padding-bottom: 12px;
+}
+
+/* Ensure tags don't overlap with the label */
+.onehaul-select-wrapper .onehaul-input-wrapper.has-value .ant-input-prefix {
+    padding-top: 4px;
+}
+
+/* Label floating styles */
+.onehaul-select-wrapper .onehaul-input-label.floated {
+    transform: translateY(-50%) scale(0.85);
+    top: 0;
+    background: var(--theme-color-pure-100);
+    padding: 0 4px;
+    color: var(--theme-color-grey-40);
+    z-index: 2;
+}
+
+/* Focus state for floated label */
+.onehaul-select-wrapper .onehaul-input-wrapper.focused .onehaul-input-label.floated {
+    color: var(--theme-color-primary-60);
+}
+
+/* Error state overrides */
+.onehaul-custom-input.has-error {
+    border-color: var(--theme-color-grey-10);
+}
+
+.onehaul-custom-input.has-error.focused {
+    border-color: var(--theme-color-grey-10);
+}
+
+.onehaul-custom-input.has-error.focused .onehaul-input-label {
+    color: var(--theme-color-error-120);
+}
+
+/* Input wrapper adjustments */
+.onehaul-select-input-wrapper .ant-input-affix-wrapper {
+    padding: 8px 12px;
+    min-height: 48px;
+    display: flex;
+    align-items: center;
+}
+
+/* Input field adjustments */
+.onehaul-select-input-wrapper .ant-input {
+    padding: 0 !important;
+    display: flex !important;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Tag prefix and suffix */
+.onehaul-select-tag-prefix,
+.onehaul-select-tag-suffix {
+    color: var(--theme-color-grey-40);
+    font-size: 12px;
+}
+
+/* Ensure proper spacing when input has value */
+.onehaul-select-wrapper .onehaul-input-wrapper.has-value .ant-input-affix-wrapper {
+    padding-top: 12px;
+    padding-bottom: 12px;
+}
+
+/* Ensure tags don't overlap with the label */
+.onehaul-select-wrapper .onehaul-input-wrapper.has-value .ant-input-prefix {
+    padding-top: 4px;
+}
+
+/* Custom Input Base */
+.onehaul-custom-input {
+    position: relative;
+    width: 100%;
+    min-height: 48px;
+    border: 1px solid var(--theme-color-grey-10);
+    border-radius: 8px;
+    background: var(--theme-color-pure-100);
+    transition: all 0.2s;
+    cursor: pointer;
+}
+
+.onehaul-custom-input:hover {
+    border-color: var(--theme-color-primary-20);
+}
+
+.onehaul-custom-input.focused {
+    border-color: var(--theme-color-primary-20);
+}
+
+/* Input Content Layout */
+.onehaul-custom-input-content {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    min-height: inherit;
+    padding: 0 12px;
+}
+
+/* Prefix and Suffix */
+.onehaul-custom-input-prefix,
+.onehaul-custom-input-suffix {
+    display: flex;
+    align-items: center;
+    color: var(--theme-color-grey-40);
+    flex-shrink: 0;
+    z-index: 1;
+}
+
+.onehaul-custom-input-prefix {
+    margin-right: 4px;
+}
+
+.onehaul-custom-input-suffix {
+    margin-left: 4px;
+}
+
+/* Label Styles */
+.onehaul-custom-input .onehaul-input-label {
+    position: absolute;
+    left: 12px;
+    color: var(--theme-color-grey-40);
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+    transition: all 0.2s ease;
+    background: transparent;
+    padding: 0 5px;
+    z-index: 1;
+    user-select: none;
+}
+
+/* Floated Label */
+.onehaul-custom-input .onehaul-input-label.floated {
+    top: -2px;
+    left: 12px;
+    transform: translateY(-50%);
+    color: var(--theme-color-grey-40);
+    background-color: var(--theme-color-pure-100);
+    padding: 0 4px;
+    z-index: 2;
+}
+
+/* Focus state label color */
+.onehaul-custom-input.focused .onehaul-input-label {
+    color: var(--theme-color-primary-60);
+}
+
+/* Label with prefix */
+.onehaul-custom-input-prefix ~ .onehaul-input-label:not(.floated) {
+    left: 28px;
+}
+
+/* Large size */
+.onehaul-custom-input.onehaul-input-lg .onehaul-input-label {
+    font-size: 16px;
+}
+
+.onehaul-custom-input.onehaul-input-lg .onehaul-input-label.floated {
+    font-size: 12px;
+    padding: 0 6px;
+    background-color: var(--theme-color-pure-100);
+    box-shadow: 0 0 0 2px var(--theme-color-pure-100);
+}
+
+/* Medium size */
+.onehaul-custom-input.onehaul-input-md .onehaul-input-label {
+    font-size: 14px;
+}
+
+.onehaul-custom-input.onehaul-input-md .onehaul-input-label.floated {
+    font-size: 12px;
+    background-color: var(--theme-color-pure-100);
+    box-shadow: 0 0 0 1px var(--theme-color-pure-100);
+}
+
+/* Small size */
+.onehaul-custom-input.onehaul-input-sm .onehaul-input-label {
+    font-size: 14px;
+}
+
+.onehaul-custom-input.onehaul-input-sm .onehaul-input-label.floated {
+    font-size: 10px;
+    padding: 0 4px;
+    background-color: var(--theme-color-pure-100);
+    box-shadow: 0 0 0 1px var(--theme-color-pure-100);
+}
+
+/* Tags Container */
+.onehaul-select-tags {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex: 1;
+    min-width: 0;
+    padding: 2px 0;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+/* Tag Styles */
+.onehaul-select-tags .ant-tag {
+    margin: 2px;
+    background: var(--theme-color-primary-20);
+    border: none;
+    border-radius: 16px;
+    color: var(--theme-color-grey-100);
+    padding: 4px 12px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 12px;
+    line-height: 1.4;
+    font-weight: 500;
+}
+
+.onehaul-select-tags .onehaul-select-custom-tag {
+    background: var(--theme-color-grey-10);
+}
+
+/* Tag Content */
+.onehaul-select-tag-content {
+    display: inline-block;
+    max-width: 150px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+/* Tag Prefix/Suffix */
+.onehaul-select-tag-prefix,
+.onehaul-select-tag-suffix {
+    display: inline-flex;
+    align-items: center;
+    color: var(--theme-color-grey-40);
+    font-size: 12px;
+}
+
+.onehaul-select-tag-prefix {
+    margin-right: 4px;
+}
+
+.onehaul-select-tag-suffix {
+    margin-left: 4px;
+}
+
+/* Overflow Counter */
+.onehaul-select-overflow-wrapper {
+    display: inline-flex;
+    align-items: center;
+    margin-left: 8px;
+    flex-shrink: 0;
+}
+
+.onehaul-select-overflow-tag.ant-tag {
+    background: var(--theme-color-grey-10) !important;
+    color: var(--theme-color-grey-60) !important;
+    font-size: 12px;
+    padding: 2px 8px;
+    margin: 0;
+}
+
+/* Dropdown Options */
+.onehaul-select-option-item {
+    display: flex;
+    align-items: center;
+    padding: 8px 12px;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: all 0.2s;
+    gap: 8px;
+}
+
+.onehaul-select-option-item .ant-checkbox-wrapper {
+    margin-right: 8px;
+    margin-left: -4px;
+}
+
+.onehaul-select-option-item:hover {
+    background: var(--theme-color-grey-2);
+}
+
+.onehaul-select-option-item.selected {
+    color: var(--theme-color-primary-60);
+}
+
+.onehaul-select-option-item.disabled {
+    color: var(--theme-color-grey-40);
+    cursor: not-allowed;
+}
+
+/* Option Content Layout */
+.onehaul-select-option-content {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: 1;
+    min-width: 0;
+}
+
+.onehaul-select-option-content-sublebel {
+    display: unset !important;
+}
+
+.onehaul-select-option-label {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Option Prefix/Suffix */
+.onehaul-select-option-prefix,
+.onehaul-select-option-suffix {
+    display: inline-flex;
+    align-items: center;
+    color: var(--theme-color-grey-40);
+    font-size: 12px;
+    flex-shrink: 0;
+}
+
+.onehaul-select-option-prefix {
+    margin-right: 8px;
+}
+
+.onehaul-select-option-suffix {
+    margin-left: 8px;
+}
+
+/* Size Variants */
+.onehaul-custom-input.onehaul-input-md {
+    min-height: 36px;
+}
+
+.onehaul-custom-input.onehaul-input-md .onehaul-custom-input-content {
+    display: flex;
+    align-items: center;
+    min-height: 36px;
+    padding: 0 8px;
+}
+
+.onehaul-custom-input.onehaul-input-md .onehaul-custom-input-prefix,
+.onehaul-custom-input.onehaul-input-md .onehaul-custom-input-suffix {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 36px;
+}
+
+/* Disabled State */
+.onehaul-custom-input.disabled {
+    background: var(--theme-color-pure-100);
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
+/* Loading state */
+.onehaul-select-loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 24px 0;
+}
+
+/* Loading more indicator at the bottom */
+.onehaul-select-loading-more {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 12px 0;
+    color: var(--theme-color-grey-40);
+    font-size: 12px;
+}
+
+.onehaul-select-loading-more .anticon {
+    margin-right: 8px;
+}
+
+/* Empty state */
+.onehaul-select-empty {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 24px 0;
+    color: var(--theme-color-grey-40);
+    font-size: 14px;
+}
+
+/* Responsive adjustments */
+@media screen and (max-width: 768px) {
+    .onehaul-select-tags {
+        max-width: 100%; /* Full width on smaller screens */
+        min-width: 150px; /* Smaller minimum width */
+    }
+
+    .onehaul-select-tag-content {
+        max-width: 120px; /* Shorter truncation on mobile */
+    }
+
+    .onehaul-custom-input-content {
+        padding: 6px 10px; /* Slightly smaller padding */
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .onehaul-select-tag-content {
+        max-width: 100px; /* Even shorter truncation on very small screens */
+    }
+
+    .onehaul-custom-input {
+        min-height: 40px; /* Slightly smaller height */
+    }
+
+    .onehaul-select-tags .ant-tag {
+        padding: 1px 6px; /* Smaller padding for tags */
+        font-size: 11px; /* Slightly smaller font */
+    }
+
+    .onehaul-select-overflow-tag.ant-tag {
+        padding: 1px 6px;
+        font-size: 11px;
+    }
+}
+
+/* Label responsive adjustments */
+@media screen and (max-width: 768px) {
+    .onehaul-custom-input .onehaul-input-label {
+        font-size: 14px;
+    }
+
+    .onehaul-custom-input .onehaul-input-label.floated {
+        transform: translateY(-50%) scale(0.8);
+    }
+}
+
+/* Ensure proper spacing when input has value */
+.onehaul-custom-input.has-value .onehaul-custom-input-content {
+    row-gap: 4px; /* Space between wrapped rows */
+}
+
+/* Prefix and suffix responsive styles */
+@media screen and (max-width: 480px) {
+    .onehaul-custom-input-prefix,
+    .onehaul-custom-input-suffix {
+        font-size: 14px;
+    }
+}
+
+/* Dropdown responsive styles */
+@media screen and (max-width: 768px) {
+    .onehaul-select-dropdown {
+        max-width: calc(100vw - 32px); /* Prevent overflow on small screens */
+    }
+}
+
+/* Helper Text */
+.onehaul-custom-input-helper-text {
+    margin-top: 4px;
+    font-size: 10px;
+    line-height: 1.4;
+    color: var(--theme-color-grey-40);
+    padding-left: 12px;
+}
+
+/* Error state for helper text */
+.onehaul-custom-input-helper-text.error {
+    color: var(--theme-color-error-120);
+}
+
+/* Center-aligned label and suffix */
+.onehaul-custom-input.center-aligned .onehaul-custom-input-content {
+    justify-content: center;
+    gap: 6px;
+}
+
+.onehaul-custom-input.center-aligned .onehaul-input-label {
+    position: relative;
+    text-align: center;
+    width: auto;
+    left: auto;
+    top: auto;
+    transform: none;
+    font-weight: 500;
+    color: var(--theme-color-grey-100);
+    padding: 0;
+    margin: 0;
+}
+
+/* Center-aligned floated label */
+.onehaul-custom-input.center-aligned .onehaul-input-label.floated {
+    position: relative;
+    left: auto;
+    top: auto;
+    transform: none;
+    background-color: var(--theme-color-pure-100);
+}
+
+.onehaul-custom-input.center-aligned .onehaul-custom-input-suffix,
+.onehaul-custom-input.center-aligned .onehaul-custom-input-prefix {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+}
+
+/* Icon-only mode */
+.onehaul-custom-input.onehaul-icon-only {
+    width: 44px;
+    height: 44px;
+    min-width: auto;
+    padding: 0;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--theme-color-pure-100);
+}
+
+.onehaul-custom-input.onehaul-icon-only:hover {
+    background-color: var(--theme-color-grey-2);
+}
+
+.onehaul-custom-input.onehaul-icon-only .onehaul-custom-input-content {
+    padding: 0;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+}
+
+.onehaul-custom-input.onehaul-icon-only .onehaul-custom-input-prefix,
+.onehaul-custom-input.onehaul-icon-only .onehaul-custom-input-suffix {
+    margin: 0;
+    color: var(--theme-color-grey-100);
+}
+
+/* Hide search in dropdown */
+.onehaul-select-dropdown:not(:has(.onehaul-select-search)) .onehaul-select-options {
+    max-height: 300px;
+    overflow-y: auto;
+    padding-top: 8px;
+}
+
+/* Adjust spacing when search is hidden */
+.onehaul-select-dropdown:not(:has(.onehaul-select-search)) {
+    padding-top: 8px;
+}
+
+/* Ensure label doesn't overlap with content in center-aligned mode */
+/* Remove this duplicate rule that conflicts with the one defined earlier */
+/* .onehaul-custom-input.center-aligned .onehaul-input-label.floated {
+transform: translateY(-50%) scale(0.85);
+top: 0;
+} */
+
+/* Ensure proper alignment in different modes */
+.onehaul-custom-input.hide-input.center-aligned .onehaul-custom-input-content {
+    justify-content: center;
+}
+
+.onehaul-custom-input.hide-input:not(.center-aligned) .onehaul-custom-input-content {
+    justify-content: space-between;
+}
+
+.onehaul-select-wrapper .onehaul-input-md {
+    padding: 0px 0px !important;
+    font-size: 12px !important;
+    height: 36px !important;
+    font-weight: 400 !important;
+}
+
+.onehaul-custom-input.center-aligned .onehaul-input-label.floated {
+    left: 50%;
+    transform: translateX(-50%) translateY(-50%) scale(0.85);
+}
+
+.onehaul-custom-input.center-aligned .onehaul-custom-input-suffix,
+.onehaul-custom-input.center-aligned .onehaul-custom-input-prefix {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Hide input mode */
+.onehaul-custom-input.hide-input .onehaul-select-tags,
+.onehaul-custom-input.hide-input .onehaul-select-overflow-wrapper {
+    display: none;
+}
+
+.onehaul-custom-input.hide-input .onehaul-custom-input-content {
+    justify-content: space-between;
+}
+
+/* Plain Label Styles */
+.onehaul-select-plain-label {
+    display: flex;
+    align-items: center;
+    min-height: 20px;
+    padding: 0px calc(4px);
+    gap: 8px;
+    color: var(--theme-color-grey-80);
+}
+
+.onehaul-select-plain-label-display-selected-value {
+    padding: 0px calc(4px);
+    width: 100%;
+}
+
+.onehaul-select-plain-label .onehaul-text {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 100%;
+    font-size: 14px !important;
+}
+
+/* Plain Label Clear Button */
+.onehaul-select-plain-label-clear {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+    margin-right: 0px;
+    flex-shrink: 0;
+}
+
+.onehaul-select-plain-label-clear:hover {
+    background-color: var(--theme-color-grey-10);
+}
+
+.onehaul-select-plain-label-clear:hover svg {
+    color: var(--theme-color-grey-60) !important;
+}
+
+.onehaul-custom-input.onehaul-input-sm .onehaul-custom-input-content {
+    display: flex;
+    align-items: center;
+    min-height: 36px;
+    padding: 0 12px;
+}
+
+.onehaul-custom-input.onehaul-input-sm .onehaul-custom-input-prefix,
+.onehaul-custom-input.onehaul-input-sm .onehaul-custom-input-suffix {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 36px;
+}
+
+.onehaul-custom-input.onehaul-input-md .onehaul-custom-input-prefix,
+.onehaul-custom-input.onehaul-input-md .onehaul-custom-input-suffix {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 36px;
+}
+
+.onehaul-custom-input.onehaul-input-lg {
+    min-height: 48px;
+    padding: 0;
+}
+
+/* Custom Input Suffix with Tick Icon */
+.onehaul-custom-input-suffix {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--theme-color-grey-40);
+    flex-shrink: 0;
+    z-index: 1;
+}
+
+.onehaul-select-original-suffix {
+    display: flex;
+    align-items: center;
+}
+
+/* Tick Icon Styles */
+.onehaul-custom-input-suffix .onehaul-tick-icon {
+    display: flex;
+    align-items: center;
+    transition: color 0.2s ease;
+}
+
+/* Add to Select.css */
+.onehaul-select-tags .ant-tag.ant-tag-has-color.disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+.onehaul-select-tags .ant-tag:not(.ant-tag-has-color).disabled {
+    background-color: var(--theme-color-grey-5);
+    color: var(--theme-color-grey-40);
+    cursor: not-allowed;
+}
+
+.onehaul-select-search-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.onehaul-select-search-text {
+    font-size: 10px !important;
+    color: var(--theme-color-grey-40);
+    text-transform: uppercase;
+}
+.onehaul-select-search-icon-container {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+    margin-bottom: 8px;
+}
+
+.onehaul-select-adv-search-text {
+    font-size: 12px;
+    color: var(--theme-color-primary-60);
+}
+.onehaul-select-search-icon {
+    color: var(--theme-color-primary-60) !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.onehaul-select-dropdown-footer-wrapper {
+    padding: 0 12px 12px 12px;
+    width: 100%;
+}
+
+.onehaul-select-dropdown-footer {
+    &.border-top {
+        padding-top: 8px;
+        border-top: 1px solid var(--theme-color-grey-10);
+    }
+}

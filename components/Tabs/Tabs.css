@@ -1,0 +1,37 @@
+.full-width-tabs .ant-tabs-nav-list {
+    display: flex;
+    width: 100%;
+}
+
+.onehaul-tabs {
+    color: var(--theme-color-grey-100);
+}
+
+.onehaul-tabs .ant-tabs-tab,
+.onehaul-tabs .ant-tabs-ink-bar,
+.onehaul-tabs .ant-tabs-tab-btn,
+.onehaul-tabs .ant-tabs-tab-active {
+    transition: all 0.5s ease !important;
+}
+
+.full-width-tabs .ant-tabs-tab {
+    flex: 1;
+    justify-content: center;
+    text-align: center;
+}
+
+.onehaul-tabs-primary {
+    .ant-tabs-nav::before {
+        border-bottom: 2px solid var(--theme-color-grey-10);
+    }
+}
+
+.onehaul-tabs-secondary {
+    .ant-tabs-nav::before {
+        border-bottom: none;
+    }
+}
+
+.ant-tabs .ant-tabs-tab.ant-tabs-tab-focus .ant-tabs-tab-btn {
+    outline: none;
+}

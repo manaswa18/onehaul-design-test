@@ -1,0 +1,133 @@
+.onehaul-input-number-wrapper {
+    .ant-input-number-input {
+        height: 34px;
+    }
+
+    &.onehaul-input-number-lg {
+        .ant-input-number-input {
+            height: 46px;
+        }
+    }
+}
+
+.onehaul-input-number-container {
+    position: relative;
+}
+
+.onehaul-input-number-label {
+    position: absolute;
+    top: 50%;
+    left: 8px;
+    transform: translateY(-50%);
+    font-size: 14px;
+    color: var(--theme-color-grey-40);
+    transition: all 0.2s ease-in-out;
+    pointer-events: none;
+    font-weight: 400;
+    background: var(--theme-color-pure-100);
+    padding: 0 4px;
+}
+
+.onehaul-input-number-lg {
+    input.ant-input-number-input {
+        height: 48px;
+    }
+
+    .onehaul-input-number-label {
+        font-size: 16px;
+    }
+
+    .ant-input-number-suffix {
+        font-size: 16px;
+    }
+
+    .ant-input-number-prefix {
+        font-size: 16px;
+    }
+
+    .onehaul-input-number-helper-text {
+        font-size: 12px;
+    }
+}
+
+.ant-input-number-affix-wrapper .ant-input-number-prefix {
+    margin-inline-end: 8px;
+}
+
+.ant-input-number {
+    border-radius: 8px;
+
+    &.ant-input-number-disabled {
+        background-color: var(--theme-color-pure-100);
+
+        .ant-input-number-input {
+            color: var(--theme-color-grey-40);
+        }
+    }
+}
+
+.onehaul-input-number-wrapper:has(.ant-input-number.ant-input-number-focused)
+    .onehaul-input-number-label {
+    top: -4px;
+    left: 8px !important;
+}
+
+.onehaul-input-number-wrapper:not(.onehaul-input-number-error):has(
+        .ant-input-number.ant-input-number-focused
+    )
+    .onehaul-input-number-label {
+    top: -4px;
+    left: 8px !important;
+    color: var(--theme-color-primary-60);
+}
+
+.onehaul-input-number-wrapper:has(.ant-input-number-input[value]:not([value='']))
+    .onehaul-input-number-label {
+    top: -4px;
+    left: 8px !important;
+}
+
+.ant-input-number-affix-wrapper:not(.ant-input-number-disabled) {
+    &:hover {
+        z-index: unset;
+    }
+}
+
+.ant-input-number-suffix,
+.ant-input-number-prefix {
+    color: var(--theme-color-grey-40);
+}
+
+.ant-input-number-outlined.ant-input-number-disabled {
+    background-color: var(--theme-color-pure-100);
+}
+
+.ant-input-number-outlined.ant-input-number-disabled:hover:not([disabled]) {
+    background-color: var(--theme-color-pure-100);
+    border-color: var(--theme-color-grey-10);
+}
+
+.ant-input-number .ant-input-number-input {
+    color: var(--theme-color-grey-100);
+
+    &::placeholder {
+        color: var(--theme-color-grey-40);
+    }
+}
+
+.onehaul-input-number-error {
+    .onehaul-input-number-label {
+        color: var(--theme-color-error-120);
+    }
+
+    .onehaul-input-number-helper-text {
+        color: var(--theme-color-error-120);
+    }
+}
+
+.onehaul-input-number-helper-text {
+    margin-top: 2px;
+    color: var(--theme-color-grey-40);
+    font-size: 10px;
+    padding: 4px 12px 0 12px;
+}

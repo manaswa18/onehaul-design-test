@@ -1,0 +1,16 @@
+.onehaul-slider {
+    margin: 0;
+}
+
+.ant-slider:not(.ant-slider-disabled) .ant-slider-handle::after {
+    background-color: var(--theme-color-primary-10);
+}
+
+.ant-slider:not(.ant-slider-disabled):hover .ant-slider-handle::after {
+    box-shadow: 0 0 0 3px var(--theme-color-primary-60);
+}
+
+.onehaul-slider-range-label {
+    margin-top: 8px !important;
+    color: var(--theme-color-grey-70);
+}

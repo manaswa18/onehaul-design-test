@@ -1,0 +1,872 @@
+/* wrapper  */
+
+.onehaul-input-wrapper {
+    position: relative;
+
+    ::placeholder {
+        color: var(--theme-color-grey-40);
+    }
+}
+.onehaul-input {
+    padding-left: 12px; /* adjust to make space for the label */
+}
+
+.onehaul-input-label {
+    position: absolute;
+    top: 50%;
+    left: 12px; /* Adjust based on padding */
+}
+
+.onehaul-input-label:not(.floated) {
+    right: 12px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* .onehaul-input-label-z-index {
+  z-index: 1000;
+} */
+
+.onehaul-input-custom-suffix {
+    margin-right: 5px;
+    color: var(--theme-color-grey-40);
+    display: flex;
+    align-items: center;
+}
+
+/* ====================variant primary===================== */
+
+/* ====for large Size==== */
+
+/* input text */
+.onehaul-input-lg {
+    padding: 12px 16px;
+    font-size: 16px;
+    height: 48px;
+    font-weight: 400;
+    line-height: 0px;
+}
+
+/* label */
+
+.onehaul-input-lg + .onehaul-input-label {
+    color: var(--theme-color-grey-40);
+    pointer-events: none;
+    transition: all 0.2s ease;
+    background: inherit !important;
+    padding: 0 5px;
+    z-index: 2;
+    /* Ensure label is above input */
+    font-size: 16px;
+    font-weight: 400;
+}
+
+/* label with prefix */
+.onehaul-input-lg.onehaul-input-has-prefix + .onehaul-input-label {
+    left: calc(24px + 8px);
+}
+
+/* label floated text */
+
+.onehaul-input-lg + .onehaul-input-label.floated {
+    font-size: 12px;
+}
+
+/* label floated position without prefix */
+
+.onehaul-input-label.floated {
+    left: 10px;
+}
+
+/* label floated position with prefix */
+
+.onehaul-input-lg.onehaul-input-has-prefix ~ .onehaul-input-label.floated {
+    left: 12px;
+    top: -4px;
+}
+
+/* helper text */
+
+/* count  text */
+
+/* ====for small Size==== */
+
+/* input  */
+.onehaul-input-md {
+    padding: 8px 12px;
+    font-size: 14px;
+    height: 36px;
+    font-weight: 400;
+}
+
+/* label */
+
+.onehaul-input-md + .onehaul-input-label {
+    left: 12px;
+    color: var(--theme-color-grey-40);
+    pointer-events: none;
+    transition: all 0.2s ease;
+    background: inherit !important;
+    padding: 0 5px;
+    z-index: 2;
+    /* Ensure label is above input */
+    font-size: 14px;
+    font-weight: 400;
+}
+
+/* label floated */
+
+.onehaul-input-md + .onehaul-input-label.floated {
+    font-size: 12px;
+}
+
+/* label floated position with prefix */
+.onehaul-input-md.onehaul-input-has-prefix ~ .onehaul-input-label {
+    left: calc(20px + 8px);
+}
+
+/* label floated position without prefix */
+
+.onehaul-input-md ~ .onehaul-input-label.floated {
+    left: 6px;
+}
+
+/* label floated position with prefix */
+
+/* helper text */
+
+.onehaul-input-md ~ .onehaul-input-helper-text {
+    font-size: 12px;
+}
+
+.onehaul-input-md ~ .onehaul-input-count {
+    font-size: 12px;
+}
+
+/* ====================variant primary focus===================== */
+
+.onehaul-input-wrapper.focused .onehaul-input-label,
+.onehaul-input-wrapper.has-value .onehaul-input-label {
+    top: -10px;
+    /* Move label above the border */
+    z-index: 2;
+    padding: 0 4px;
+    color: var(--theme-color-grey-40);
+}
+
+/* Color only changes during focus - like input border */
+.onehaul-input-wrapper.focused .onehaul-input-label {
+    color: var(--theme-color-primary-60);
+}
+
+/* ====================variant primary helper text ===================== */
+
+.onehaul-input-wrapper .onehaul-input-helper-text {
+    position: absolute;
+    left: 12px;
+    top: 4px;
+    font-size: 10px !important;
+    color: var(--theme-color-grey-40) !important;
+    padding-left: 12px;
+    line-height: 1.4;
+}
+
+/* ====================variant primary text count ===================== */
+
+.onehaul-input-count {
+    position: absolute;
+    right: 12px;
+    bottom: 3px;
+    font-size: 12px;
+    color: var(--theme-color-grey-40);
+    background: inherit;
+    padding: 0 4px;
+    pointer-events: none;
+}
+
+/* ====================variant primary error  ===================== */
+
+/* .onehaul-input-wrapper.has-error .onehaul-input-primary {
+ border-color: var(--theme-color-error-120);
+} */
+
+.onehaul-input-wrapper.has-error .onehaul-input-label,
+.onehaul-input-wrapper.has-error.focused .onehaul-input-label,
+.onehaul-input-wrapper.has-error.has-value .onehaul-input-label {
+    color: var(--theme-color-error-120);
+    border-color: var(--theme-color-error-120) !important;
+}
+
+.onehaul-input-wrapper.has-error .onehaul-input-helper-text,
+.onehaul-input-wrapper.has-error .onehaul-input-count {
+    color: var(--theme-color-error-120);
+}
+
+.onehaul-error {
+    color: var(--theme-color-error-120);
+}
+
+/* ====================variant primary disabled  ===================== */
+
+.ant-input-disabled {
+    background-color: var(--theme-color-pure-100) !important;
+}
+
+.onehaul-input-wrapper-disabled .onehaul-input-label {
+    color: var(--theme-color-grey-40) !important;
+}
+
+.ant-input-disabled.onehaul-input-label {
+    background-color: inherit !important;
+}
+
+/* ====================variant primary disabled with error  ===================== */
+
+.onehaul-input-wrapper.has-error .ant-input-disabled:hover {
+    border-color: var(--theme-color-error-120);
+    cursor: not-allowed;
+}
+
+.onehaul-input-wrapper.has-error .onehaul-input-label {
+    color: var(--theme-color-error-120) !important;
+}
+
+/* ====================variant secondary  ===================== */
+/* text size large */
+
+/* input text */
+.onehaul-input-secondary.onehaul-input-lg {
+    padding: 6px 16px;
+    font-size: 16px;
+    height: 48px;
+    font-weight: 400;
+    line-height: 0px;
+}
+
+/* ======= variant secondary  ======*/
+
+/* label with prefix */
+
+.onehaul-input-wrapper .onehaul-input-secondary.onehaul-input-has-prefix + .onehaul-input-label,
+.onehaul-input-wrapper .onehaul-input-secondary.onehaul-input-has-prefix ~ .onehaul-input-label {
+    left: 30px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+/* label  floated with prefix  */
+
+.onehaul-input-wrapper
+    .onehaul-input-secondary.onehaul-input-has-prefix
+    + .onehaul-input-label.onehaul-input-label.floated,
+.onehaul-input-wrapper
+    .onehaul-input-secondary.onehaul-input-has-prefix
+    ~ .onehaul-input-label.floated {
+    left: 32px;
+    top: 12px;
+    transform: none;
+    font-size: 12px;
+}
+
+/* label  floated without prefix  */
+
+.onehaul-input-wrapper .onehaul-input-secondary + .onehaul-input-label.onehaul-input-label.floated,
+.onehaul-input-wrapper .onehaul-input-secondary ~ .onehaul-input-label.floated {
+    left: 12px;
+    top: 12px;
+    transform: none;
+    font-size: 10px;
+}
+
+/* label  floated  for small input */
+
+.onehaul-input-wrapper
+    .onehaul-input-md.onehaul-input-secondary.onehaul-input-has-prefix
+    + .onehaul-input-label.onehaul-input-label.floated,
+.onehaul-input-wrapper
+    .onehaul-input-md.onehaul-input-secondary.onehaul-input-has-prefix
+    ~ .onehaul-input-label.floated {
+    left: 22px;
+    top: 4px;
+    transform: none;
+    font-size: 10px;
+}
+
+/* label */
+
+.onehaul-input-wrapper-secondary.focused .ant-input,
+.onehaul-input-wrapper-secondary.has-value .ant-input {
+    transition: top 0.2s ease;
+    padding-top: 22px;
+    padding-bottom: 6px;
+}
+
+.onehaul-input-wrapper-secondary.focused .ant-input-suffix,
+.onehaul-input-wrapper-secondary.has-value .ant-input-suffix {
+    position: relative !important;
+    top: 4px !important;
+    transition: top 0.4s ease;
+}
+
+.onehaul-input-wrapper-secondary.focused .onehaul-input-has-prefix .ant-input-prefix,
+.onehaul-input-wrapper-secondary.has-value .onehaul-input-has-prefix .ant-input-prefix {
+    position: relative !important;
+    top: 8px !important;
+    transition: top 0.2s ease;
+}
+
+.onehaul-input-wrapper-secondary.focused .onehaul-input-has-prefix .ant-input-suffix,
+.onehaul-input-wrapper-secondary.has-value .onehaul-input-has-prefix .ant-input-suffix {
+    position: relative !important;
+    top: 8px !important;
+    transition: top 0.2s ease;
+}
+
+.onehaul-input-wrapper-secondary.focused .onehaul-input-has-prefix .ant-input,
+.onehaul-input-wrapper-secondary.has-value .onehaul-input-has-prefix .ant-input {
+    position: relative !important;
+    padding-top: 18px !important;
+    padding-bottom: 8px !important;
+    transition: padding 0.2s ease;
+}
+
+.onehaul-input-wrapper .onehaul-input-secondary.onehaul-input-has-prefix + .onehaul-input-label,
+.onehaul-input-wrapper .onehaul-input-secondary.onehaul-input-has-prefix ~ .onehaul-input-label {
+    left: 35px;
+    top: 100%;
+    transition: all 0.2s ease;
+}
+
+.onehaul-input-wrapper .onehaul-input-secondary + .onehaul-input-label,
+.onehaul-input-wrapper .onehaul-input-secondary ~ .onehaul-input-label {
+    left: 12px;
+}
+
+.onehaul-input-wrapper-secondary.focused .onehaul-input-label,
+.onehaul-input-wrapper-secondary.has-value .onehaul-input-label {
+    top: 6px;
+    /* Move label above to exactly 8px from top */
+    left: 12px;
+    color: var(--theme-color-grey-40);
+    background: inherit !important;
+    z-index: 2;
+    padding: 0 4px;
+    font-size: 12px;
+    transform: none;
+}
+
+/* Color only changes during focus for secondary variant */
+.onehaul-input-wrapper-secondary.focused .onehaul-input-label {
+    color: var(--theme-color-primary-60);
+}
+
+.onehaul-input-wrapper-secondary .onehaul-input-label {
+    background: inherit !important;
+}
+
+.onehaul-input-secondary {
+    background: var(--theme-color-grey-2);
+    border: 1px solid var(--theme-color-grey-2);
+    transition: all 0.2s ease;
+}
+
+.onehaul-input-secondary,
+.onehaul-input-secondary:hover,
+.onehaul-input-secondary:focus,
+.onehaul-input-secondary:active {
+    background: var(--theme-color-grey-2) !important;
+    border: 0;
+    border-bottom: 1px solid var(--theme-color-primary-20);
+    transition: all 0.2s ease;
+}
+
+.onehaul-input.secondary.has-value span.ant-input-prefix {
+    margin-top: 4px;
+}
+
+.onehaul-input-secondary .onehaul-input-label {
+    background-color: transparent;
+}
+
+.onehaul-input.secondary .onehaul-input-label.floated {
+    left: 28px;
+}
+
+/* ====================variant secondary disabled ===================== */
+
+.onehaul-input-secondary[disabled] + .onehaul-input-label,
+.onehaul-input-secondary.disabled + .onehaul-input-label {
+    color: var(--theme-color-error-120);
+}
+
+.onehaul-input-secondary .ant-input.ant-input-disabled {
+    background-color: transparent !important;
+}
+
+/* Password toggle styles */
+.onehaul-password-toggle {
+    cursor: pointer;
+    color: var(--theme-color-grey-40);
+    transition: color 0.2s;
+    padding-left: 8px;
+}
+
+.onehaul-password-toggle:hover {
+    color: var(--theme-color-grey-60);
+}
+
+/* OTP input styles */
+.onehaul-otp-container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.onehaul-otp-title {
+    margin-bottom: 8px;
+    font-weight: 500;
+    font-size: 16px;
+    color: var(--theme-color-grey-60);
+}
+
+/* Remove padding for OTP helper text */
+.onehaul-otp-container ~ .onehaul-input-bottom-container .onehaul-input-helper-text {
+    padding-left: 0;
+    margin: 0;
+    position: relative;
+    left: 0;
+    top: 0;
+}
+
+.onehaul-input-otp {
+    display: flex;
+    gap: 8px;
+    width: 100%;
+}
+
+.onehaul-input-otp .ant-input-otp-input {
+    border: 1px solid var(--theme-color-grey-10);
+    border-radius: 8px;
+    height: 48px;
+    width: 48px;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.onehaul-input-otp.onehaul-input-md .ant-input-otp-input {
+    height: 36px;
+    width: 36px;
+    font-size: 16px;
+}
+
+.onehaul-input-otp .ant-input-otp-input:focus {
+    border-color: var(--theme-color-primary-60);
+    box-shadow: 0 0 0 2px rgba(var(--theme-color-primary-60-rgb), 0.2);
+}
+
+/* TextArea styles */
+.onehaul-input-wrapper textarea.onehaul-input {
+    height: auto;
+    min-height: 80px;
+    padding: 12px 16px;
+    resize: vertical;
+}
+
+.onehaul-input-wrapper textarea.onehaul-input-md {
+    min-height: 60px;
+    padding: 8px 12px;
+}
+
+/* Label positioning for textarea */
+.onehaul-input-wrapper textarea.onehaul-input ~ .onehaul-input-label {
+    top: 16px;
+    transform: none;
+}
+
+.onehaul-input-wrapper textarea.onehaul-input ~ .onehaul-input-label.floated {
+    top: -10px;
+   
+}
+
+/* Addon styles */
+.onehaul-input-addon-container {
+    display: flex;
+    align-items: stretch;
+    width: 100%;
+    position: relative;
+}
+
+.onehaul-input-addon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 12px;
+    background-color: var(--theme-color-grey-5);
+    border: 1px solid var(--theme-color-grey-10);
+    color: var(--theme-color-grey-60);
+    z-index: 1;
+    /* Lower than the label's z-index */
+}
+
+.onehaul-input-addon-before {
+    border-right: none;
+    border-radius: 8px 0 0 8px;
+}
+
+.onehaul-input-addon-after {
+    border-left: none;
+    border-radius: 0 8px 8px 0;
+}
+
+.onehaul-input-with-addon {
+    flex: 1;
+    position: relative;
+    /* Add this to ensure label position is relative to this container */
+}
+
+.onehaul-input-with-addon .onehaul-input {
+    border-radius: 0;
+}
+
+.onehaul-input-addon-before + .onehaul-input-with-addon .onehaul-input {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+}
+
+.onehaul-input-with-addon + .onehaul-input-addon-after .onehaul-input {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+/* Suffix/prefix positioning for special inputs */
+.onehaul-input-wrapper.has-value textarea.onehaul-input + .onehaul-input-label,
+.onehaul-input-wrapper.focused textarea.onehaul-input + .onehaul-input-label {
+    top: -10px;
+    background: var(--theme-color-pure-100) !important;
+    padding: 0 4px;
+}
+
+/* Adjust size variants for textarea */
+.onehaul-input-lg.textarea {
+    padding: 12px 16px;
+    font-size: 16px;
+}
+
+.onehaul-input-md.textarea {
+    padding: 8px 12px;
+    font-size: 14px;
+}
+
+/* Bottom container for helper text and count */
+.onehaul-input-bottom-container {
+    position: relative;
+    width: 100%;
+    min-height: 20px;
+    display: flex;
+    margin-left: 1px;
+    justify-content: space-between;
+}
+
+/* Fix helper text position with addons */
+.onehaul-input-wrapper.has-addon .onehaul-input-helper-text {
+    position: relative;
+}
+
+/* Label positioning for addons */
+.onehaul-input-with-addon .onehaul-input-label {
+    z-index: 3;
+    left: 12px;
+    pointer-events: none;
+    transition: all 0.2s ease;
+    background: inherit;
+    padding: 0 5px;
+    color: var(--theme-color-grey-40);
+    font-size: 16px;
+    font-weight: 400;
+}
+
+.onehaul-input-with-addon .onehaul-input-has-prefix + .onehaul-input-label {
+    left: calc(24px + 8px);
+    /* Icon width + 8px gap */
+}
+
+/* Make sure label is properly positioned with addon */
+.onehaul-input-wrapper.has-addon .onehaul-input-label {
+    z-index: 3;
+    background: inherit;
+}
+
+/* Addon container adjustments */
+.onehaul-input-addon-container {
+    display: flex;
+    align-items: stretch;
+    width: 100%;
+    position: relative;
+}
+
+/* Ensure floating state is correct for addons */
+.onehaul-input-with-addon .onehaul-input-label.floated {
+    top: -6px !important;
+   
+    background: inherit;
+    padding: 0 4px;
+    z-index: 3;
+}
+
+/* Border radius for inputs with only one addon */
+.onehaul-input.addon-before-only {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    border-top-right-radius: 8px;
+    border-bottom-right-radius: 8px;
+}
+
+.onehaul-input.addon-after-only {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+    border-top-left-radius: 8px;
+    border-bottom-left-radius: 8px;
+}
+
+.onehaul-input-with-addon.with-addon-before-only .onehaul-input {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    border-top-right-radius: 8px;
+    border-bottom-right-radius: 8px;
+}
+
+.onehaul-input-with-addon.with-addon-after-only .onehaul-input {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+    border-top-left-radius: 8px;
+    border-bottom-left-radius: 8px;
+}
+
+/* When both addons are present, no border radius on input */
+.onehaul-input-with-addon:not(.with-addon-before-only):not(.with-addon-after-only) .onehaul-input {
+    border-radius: 0;
+}
+
+/* OTP helper text container */
+.onehaul-otp-helper .onehaul-input-helper-text {
+    padding-left: 0;
+    margin-left: 0;
+}
+
+.onehaul-otp-title-text {
+    color: var(--theme-color-grey-60);
+    margin-bottom: 12px;
+    display: block;
+}
+
+.onehaul-input-text {
+    position: relative;
+}
+
+.onehaul-input-label.onehaul-input-label-primary.onehaul-input-lg {
+    top: 50%;
+}
+
+.onehaul-input-label.onehaul-input-label-primary.onehaul-input-md {
+    top: 25%;
+}
+.onehaul-input-label.onehaul-input-label-primary.onehaul-input-lg.onehaul-input-has-suffix {
+    top: 35%;
+}
+
+.onehaul-input-label.onehaul-input-label-primary.onehaul-input-md.onehaul-input-has-suffix {
+    top: 18%;
+}
+
+.onehaul-input-label.onehaul-input-label-primary.onehaul-input-lg.has-text-helper {
+    top: 35%;
+}
+
+.onehaul-input-label.onehaul-input-label-primary.onehaul-input-md.has-text-helper:not(.floated) {
+    top: 20%;
+    line-height: 1;
+}
+label.onehaul-input-label.onehaul-input-label-primary.onehaul-input-lg.onehaul-input-has-prefix-suffix.has-addon.has-text-helper {
+    top: 50%;
+}
+
+label.onehaul-input-label.onehaul-input-label-primary.onehaul-input-md.onehaul-input-has-prefix-suffix.has-addon.has-text-helper {
+    top: 25%;
+}
+label.onehaul-input-label.onehaul-input-label-primary.onehaul-input-lg.has-addon.has-text-helper {
+    top: 50%;
+}
+
+label.onehaul-input-label.onehaul-input-label-primary.onehaul-input-md.has-addon.has-text-helper {
+    top: 25%;
+}
+label.onehaul-input-label.onehaul-input-label-primary.onehaul-input-lg.has-text-helper.text-textarea {
+    top: 10%;
+}
+
+.onehaul-input-label.onehaul-input-label-primary.floated {
+    top: -8px !important;
+    left: 11px;
+    background-color: var(--theme-color-pure-100) !important;
+    height: 14px;
+}
+
+/* Special adjustments for secondary variant with suffix */
+.onehaul-input-wrapper-secondary.focused .onehaul-input-has-suffix .ant-input,
+.onehaul-input-wrapper-secondary.has-value .onehaul-input-has-suffix .ant-input {
+    padding-top: 20px;
+    padding-bottom: 8px;
+}
+
+/* Small input secondary variant with prefix/suffix */
+.onehaul-input-wrapper-secondary.focused
+    .onehaul-input-md.onehaul-input-has-prefix
+    .ant-input-prefix,
+.onehaul-input-wrapper-secondary.has-value
+    .onehaul-input-md.onehaul-input-has-prefix
+    .ant-input-prefix,
+.onehaul-input-wrapper-secondary.focused
+    .onehaul-input-md.onehaul-input-has-suffix
+    .ant-input-suffix,
+.onehaul-input-wrapper-secondary.has-value
+    .onehaul-input-md.onehaul-input-has-suffix
+    .ant-input-suffix {
+    top: 6px !important;
+}
+
+.onehaul-input-wrapper-secondary.focused .onehaul-input-md .ant-input,
+.onehaul-input-wrapper-secondary.has-value .onehaul-input-md .ant-input {
+    padding-top: 24px;
+    padding-bottom: 8px;
+}
+
+.onehaul-input-wrapper-secondary .onehaul-input-md + .onehaul-input-label,
+.onehaul-input-wrapper-secondary .onehaul-input-md ~ .onehaul-input-label {
+    font-size: 14px;
+}
+
+.onehaul-input-wrapper-secondary.focused .onehaul-input-md + .onehaul-input-label,
+.onehaul-input-wrapper-secondary.has-value .onehaul-input-md + .onehaul-input-label,
+.onehaul-input-wrapper-secondary.focused .onehaul-input-md ~ .onehaul-input-label,
+.onehaul-input-wrapper-secondary.has-value .onehaul-input-md ~ .onehaul-input-label {
+    font-size: 10px;
+}
+
+.onehaul-input-label.onehaul-input-label-primary.onehaul-input-lg.floated.onehaul-input-has-prefix-suffix.has-text-helper.text-primary {
+    top: -4px;
+    left: 10px;
+}
+
+.onehaul-input-label.onehaul-input-label-primary.onehaul-input-md.floated.onehaul-input-has-prefix-suffix.has-text-helper.text-primary {
+    top: -8px;
+}
+
+label.onehaul-input-label.onehaul-input-label-primary.onehaul-input-lg.floated {
+    top: -2px !important;
+    left: 12px;
+    height: 12px;
+    background-color: var(--theme-color-pure-100) !important;
+}
+
+label.onehaul-input-label.onehaul-input-label-primary.onehaul-input-lg.floated.onehaul-input-has-prefix-suffix.has-addon.has-text-helper {
+    left: 12px;
+}
+
+label.onehaul-input-label.onehaul-input-label-primary.onehaul-input-lg.floated.onehaul-input-has-prefix-suffix.has-text-helper.text-textarea {
+    left: 12px;
+}
+
+label.onehaul-input-label.onehaul-input-label-primary.onehaul-input-md.floated.onehaul-input-has-prefix-suffix.has-text-helper.text-text {
+    top: -8px;
+    left: 12px;
+}
+
+.onehaul-input.onehaul-input-secondary.onehaul-input-lg.onehaul-input-textarea {
+    padding-top: 30px;
+}
+
+label.onehaul-input-label.onehaul-input-label-primary.onehaul-input-md.floated.has-addon.has-text-helper {
+    left: 9px;
+}
+
+label.onehaul-input-label.onehaul-input-label-primary.onehaul-input-lg.floated.has-addon.has-text-helper {
+    left: 7px;
+}
+label.onehaul-input-label.onehaul-input-label-primary.onehaul-input-lg.floated.text-text {
+    left: 12px;
+}
+
+.onehaul-custom-input.onehaul-input-md .onehaul-custom-input-content {
+    display: flex;
+    align-items: center;
+    min-height: 36px;
+    padding: 0 12px;
+}
+
+.onehaul-custom-input.onehaul-input-md .onehaul-custom-input-prefix,
+.onehaul-custom-input.onehaul-input-md .onehaul-custom-input-suffix {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 36px;
+}
+
+.onehaul-input-label.onehaul-input-label-primary.onehaul-input-md.has-text-helper.text-textarea {
+    
+}
+
+
+label.onehaul-input-label.onehaul-input-label-primary.onehaul-input-md.floated.has-text-helper.text-textarea
+
+ {
+    font-size: 12px;
+    height: 14px;
+    background: var(--theme-color-pure-100) !important;
+    top:-3.2%!important;
+    left:1.1%!important;
+}
+label.onehaul-input-label.onehaul-input-label-primary.onehaul-input-lg.floated.has-text-helper.text-textarea{
+    left:1%!important;
+}
+
+
+label.onehaul-input-label.onehaul-input-label-primary.onehaul-input-md.onehaul-input-has-prefix-suffix.has-text-helper.text-text 
+{
+    left:27px
+}
+
+
+.onehaul-input-label.onehaul-input-label-primary.onehaul-input-md.has-text-helper.text-textarea 
+{
+    top:12px!important;
+}
+label.onehaul-input-label.onehaul-input-label-primary.onehaul-input-md.onehaul-input-has-prefix-suffix.has-addon.has-text-helper{
+left:28px!important;
+}
+
+label.onehaul-input-label.onehaul-input-label-primary.onehaul-input-lg.text-textarea
+
+ {
+    font-size: 14px;
+    height: 16px;
+    background: var(--theme-color-pure-100) !important;
+    top:-4.2%!important;
+    left:1.1%!important;
+    padding: 10px 4px;
+}
+
+.ant-otp-input-wrapper{
+    input::-webkit-outer-spin-button,
+    input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+
+    input[type=number] {
+        -moz-appearance: textfield;
+    }
+}

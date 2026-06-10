@@ -1,0 +1,92 @@
+.onehaul-collapse {
+    gap: 12px;
+    flex-direction: column;
+    display: flex;
+    width: 100%;
+    background-color: var(--theme-color-pure-100);
+    border: none;
+    line-height: unset;
+    --label-gap: 12px;
+}
+
+.onehaul-collapse:not(.ant-collapse-ghost) {
+    .onehaul-collapse-item {
+        border: 1px solid var(--theme-color-grey-10) !important;
+    }
+
+    .onehaul-collapse-item .ant-collapse-header {
+        background-color: var(--theme-color-grey-2);
+    }
+}
+
+.onehaul-collapse-item {
+    border-radius: 8px !important;
+    padding: 0;
+    transition: all 0.3s ease-in-out;
+}
+
+.onehaul-collapse-item .ant-collapse-header {
+    border-radius: 8px !important;
+}
+
+.onehaul-collapse-item.ant-collapse-item-active .ant-collapse-header {
+    border-radius: 8px 8px 0 0 !important;
+}
+
+.onehaul-collapse-item-label-container {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--label-gap);
+}
+
+.onehaul-collapse-item-label-completed-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    padding: 4px;
+
+    &.numbered-completed {
+        background-color: var(--theme-color-success-100);
+        border: 1px solid var(--theme-color-success-40);
+    }
+
+    &.numbered-incomplete {
+        background-color: var(--theme-color-pure-100);
+        border: 1px solid var(--theme-color-grey-5);
+    }
+
+    &.icon-completed {
+        background-color: var(--theme-color-primary-60);
+        border: 1px solid var(--theme-color-primary-10);
+    }
+}
+
+.onehaul-collapse-item-label {
+    color: var(--theme-color-grey-100);
+    font-weight: 500;
+    line-height: 20px;
+
+    &.onehaul-collapse-item-label-disabled {
+        color: var(--theme-color-grey-40);
+    }
+
+    &.onehaul-collapse-item-label-completed {
+        color: var(--theme-color-success-100);
+    }
+}
+
+.onehaul-collapse-item-sublabel {
+    color: var(--theme-color-grey-50);
+
+    &.onehaul-collapse-item-sublabel-disabled {
+        color: var(--theme-color-grey-40);
+    }
+}
+
+.onehaul-collapse-item .ant-collapse-content-box {
+    padding: 20px !important;
+    border-top: 1px solid var(--theme-color-grey-10);
+}

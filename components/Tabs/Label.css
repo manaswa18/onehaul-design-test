@@ -1,0 +1,173 @@
+.ant-tabs-tab {
+    margin-right: 0 !important;
+}
+.ant-tabs-tab:last-child {
+    margin-right: 0 !important;
+}
+
+.onehaul-tabs-primary {
+    .ant-tabs-tab {
+        padding: 12px 32px !important;
+    }
+}
+
+.onehaul-tabs-secondary {
+    .ant-tabs-tab {
+        padding: 8px 20px !important;
+    }
+}
+
+:where(.onehaul-tabs) .ant-tabs-tab + .ant-tabs-tab {
+    margin-left: 0 !important;
+}
+
+.onehaul-tabs-level {
+    display: flex;
+    align-items: center;
+    color: var(--theme-color-grey-10);
+    gap: 0px;
+    justify-content: center;
+}
+
+/* =================== Prefix =======================  */
+
+.onehaul-tabs-level-prefix {
+    display: inline-flex;
+    align-items: center;
+    margin-right: 8px;
+    width: 16px;
+    height: 16px;
+}
+
+.onehaul-tabs-level-prefix svg {
+    color: var(--theme-color-grey-40);
+    width: 100%;
+    height: 100%;
+    fill: currentColor; /* Let it inherit text color */
+    transition: color 0.5s ease; /* Slower transition for icon color */
+}
+
+.ant-tabs-tab:hover .onehaul-tabs-level-prefix svg {
+    color: var(--theme-color-primary-60);
+}
+
+.ant-tabs-tab.ant-tabs-tab-active .onehaul-tabs-level-prefix svg {
+    color: var(--theme-color-primary-60) !important;
+}
+
+/* =================== Suffix =======================  */
+
+.onehaul-tabs-level-suffix {
+    display: inline-flex;
+    align-items: center;
+    margin-left: 8px;
+}
+
+/* Normal state */
+.onehaul-tabs-level-suffix .ant-badge-count {
+    background-color: var(--theme-color-grey-10) !important;
+    transition: background-color 0.5s ease, color 0.5s ease; /* Slower transition for badge */
+}
+
+.onehaul-tabs-level-suffix .ant-badge-count .span.ant-scroll-number-only {
+    color: var(--theme-color-primary-60) !important;
+}
+
+/* On tab hover */
+.ant-tabs-tab:hover .onehaul-tabs-level-suffix .ant-badge-count {
+    background-color: var(--theme-color-primary-60) !important; /* Change to your hover color */
+    color: var(--theme-color-pure-100) !important; /* Change to your active color (primary/5) */
+}
+
+/* On active tab */
+.ant-tabs-tab-active .onehaul-tabs-level-suffix .ant-badge-count {
+    background-color: var(--theme-color-primary-60) !important;
+    color: var(--theme-color-pure-100) !important; /* Change to your active color (primary/5) */
+}
+
+.onehaul-tabs-level-suffix .ant-badge-count {
+    color: var(--theme-color-grey-40) !important; /* Change to your active color (primary/5) */
+}
+
+/* .onehaul-tabs-level-suffix  .span.ant-scroll-number-only{
+    color:var(--theme-color-grey-10)!important
+  } */
+
+/* ===================hover =======================  */
+.ant-tabs-tab:hover {
+    background-color: var(--theme-color-grey-2);
+    transition: background-color 0.5s ease; /* Slower transition for background */
+}
+
+/* ===================Text =======================  */
+
+.onehaul-tabs-level .onehaul-tabs-level-text {
+    color: var(--theme-color-grey-40);
+    transition: color 0.5s ease; /* Slower transition for text color */
+}
+
+.ant-tabs-tab:hover .onehaul-tabs-level-text {
+    color: var(--theme-color-primary-60);
+}
+
+.ant-tabs-tab-active .onehaul-tabs-level-text {
+    color: var(--theme-color-primary-60) !important;
+    font-weight: 500 !important;
+}
+
+/* ===================ant-tabs-ink-bar=======================  */
+
+/* This will apply the hover underline effect */
+.ant-tabs-tab {
+    border-radius: 8px;
+    position: relative; /* required for absolute positioning of ::after */
+    transition: all 0.5s ease; /* Slower transition for the tab itself */
+}
+
+/* ::after creates the custom hover underline for all tabs */
+.ant-tabs-tab:hover::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background-color: var(--theme-color-primary-20); /* Your custom hover color */
+    transition: all 0.5s ease; /* Slower transition for the underline */
+}
+.ant-tabs-ink-bar {
+    background-color: var(--theme-color-primary-60) !important;
+    transition: all 0.5s ease; /* Slower transition for the ink bar */
+}
+
+/* ===================type secondary=======================  */
+
+.onehaul-tabs-secondary .ant-tabs-tab-active {
+    background-color: var(--theme-color-primary-5);
+}
+
+.onehaul-tabs-secondary .ant-tabs-ink-bar {
+    background-color: transparent !important;
+}
+
+/* ===================type secondary hover border=======================  */
+
+.onehaul-tabs-secondary .ant-tabs-tab:hover::after {
+    display: none;
+}
+/* ===================postion vertical=======================  */
+
+.onehaul-tabs.ant-tabs-left .ant-tabs-tab,
+.onehaul-tabs.ant-tabs-right .ant-tabs-tab {
+    border: none !important;
+    background: transparent;
+}
+
+.onehaul-tabs.ant-tabs-left .ant-tabs-tab:hover,
+.onehaul-tabs.ant-tabs-right .ant-tabs-tab:hover {
+    border: none !important;
+    background: transparent;
+}
+.onehaul-tabs.ant-tabs-left .ant-tabs-tab:hover::after {
+    display: none;
+}

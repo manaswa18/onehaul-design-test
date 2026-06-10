@@ -1,0 +1,118 @@
+.onehaul-file-upload {
+    width: 100%;
+    position: relative;
+}
+
+.onehaul-file-upload-default-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+}
+
+.onehaul-file-upload-helper-text {
+    margin-top: 4px !important;
+    display: block;
+}
+
+.onehaul-file-upload-list {
+    margin-top: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.onehaul-file-upload-item {
+    display: flex;
+    align-items: center;
+    padding: 10px 12px;
+    background-color: var(--theme-color-grey-2);
+    border-radius: 8px;
+}
+
+.onehaul-file-upload-item-name {
+    text-decoration-line: underline;
+    cursor: pointer;
+    flex: 1;
+}
+
+.onehaul-file-upload-item-delete-icon {
+    cursor: pointer;
+}
+
+.onehaul-file-upload-error .ant-upload-drag,
+.onehaul-file-upload-error .ant-upload .ant-btn,
+.onehaul-file-upload-error .ant-upload {
+    border-color: var(--theme-color-error-40) !important;
+
+    &:hover {
+        border-color: var(--theme-color-error-40) !important;
+    }
+}
+
+.ant-upload-drag {
+    border: 1px dashed var(--theme-color-grey-10) !important;
+    text-align: left !important;
+    background-color: var(--theme-color-pure-100) !important;
+
+    .ant-upload {
+        padding: 12px !important;
+    }
+
+    &:hover {
+        border: 1px dashed var(--theme-color-grey-40) !important;
+    }
+}
+
+.onehaul-file-upload-helper-text.onehaul-error {
+    color: var(--theme-color-error-100);
+}
+
+.onehaul-file-upload-button-content {
+    width: 100%;
+}
+
+.ant-upload {
+    width: 100%;
+}
+
+.onehaul-file-upload-helper-text {
+    font-size: 10px;
+    color: var(--theme-color-grey-40);
+    margin-top: 4px;
+}
+
+.onehaul-file-upload-error-message {
+    font-size: 10px;
+    color: var(--theme-color-error-120);
+    margin-top: 4px;
+}
+
+.ant-upload-list-item-error {
+    .anticon,
+    .ant-upload-list-item-name {
+        color: var(--theme-color-error-120) !important;
+    }
+}
+
+.onehaul-file-upload-button-content {
+    width: 100%;
+}
+
+.ant-upload-select {
+    width: 100%;
+}
+
+.onehaul-file-upload-placeholder {
+    line-height: 20px;
+}
+
+.onehaul-file-upload-description {
+    line-height: 14px;
+}
+
+.onehaul-file-upload-content {
+    line-height: 1.2;
+    display: flex;
+    flex-direction: column;
+}

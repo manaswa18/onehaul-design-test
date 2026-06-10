@@ -1,0 +1,7 @@
+.onehaul-breadcrumb .ant-breadcrumb-link {
+    cursor: pointer;
+}
+
+.onehaul-breadcrumb li:last-child .ant-breadcrumb-link {
+    font-weight: 500;
+}

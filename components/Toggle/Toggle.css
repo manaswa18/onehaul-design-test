@@ -1,0 +1,26 @@
+.onehaul-toggle-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.ant-switch-handle {
+    top: -3px !important;
+}
+
+.ant-switch-handle:before {
+    border: 1px solid var(--theme-color-grey-10);
+}
+
+.ant-switch-checked .ant-switch-handle:before {
+    background-color: var(--theme-color-primary-60) !important;
+    border-color: var(--theme-color-primary-60);
+}
+
+.onehaul-toggle-label {
+    color: var(--theme-color-grey-40);
+
+    &.checked {
+        color: var(--theme-color-grey-100);
+    }
+}

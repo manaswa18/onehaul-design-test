@@ -1,0 +1,17 @@
+.onehaul-notification {
+    padding: 0 !important;
+    width: 288px !important;
+}
+
+.onehaul-notification .ant-notification-notice-message {
+    display: none;
+}
+
+.onehaul-notification .ant-notification-notice-close {
+    display: none !important;
+}
+
+.onehaul-notification .onehaul-alert {
+    padding: 12px;
+    width: 100% !important;
+}

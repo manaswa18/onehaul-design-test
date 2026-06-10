@@ -1,0 +1,13 @@
+.onehaul-avatar {
+    background-color: var(--theme-color-primary-60);
+    border: 1px solid var(--theme-color-grey-10);
+}
+
+.onehaul-avatar-group {
+    display: flex;
+    align-items: center;
+}
+
+.onehaul-avatar-group .ant-avatar {
+    border: 1px solid var(--theme-color-grey-10);
+}

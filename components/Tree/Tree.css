@@ -1,0 +1,43 @@
+.ant-tree-checkbox-inner {
+    border-radius: 2px !important;
+    border: 2px solid var(--theme-color-grey-10) !important;
+
+    &::after {
+        border-width: 1.5px !important;
+        top: 45% !important;
+    }
+}
+
+.ant-tree-checkbox-checked {
+    .ant-tree-checkbox-inner {
+        border-color: var(--theme-color-primary-60) !important;
+        background-color: var(--theme-color-primary-60) !important;
+    }
+
+    &.ant-tree-checkbox-disabled {
+        .ant-tree-checkbox-inner {
+            background-color: var(--theme-color-primary-10) !important;
+            border-color: var(--theme-color-primary-10) !important;
+
+            &::after {
+                border-color: var(--theme-color-pure-100);
+            }
+        }
+    }
+}
+
+.ant-tree-checkbox-indeterminate {
+    .ant-tree-checkbox-inner {
+        border: 1px solid var(--theme-color-grey-10) !important;
+        border-radius: 2px !important;
+
+        &::after {
+            border-width: 1.5px !important;
+            top: 50% !important;
+        }
+    }
+}
+
+.ant-tree-iconEle {
+    vertical-align: middle !important;
+}

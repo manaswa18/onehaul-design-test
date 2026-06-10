@@ -1,0 +1,335 @@
+.onehaul-stepper {
+    width: 100%;
+}
+
+/* Common styles for step icons */
+.step-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 2px solid transparent;
+}
+.ant-steps-item-tail {
+    inset-inline-start:10px!important;
+}
+
+/* Completed step */
+.step-icon.completed {
+    border-color: var(--theme-color-primary-20);
+}
+
+.step-icon.completed.onehaul-stepper-icon-completed-number {
+    background-color: var(--theme-color-success-100);
+    border-color: var(--theme-color-success-100);
+    color: var(--theme-color-pure-100);
+}
+
+.step-icon.onehaul-stepper-icon-error-default {
+    background-color: var(--theme-color-error-20);
+}
+
+.onehaul-stepper-icon-tick-default-error {
+    color: var(--theme-color-error-100);
+    fill: var(--theme-color-error-100);
+}
+
+.onehaul-stepper-icon-tick {
+    font-size: 12px;
+    color: var(--theme-color-primary-60);
+}
+
+.onehaul-stepper-icon-tick-number-completed {
+    color: var(--theme-color-pure-100);
+}
+
+/* Error icon size adjustment */
+.step-icon.error svg {
+    width: 16px;
+    height: 16px;
+}
+
+/* Current step */
+.step-icon.current {
+    border-color: var(--theme-color-primary-20);
+}
+
+.step-icon.current .step-icon-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: var(--theme-color-primary-60);
+}
+
+/* Disabled step */
+.step-icon.disabled {
+    background-color: var(--theme-color-grey-5);
+}
+
+.step-icon.disabled .step-icon-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: var(--theme-color-grey-40);
+}
+
+/* Number style */
+.step-number {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background-color: var(--theme-color-grey-20);
+    color: var(--theme-color-grey-100);
+    font-weight: 600;
+    font-size: 12px;
+}
+
+.step-number.disabled {
+    background-color: var(--theme-color-grey-5);
+    border: 2px solid var(--theme-color-grey-5);
+    color: var(--theme-color-grey-40);
+}
+
+/* Connector line styles - apply to all labelPlacements */
+.onehaul-stepper .ant-steps-item-tail {
+    padding: 3.5px 0;
+}
+
+/* Default type connector lines - for all labelPlacements */
+.onehaul-stepper[class*="default"] .ant-steps-item-finish .ant-steps-item-tail::after,
+.onehaul-stepper[class*="default"] .ant-steps-item-finish .ant-steps-item-title::after {
+    border: 1px solid var(--theme-color-primary-10) !important;
+    background-color: transparent !important;
+    width: 100%;
+}
+
+.onehaul-stepper[class*="default"] .ant-steps-item-wait .ant-steps-item-tail::after,
+.onehaul-stepper[class*="default"] .ant-steps-item-wait .ant-steps-item-title::after {
+    border: 1px dashed var(--theme-color-grey-20) !important;
+    background-color: transparent !important;
+}
+
+.onehaul-stepper[class*="default"] .ant-steps-item-process .ant-steps-item-tail::after,
+.onehaul-stepper[class*="default"] .ant-steps-item-process .ant-steps-item-title::after {
+    border: 1px dashed var(--theme-color-grey-20) !important;
+    background-color: transparent !important;
+}
+
+.onehaul-stepper[class*="default"] .ant-steps-item-error .ant-steps-item-tail::after,
+.onehaul-stepper[class*="default"] .ant-steps-item-error .ant-steps-item-title::after {
+    border: 1px dashed var(--theme-color-grey-20) !important;
+    background-color: transparent !important;
+}
+
+/* Number type connector lines - for all labelPlacements */
+.onehaul-stepper[class*="number"] .ant-steps-item-finish .ant-steps-item-tail::after,
+.onehaul-stepper[class*="number"] .ant-steps-item-finish .ant-steps-item-title::after {
+    border: 1px solid var(--theme-color-success-60) !important;
+    background-color: transparent !important;
+}
+
+.onehaul-stepper[class*="number"] .ant-steps-item-wait .ant-steps-item-tail::after,
+.onehaul-stepper[class*="number"] .ant-steps-item-wait .ant-steps-item-title::after {
+    border: 1px dashed var(--theme-color-grey-20) !important;
+    background-color: transparent !important;
+}
+
+.onehaul-stepper[class*="number"] .ant-steps-item-process .ant-steps-item-tail::after,
+.onehaul-stepper[class*="number"] .ant-steps-item-process .ant-steps-item-title::after {
+    border: 1px dashed var(--theme-color-grey-20) !important;
+    background-color: transparent !important;
+}
+
+.onehaul-stepper[class*="number"] .ant-steps-item-error .ant-steps-item-tail::after,
+.onehaul-stepper[class*="number"] .ant-steps-item-error .ant-steps-item-title::after {
+    border: 1px dashed var(--theme-color-grey-20) !important;
+    background-color: transparent !important;
+}
+
+.onehaul-stepper-icon-error-default svg,
+.onehaul-stepper-icon-error-default svg path {
+    fill: var(--theme-color-error-100);
+}
+
+.onehaul-stepper-icon-error-number svg,
+.onehaul-stepper-icon-error-number svg path {
+    fill: var(--theme-color-pure-100);
+}
+
+.onehaul-stepper-icon-error-number {
+    background-color: var(--theme-color-error-100);
+}
+
+.onehaul-stepper-icon-tick-number-error {
+    color: var(--theme-color-pure-100) !important;
+    fill: var(--theme-color-pure-100) !important;
+}
+
+/* Remove the general vertical styles and only keep them for the vertical-label variant */
+/* Vertical Stepper with vertical label */
+.onehaul-stepper-vertical-label.ant-steps-vertical {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.onehaul-stepper-vertical-label .ant-steps-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding-bottom: 60px;
+    position: relative;
+}
+
+.onehaul-stepper-vertical-label .ant-steps-item:last-child {
+    padding-bottom: 0;
+}
+
+.onehaul-stepper-vertical-label .ant-steps-item-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.onehaul-stepper-vertical-label .ant-steps-item-icon {
+    margin-right: 0;
+    position: relative;
+    z-index: 2;
+}
+
+.onehaul-stepper-vertical-label .ant-steps-item-content {
+    margin-left: 0;
+    margin-top: 8px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Connector styling */
+.onehaul-stepper-vertical-label .ant-steps-item-tail {
+    position: absolute;
+    top: 50px !important;
+    height: calc(100% - 60px) !important;
+    left: 30% !important;
+    transform: translateX(-30%) !important;
+
+    background-color: transparent !important;
+}
+
+.onehaul-stepper-vertical-label .ant-steps-item-tail::after {
+    width: 1px !important;
+    height: 100% !important;
+    
+}
+
+:where(.css-dev-only-do-not-override-grpee3).ant-steps .ant-steps-item-title::after
+
+ {
+    position: absolute;
+    top: 12px;
+    inset-inline-start: 100%;
+    display: block;
+    width: 9999px;
+    height: 1px;
+    background: #FAFAFA;
+    content: "";
+}
+
+:where(.css-dev-only-do-not-override-grpee3).ant-steps.ant-steps-label-vertical .ant-steps-item-tail {
+    margin-inline-start: 40px;
+    padding: 0 34px;
+}
+
+.onehaul-stepper-vertical-label .ant-steps-item-wait .ant-steps-item-tail::after {
+    border-left: 1px dashed var(--theme-color-grey-20) !important;
+    background-color: transparent !important;
+}
+
+:where(.css-dev-only-do-not-override-grpee3).ant-steps.ant-steps-vertical >.ant-steps-item .ant-steps-item-icon{
+    margin-inline-end:0!important;
+}
+.ant-steps-item-title {
+    padding-right: 0 !important;
+}
+
+:where(.css-dev-only-do-not-override-grpee3).ant-steps .ant-steps-item-title::after{
+    left: 54px !important;
+}
+/* :where(.css-dev-only-do-not-override-grpee3).ant-steps.ant-steps-vertical >.ant-steps-item>.ant-steps-item-container>.ant-steps-item-tail {
+    position: absolute;
+    top: 0;
+    inset-inline-start: 15px;
+    width: 1px;
+    height: 100%;
+    padding: 38px 0 6px;
+    left: 33px!important;
+} */
+
+/* */
+
+.onehaul-stepper-vertical-label .ant-steps-item-tail
+ {
+    position: absolute;
+    left: 42% !important;
+   
+}
+
+.:where(.css-dev-only-do-not-override-grpee3).ant-steps.ant-steps-vertical >.ant-steps-item>.ant-steps-item-container>.ant-steps-item-tail{
+    position: 25px 0 6px;
+}
+:where(.css-dev-only-do-not-override-grpee3).ant-steps .ant-steps-item-tail {
+    top:10px
+}
+
+:where(.css-dev-only-do-not-override-grpee3).ant-steps >.ant-steps-item-container>.ant-steps-item-content>.ant-steps-item-title::after 
+{
+    top: 10px;
+}
+:where(.css-dev-only-do-not-override-grpee3).ant-steps .ant-steps-item-process>.ant-steps-item-container>.ant-steps-item-content>.ant-steps-item-title::after{
+    top: 10px;
+}
+
+:where(.css-dev-only-do-not-override-grpee3).ant-steps .ant-steps-item-finish>.ant-steps-item-container>.ant-steps-item-content>.ant-steps-item-title::after {
+
+    width: 100px;
+    top: 10px;
+}
+:where(.css-dev-only-do-not-override-grpee3).ant-steps .ant-steps-item-error>.ant-steps-item-container>.ant-steps-item-content>.ant-steps-item-title::after{
+    top: 10px;
+}
+:where(.css-dev-only-do-not-override-grpee3).ant-steps .ant-steps-item-wait>.ant-steps-item-container>.ant-steps-item-content>.ant-steps-item-title::after{
+    top: 10px;
+}
+
+
+
+:where(.css-dev-only-do-not-override-grpee3).ant-steps.ant-steps-vertical >.ant-steps-item>.ant-steps-item-container>.ant-steps-item-tail {
+    position: absolute;
+    top: 3px;
+    inset-inline-start: 9px !important;
+    width: 1px;
+    height: 100%;
+    padding: 24px 0 6px;
+} 
+:where(.css-dev-only-do-not-override-grpee3).ant-steps.ant-steps-vertical.onehaul-stepper-vertical-label .ant-steps-item.ant-steps-item-custom > .ant-steps-item-container > .ant-steps-item-tail {
+    position: absolute;
+    top: 0;
+    inset-inline-start: 30px !important;
+    width: 1px;
+    height: 100%;
+    padding: 24px 0 6px;
+}
+
+:where(.css-dev-only-do-not-override-grpee3).ant-steps.ant-steps-vertical >.ant-steps-item .ant-steps-item-icon{
+    margin-top: 3px;
+}
+:where(.css-dev-only-do-not-override-grpee3).ant-steps .ant-steps-item-custom >.ant-steps-item-container>.ant-steps-item-icon >.ant-steps-icon {
+    top:1px;
+}

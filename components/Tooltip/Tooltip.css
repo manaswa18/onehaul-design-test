@@ -1,0 +1,7 @@
+.onehaul-tooltip {
+    width: fit-content;
+}
+
+.ant-tooltip .ant-tooltip-inner {
+    padding: 16px;
+}

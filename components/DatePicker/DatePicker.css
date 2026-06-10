@@ -1,0 +1,89 @@
+.onehaul-datepicker-container {
+    position: relative;
+}
+
+.onehaul-datepicker {
+    padding: 8px 12px;
+    height: 36px;
+    border-radius: 8px;
+    border: 1px solid var(--theme-color-grey-10);
+    background: var(--theme-color-pure-100);
+    transition: border-color 0.2s ease-in-out;
+    width: 100%;
+
+    &:hover {
+        border-color: var(--theme-color-grey-10);
+    }
+
+    &:focus {
+        border-color: var(--theme-color-primary-100);
+    }
+
+    &:focus-within {
+        border-color: var(--theme-color-primary-20);
+        box-shadow: none;
+    }
+
+    &:disabled {
+        border-color: var(--theme-color-grey-10);
+    }
+
+    ::placeholder {
+        color: var(--theme-color-grey-40) !important;
+    }
+}
+
+.onehaul-datepicker .ant-picker-suffix {
+    color: var(--theme-color-grey-100);
+}
+
+.onehaul-datepicker-disabled {
+    background: var(--theme-color-pure-100) !important;
+    border-color: var(--theme-color-grey-10) !important;
+    color: var(--theme-color-grey-40) !important;
+    cursor: not-allowed !important;
+}
+
+.onehaul-datepicker-error {
+    border-color: var(--theme-color-grey-10) !important;
+}
+
+.onehaul-datepicker-label {
+    position: absolute;
+    top: 50%;
+    left: 8px;
+    transform: translateY(-50%);
+    font-size: 14px;
+    color: var(--theme-color-grey-40);
+    transition: all 0.2s ease-in-out;
+    pointer-events: none;
+    font-weight: 400;
+    background: var(--theme-color-pure-100);
+    padding: 0 4px;
+
+    &.onehaul-datepicker-label-has-value {
+        top: 0;
+        font-size: 12px;
+        color: var(--theme-color-grey-40);
+    }
+
+    &.onehaul-datepicker-label-focused {
+        top: 0;
+        font-size: 12px;
+        color: var(--theme-color-primary-60);
+    }
+
+    &.onehaul-datepicker-label-has-prefix {
+        left: 28px;
+    }
+}
+
+.onehaul-datepicker-label-error {
+    &.onehaul-datepicker-label-has-value {
+        color: var(--theme-color-error-120);
+    }
+
+    &.onehaul-datepicker-label-focused {
+        color: var(--theme-color-error-120);
+    }
+}
