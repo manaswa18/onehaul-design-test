@@ -10,6 +10,15 @@ import {
     MdOutlineDelete,
     MdOutlineUpload,
     MdAttachFile,
+    MdMoreVert,
+    MdPhone,
+    MdOutlineMailOutline,
+    MdChevronLeft,
+    MdChevronRight,
+    MdOutlineDescription,
+    MdOutlineViewList,
+    MdHelpOutline,
+    MdOutlineNotificationsNone,
 } from 'react-icons/md';
 
 const iconWrapper = (MuiIcon) => ({ width, height, color, style, ...props }) => (
@@ -40,3 +49,12 @@ export const InfoCircle = iconWrapper(MdOutlineInfo);
 export const Delete = iconWrapper(MdOutlineDelete);
 export const Upload = iconWrapper(MdOutlineUpload);
 export const Attachment = iconWrapper(MdAttachFile);
+export const MoreVert = iconWrapper(MdMoreVert);
+export const Phone = iconWrapper(MdPhone);
+export const MailOutline = iconWrapper(MdOutlineMailOutline);
+export const ChevronLeft = iconWrapper(MdChevronLeft);
+export const ChevronRight = iconWrapper(MdChevronRight);
+export const DocIcon = iconWrapper(MdOutlineDescription);
+export const ListIcon = iconWrapper(MdOutlineViewList);
+export const HelpIcon = iconWrapper(MdHelpOutline);
+export const NotificationIcon = iconWrapper(MdOutlineNotificationsNone);
