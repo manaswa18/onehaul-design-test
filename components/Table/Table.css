@@ -291,6 +291,7 @@
 
 /* ── Custom cell helpers ─────────────────────────── */
 .oh-cell-shipment-no {
+  display: block;
   font-size: 14px;
   font-weight: 500;
   color: var(--theme-color-primary-60);
@@ -306,10 +307,23 @@
   font-style: italic;
 }
 
+.oh-cell-text {
+  display: block;
+  font-size: 14px;
+  color: var(--theme-color-grey-100);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
 .oh-cell-stack {
   display: flex;
   flex-direction: column;
   gap: 1px;
+  width: 100%;
+  min-width: 0;
+  overflow: hidden;
 }
 
 .oh-cell-stack .primary {
@@ -403,6 +417,22 @@
   color: var(--theme-color-primary-60);
 }
 
+
+
+/* Sticky left column (checkbox) — kill Tabulator's default frozen shadow/border */
+.onehaul-table-wrapper .tabulator-col.tabulator-frozen.tabulator-frozen-left,
+.onehaul-table-wrapper .tabulator-cell.tabulator-frozen.tabulator-frozen-left {
+  box-shadow: none !important;
+  border-right: 1px solid var(--theme-color-grey-20) !important;
+}
+
+/* When scrolled: checkbox column gets right-side shadow (mirrors the right frozen column) */
+.onehaul-table-wrapper.is-scrolled-x .tabulator-col.tabulator-frozen.tabulator-frozen-left,
+.onehaul-table-wrapper.is-scrolled-x .tabulator-cell.tabulator-frozen.tabulator-frozen-left {
+  box-shadow: 4px 0 16px rgba(136, 136, 136, 0.12) !important;
+  clip-path: inset(0 -20px 0 0);
+  border-right: none !important;
+}
 
 /* Sticky right column (frozen: true on last column) */
 .onehaul-table-wrapper .tabulator-col.tabulator-frozen.tabulator-frozen-right,

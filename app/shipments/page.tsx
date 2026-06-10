@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Text from '@/components/Text';
 import ButtonComponent from '@/components/Button';
@@ -388,7 +388,7 @@ function shipmentNoFormatter(cell: any) {
 
 function clientFormatter(cell: any) {
   const val = cell.getValue();
-  return `<span style="font-size:14px;color:var(--theme-color-grey-100);">${val}</span>`;
+  return `<span class="oh-cell-text">${val}</span>`;
 }
 
 function carrierFormatter(cell: any) {
@@ -397,7 +397,7 @@ function carrierFormatter(cell: any) {
   const abbr = carrier.substring(0, 3).toUpperCase();
   return `<div class="oh-carrier-cell">
     <div class="oh-carrier-logo" style="background:${bg};">${abbr}</div>
-    <span style="font-size:14px;color:var(--theme-color-grey-100);">${carrier}</span>
+    <span>${carrier}</span>
   </div>`;
 }
 
@@ -406,7 +406,7 @@ function carrierRefFormatter(cell: any) {
   if (val === 'PENDING') {
     return `<span class="oh-cell-muted">Pending</span>`;
   }
-  return `<span style="font-size:14px;color:var(--theme-color-grey-70);">${val}</span>`;
+  return `<span class="oh-cell-text">${val}</span>`;
 }
 
 function routeFormatter(cell: any) {
@@ -419,13 +419,17 @@ function routeFormatter(cell: any) {
 }
 
 function dateFormatter(cell: any) {
-  return `<span style="font-size:14px;color:var(--theme-color-grey-70);">${cell.getValue()}</span>`;
+  return `<span class="oh-cell-text">${cell.getValue()}</span>`;
 }
 
 function commodityFormatter(cell: any) {
   const val: string = cell.getValue();
-  const truncated = val.length > 22 ? val.substring(0, 22) + '…' : val;
-  return `<span style="font-size:14px;color:var(--theme-color-grey-70);" title="${val}">${truncated}</span>`;
+  return `<span class="oh-cell-text" title="${val}">${val}</span>`;
+}
+
+function containersFormatter(cell: any) {
+  const val: string = cell.getValue();
+  return `<span class="oh-cell-text">${val}</span>`;
 }
 
 function stageFormatter(cell: any) {
@@ -445,7 +449,7 @@ function milestoneFormatter(cell: any) {
   const val: string = cell.getValue();
   if (!val) return '<span style="color:var(--theme-color-grey-30);">—</span>';
   const [event, ts] = val.split(' • ');
-  if (!ts) return `<span style="font-size:14px;color:var(--theme-color-grey-70);">${val}</span>`;
+  if (!ts) return `<span class="oh-cell-text">${val}</span>`;
   return `<div class="oh-cell-stack">
     <span class="primary">${event}</span>
     <span class="secondary">${ts}</span>
@@ -459,8 +463,8 @@ function nextEventFormatter(cell: any) {
     ? 'var(--theme-color-error-100)'
     : event.urgency === 'due-today'
     ? 'var(--theme-color-orange-120)'
-    : 'var(--theme-color-grey-70)';
-  return `<span style="font-size:14px;color:${color};font-weight:${event.urgency ? 500 : 400};">${event.label}</span>`;
+    : 'var(--theme-color-grey-100)';
+  return `<span class="oh-cell-text" style="color:${color};font-weight:${event.urgency ? 500 : 400};">${event.label}</span>`;
 }
 
 function tasksFormatter(cell: any) {
@@ -474,7 +478,7 @@ function tasksFormatter(cell: any) {
   const label = tasks.urgency === 'overdue' ? `${tasks.count} overdue` : `${tasks.count} due`;
   return `<div class="oh-tasks-cell">
     <div class="oh-urgency-dot" style="background:${dotColor};"></div>
-    <span style="font-size:12px;color:var(--theme-color-grey-70);">${label}</span>
+    <span style="font-size:12px;color:var(--theme-color-grey-100);">${label}</span>
   </div>`;
 }
 
@@ -541,6 +545,7 @@ const COLUMNS = [
     minWidth: 48,
     headerSort: false,
     resizable: false,
+    frozen: true,
   },
   { title: 'SHIPMENT NO.', field: 'shipmentNo', width: 200, minWidth: 180, headerSort: false, formatter: shipmentNoFormatter },
   { title: 'CLIENT', field: 'client', width: 220, minWidth: 180, headerSort: false, formatter: clientFormatter },
@@ -550,7 +555,7 @@ const COLUMNS = [
   { title: 'DESTINATION', field: 'destination', width: 160, minWidth: 140, headerSort: false, formatter: routeFormatter },
   { title: 'ETD', field: 'etd', width: 130, minWidth: 110, headerSort: false, formatter: dateFormatter },
   { title: 'ETA', field: 'eta', width: 130, minWidth: 110, headerSort: false, formatter: dateFormatter },
-  { title: 'CONTAINERS', field: 'containers', width: 180, minWidth: 150, headerSort: false },
+  { title: 'CONTAINERS', field: 'containers', width: 180, minWidth: 150, headerSort: false, formatter: containersFormatter },
   { title: 'COMMODITY', field: 'commodity', width: 180, minWidth: 150, headerSort: false, formatter: commodityFormatter },
   { title: 'STAGE', field: 'stage', width: 190, minWidth: 160, headerSort: false, formatter: stageFormatter },
   { title: 'BOOKING STATUS', field: 'bookingStatus', width: 190, minWidth: 160, headerSort: false, formatter: bookingStatusFormatter },
@@ -711,6 +716,23 @@ export default function ShipmentsPage() {
   const [activeTab, setActiveTab] = useState('fcl');
   const [shipmentView, setShipmentView] = useState('my');
   const [createDrawerOpen, setCreateDrawerOpen] = useState(false);
+
+  // Toggle .is-scrolled-x on the table wrapper when user scrolls the table horizontally
+  useEffect(() => {
+    let holder: HTMLElement | null = null;
+    const onScroll = () => {
+      const wrapper = document.querySelector('.onehaul-table-wrapper') as HTMLElement | null;
+      if (wrapper && holder) wrapper.classList.toggle('is-scrolled-x', holder.scrollLeft > 0);
+    };
+    const timer = setTimeout(() => {
+      holder = document.querySelector('.tabulator-tableholder');
+      holder?.addEventListener('scroll', onScroll, { passive: true });
+    }, 300);
+    return () => {
+      clearTimeout(timer);
+      holder?.removeEventListener('scroll', onScroll);
+    };
+  }, []);
 
   const filteredShipments = MOCK_SHIPMENTS.filter(s => {
     if (shipmentView === 'my' && !s.isMyShipment) return false;
