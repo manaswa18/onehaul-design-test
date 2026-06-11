@@ -1,0 +1,84 @@
+/* ── Main panel — hide scrollbar ─────────────────────────────────────────────── */
+.sd-left-panel::-webkit-scrollbar {
+  display: none;
+}
+
+.sd-left-panel {
+  scrollbar-width: none;
+}
+
+/* ── Main panel tabs ─────────────────────────────────────────────────────────── */
+.sd-main-tabs {
+  display: flex;
+  flex-direction: column;
+}
+
+.sd-main-tabs > .ant-tabs-nav {
+  margin-bottom: 0;
+}
+
+.sd-main-tabs .ant-tabs-content-holder {
+  padding-top: 24px;
+}
+
+/* ── Right panel — hide scrollbar ────────────────────────────────────────────── */
+.sd-right-panel::-webkit-scrollbar {
+  display: none;
+}
+
+.sd-right-panel {
+  scrollbar-width: none;
+}
+
+/* ── Right panel collapsible sections ───────────────────────────────────────── */
+.sd-sidebar-collapse.ant-collapse-ghost {
+  gap: 0;
+}
+
+.sd-sidebar-collapse .onehaul-collapse-item {
+  border-bottom: 1px solid var(--theme-color-grey-10) !important;
+  border-radius: 0 !important;
+}
+
+.sd-sidebar-collapse .onehaul-collapse-item:last-child {
+  border-bottom: none !important;
+}
+
+.sd-sidebar-collapse .ant-collapse-header {
+  padding: 14px 0 !important;
+  align-items: center !important;
+}
+
+.sd-sidebar-collapse .ant-collapse-content-box {
+  padding: 0 0 16px 0 !important;
+  border-top: none !important;
+}
+
+.sd-sidebar-collapse .onehaul-collapse-item-label {
+  text-transform: uppercase !important;
+  color: var(--theme-color-grey-50) !important;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  letter-spacing: 0.6px !important;
+}
+
+/* ── Overview accordion sections ─────────────────────────────────────────────── */
+.sd-overview-collapse {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sd-overview-collapse .ant-collapse-header {
+  padding: 12px 20px !important;
+  align-items: center !important;
+}
+
+.sd-overview-collapse .ant-collapse-content-box {
+  padding: 20px !important;
+}
+
+.sd-overview-collapse .onehaul-collapse-item {
+  border-radius: 8px !important;
+  overflow: hidden;
+}

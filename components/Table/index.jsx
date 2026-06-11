@@ -37,10 +37,11 @@ const Table = ({
         height: height || undefined,
         rowHeight: 52,
         selectableRows: false,
-        rowClick: (e, row) => {
-          if (onRowClickRef.current) onRowClickRef.current(row.getData());
-        },
         ...options,
+      });
+
+      instanceRef.current.on('rowClick', (e, row) => {
+        if (onRowClickRef.current) onRowClickRef.current(row.getData());
       });
     });
 
