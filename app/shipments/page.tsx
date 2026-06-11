@@ -915,7 +915,6 @@ export default function ShipmentsPage() {
             onChange={setActiveTab}
             type="primary"
             className="shipments-primary-tabs"
-            className="shipments-primary-tabs"
           />
 
         </div>
