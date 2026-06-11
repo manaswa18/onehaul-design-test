@@ -1,0 +1,174 @@
+/* Tasks Page */
+
+/* ── Page header ─────────────────────────────────── */
+
+.tasks-page-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 28px 28px 0;
+  flex-shrink: 0;
+}
+
+.tasks-header-left {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+/* ── Filter bar ──────────────────────────────────── */
+
+.tasks-filter-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 16px 28px;
+  flex-shrink: 0;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  border-bottom: 1px solid var(--theme-color-grey-10);
+}
+
+.tasks-filter-bar::-webkit-scrollbar { display: none; }
+
+.tasks-filter-divider {
+  width: 1px;
+  height: 16px;
+  background: var(--theme-color-grey-20);
+  flex-shrink: 0;
+  margin: 0 4px;
+}
+
+.tasks-filter-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border: 1px solid var(--theme-color-grey-10);
+  border-radius: 6px;
+  background: var(--theme-color-pure-100);
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: border-color 0.15s;
+}
+
+.tasks-filter-btn:hover { border-color: var(--theme-color-grey-30); }
+
+.tasks-filter-clear,
+.tasks-filter-save {
+  border: none;
+  background: none;
+  cursor: pointer;
+  padding: 4px 6px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* ── Grid layout (shared by header + rows) ───────── */
+
+.tasks-col-header,
+.tasks-row {
+  display: grid;
+  grid-template-columns: 48px 1fr 148px 148px 192px 156px 148px;
+  align-items: center;
+  min-height: 44px;
+}
+
+/* ── Column header — plain, no background/border ─── */
+
+.tasks-col-header {
+  padding: 8px 0;
+  flex-shrink: 0;
+}
+
+/* ── Column cells ─────────────────────────────────── */
+
+.tasks-col-cb {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 8px;
+}
+
+.tasks-col-task {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 16px 0 4px;
+  min-width: 0;
+}
+
+.tasks-col-stage,
+.tasks-col-shipment,
+.tasks-col-assignee,
+.tasks-col-deadline,
+.tasks-col-action {
+  padding: 0 16px;
+  min-width: 0;
+}
+
+.tasks-col-action {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* ── Sections wrapper ─────────────────────────────── */
+
+.tasks-sections {
+  flex: 1;
+  padding: 0 28px 28px;
+  margin-top: 8px;
+}
+
+/* Override Collapse content box padding so rows go edge-to-edge */
+.tasks-sections .ant-collapse-content-box {
+  padding: 0 !important;
+}
+
+.tasks-sections .onehaul-collapse-item-content {
+  padding-left: 0 !important;
+}
+
+/* Collapse items flush against each other — no gap between sections */
+.tasks-sections .onehaul-collapse {
+  gap: 12px;
+}
+
+/* ── Task rows ───────────────────────────────────── */
+
+.tasks-section-rows {
+  display: flex;
+  flex-direction: column;
+}
+
+.tasks-row {
+  background: var(--theme-color-pure-100);
+  min-height: 60px;
+  transition: background 0.15s ease;
+  cursor: default;
+}
+
+.tasks-row:hover { background: var(--theme-color-primary-5); }
+
+.tasks-row--divided { border-bottom: 1px solid var(--theme-color-grey-10); }
+
+/* ── Overflow button ─────────────────────────────── */
+
+.tasks-overflow-btn {
+  width: 28px;
+  height: 28px;
+  border: none;
+  background: none;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.15s;
+}
+
+.tasks-overflow-btn:hover { background: var(--theme-color-grey-10); }
