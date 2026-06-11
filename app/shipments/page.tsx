@@ -546,7 +546,6 @@ const COLUMNS = [
     headerSort: false,
     resizable: false,
     frozen: true,
-    frozen: true,
   },
   { title: 'SHIPMENT NO.', field: 'shipmentNo', width: 200, minWidth: 180, headerSort: false, formatter: shipmentNoFormatter },
   { title: 'CLIENT', field: 'client', width: 220, minWidth: 180, headerSort: false, formatter: clientFormatter },
