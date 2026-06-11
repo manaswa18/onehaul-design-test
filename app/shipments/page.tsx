@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Text from '@/components/Text';
 import ButtonComponent from '@/components/Button';
@@ -541,6 +541,7 @@ const COLUMNS = [
     minWidth: 48,
     headerSort: false,
     resizable: false,
+    frozen: true,
   },
   { title: 'SHIPMENT NO.', field: 'shipmentNo', width: 200, minWidth: 180, headerSort: false, formatter: shipmentNoFormatter },
   { title: 'CLIENT', field: 'client', width: 220, minWidth: 180, headerSort: false, formatter: clientFormatter },
@@ -721,6 +722,22 @@ export default function ShipmentsPage() {
   const [shipmentView, setShipmentView] = useState('my');
   const [createDrawerOpen, setCreateDrawerOpen] = useState(false);
   const [statusTab, setStatusTab] = useState('all');
+
+  useEffect(() => {
+    let holder: HTMLElement | null = null;
+    const onScroll = () => {
+      const wrapper = document.querySelector('.onehaul-table-wrapper') as HTMLElement | null;
+      if (wrapper && holder) wrapper.classList.toggle('is-scrolled-x', holder.scrollLeft > 0);
+    };
+    const timer = setTimeout(() => {
+      holder = document.querySelector('.tabulator-tableholder');
+      holder?.addEventListener('scroll', onScroll, { passive: true });
+    }, 300);
+    return () => {
+      clearTimeout(timer);
+      holder?.removeEventListener('scroll', onScroll);
+    };
+  }, []);
 
   const filteredShipments = MOCK_SHIPMENTS.filter(s => {
     if (shipmentView === 'my' && !s.isMyShipment) return false;
