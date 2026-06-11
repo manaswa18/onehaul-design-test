@@ -44,3 +44,5 @@ export const User: React.FC<IconProps>;
 export const Block: React.FC<IconProps>;
 export const Redirect: React.FC<IconProps>;
 export const Bulkadd: React.FC<IconProps>;
+export const Lock: React.FC<IconProps>;
+export const Error: React.FC<IconProps>;

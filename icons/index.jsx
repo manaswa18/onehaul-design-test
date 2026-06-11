@@ -33,4 +33,6 @@ export {
   Block,
   Redirect,
   Bulkadd,
+  Lock,
+  Error,
 } from '@onehaul/ui/icons';

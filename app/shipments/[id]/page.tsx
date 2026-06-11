@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useParams } from 'next/navigation';
 import BreadcrumbComponent from '@/components/Breadcrumb';
 import ButtonComponent from '@/components/Button';
 import TabsComponent from '@/components/Tabs';
@@ -690,6 +690,7 @@ function OverviewContent() {
 
 export default function ShipmentDetailsPage({ params }: Props) {
   const router = useRouter();
+  const { id } = useParams<{ id: string }>();
   const [rightPanelCollapsed, setRightPanelCollapsed] = useState(false);
 
   const mainTabItems = [
@@ -782,7 +783,7 @@ export default function ShipmentDetailsPage({ params }: Props) {
                 </div>
               </div>
               <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexShrink: 0 }}>
-                <Button variant="primary" size="md">Some CTA</Button>
+                <Button variant="secondary" size="md" onClick={() => router.push(`/shipments/${id}/booking`)}>Manage Booking</Button>
                 <Dropdown
                   trigger={['click']}
                   placement="bottomRight"
@@ -802,7 +803,7 @@ export default function ShipmentDetailsPage({ params }: Props) {
                     <Button
                       variant="secondary"
                       size="md"
-                      icon={<MoreVert width={16} height={16} color="var(--theme-color-grey-70)" />}
+                      icon={<MoreVert width={16} height={16} />}
                     />
                   </div>
                 </Dropdown>
