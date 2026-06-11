@@ -418,22 +418,6 @@
 }
 
 
-
-/* Sticky left column (checkbox) — kill Tabulator's default frozen shadow/border */
-.onehaul-table-wrapper .tabulator-col.tabulator-frozen.tabulator-frozen-left,
-.onehaul-table-wrapper .tabulator-cell.tabulator-frozen.tabulator-frozen-left {
-  box-shadow: none !important;
-  border-right: 1px solid var(--theme-color-grey-20) !important;
-}
-
-/* When scrolled: checkbox column gets right-side shadow (mirrors the right frozen column) */
-.onehaul-table-wrapper.is-scrolled-x .tabulator-col.tabulator-frozen.tabulator-frozen-left,
-.onehaul-table-wrapper.is-scrolled-x .tabulator-cell.tabulator-frozen.tabulator-frozen-left {
-  box-shadow: 4px 0 16px rgba(136, 136, 136, 0.12) !important;
-  clip-path: inset(0 -20px 0 0);
-  border-right: none !important;
-}
-
 /* Sticky right column (frozen: true on last column) */
 .onehaul-table-wrapper .tabulator-col.tabulator-frozen.tabulator-frozen-right,
 .onehaul-table-wrapper .tabulator-cell.tabulator-frozen.tabulator-frozen-right {
