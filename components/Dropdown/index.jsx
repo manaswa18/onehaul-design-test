@@ -21,15 +21,12 @@ const Dropdown = ({
     // 2. Auto-generate Menu from items if provided
     // 3. Pass through other props to AntDropdown
 
-    let dropdownRender;
+    let popupRender;
 
     if (overlay) {
-        // Direct overlay prop (preferred method)
-        // Wrap in a div to prevent Ant Design from interfering with Menu styles
-        dropdownRender = () => <div className="onehaul-dropdown-content">{overlay}</div>;
+        popupRender = () => <div className="onehaul-dropdown-content">{overlay}</div>;
     } else if (items) {
-        // Auto-generate Menu from items (convenience method)
-        dropdownRender = () => (
+        popupRender = () => (
             <div className="onehaul-dropdown-content">
                 <Menu
                     items={items}
@@ -47,7 +44,7 @@ const Dropdown = ({
     return (
         <AntDropdown
             className={`onehaul-dropdown ${className}`}
-            dropdownRender={dropdownRender}
+            popupRender={popupRender}
             {...props}
         >
             {children}

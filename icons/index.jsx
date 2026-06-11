@@ -25,4 +25,12 @@ export {
   Linkoff,
   Shipment as ShipmentIcon,
   Calendar,
+  Leftpanelclose,
+  Leftpanelopen,
+  Nav,
+  Navclose,
+  User,
+  Block,
+  Redirect,
+  Bulkadd,
 } from '@onehaul/ui/icons';

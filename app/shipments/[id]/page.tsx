@@ -8,17 +8,21 @@ import TabsComponent from '@/components/Tabs';
 import CollapseComponent from '@/components/Collapse';
 import Text from '@/components/Text';
 import Avatar from '@/components/Avatar';
+import PillComponent from '@/components/Pill';
 import SelectComponent from '@/components/Select';
 import DrawerComponent from '@/components/Drawer';
-import { MoreVert, DocIcon, HelpIcon, NotificationIcon, EditPencil, Add, Delete } from '@/icons';
+import DropdownComponent from '@/components/Dropdown';
+import { MoreVert, DocIcon, HelpIcon, NotificationIcon, EditPencil, Add, Delete, Nav, Navclose, User, Block, Redirect, Bulkadd } from '@/icons';
 import './shipment-details.css';
 
 const Breadcrumb = BreadcrumbComponent as React.ComponentType<any>;
 const Button = ButtonComponent as React.ComponentType<any>;
 const Tabs = TabsComponent as React.ComponentType<any>;
 const Collapse = CollapseComponent as React.ComponentType<any>;
+const Pill = PillComponent as React.ComponentType<any>;
 const Select = SelectComponent as React.ComponentType<any>;
 const Drawer = DrawerComponent as React.ComponentType<any>;
+const Dropdown = DropdownComponent as React.ComponentType<any>;
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -686,6 +690,7 @@ function OverviewContent() {
 
 export default function ShipmentDetailsPage({ params }: Props) {
   const router = useRouter();
+  const [rightPanelCollapsed, setRightPanelCollapsed] = useState(false);
 
   const mainTabItems = [
     {
@@ -757,9 +762,15 @@ export default function ShipmentDetailsPage({ params }: Props) {
             {/* Title row + CTAs */}
             <div style={{ display: 'flex', alignItems: 'flex-start', gap: 16, marginBottom: 24, flexShrink: 0 }}>
               <div style={{ flex: 1, minWidth: 0 }}>
-                <Text variant="heading" size="lg" weight="semibold" style={{ color: 'var(--theme-color-grey-100)' }}>
-                  ONH-2026-04821
-                </Text>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                  <Text variant="heading" size="lg" weight="semibold" style={{ color: 'var(--theme-color-grey-100)' }}>
+                    ONH-2026-04821
+                  </Text>
+                  <div style={{ display: 'flex', gap: 5, alignItems: 'center' }}>
+                    <Pill color="success" theme="light" size="sm" showIcon={false}>Booking Confirmed</Pill>
+                    <Pill color="blue" theme="light" size="sm" showIcon={false}>In Transit</Pill>
+                  </div>
+                </div>
                 <div style={{ marginTop: 4 }}>
                   <Text variant="body" size="md" style={{ color: 'var(--theme-color-grey-50)' }}>
                     {'Voltas India Limited • '}
@@ -772,11 +783,29 @@ export default function ShipmentDetailsPage({ params }: Props) {
               </div>
               <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexShrink: 0 }}>
                 <Button variant="primary" size="md">Some CTA</Button>
-                <Button
-                  variant="secondary"
-                  size="md"
-                  icon={<MoreVert width={16} height={16} color="var(--theme-color-grey-70)" />}
-                />
+                <Dropdown
+                  trigger={['click']}
+                  placement="bottomRight"
+                  overlayClassName="sd-overflow-menu"
+                  items={[
+                    { key: 'amend-booking',  type: 'action', label: 'Amend Booking',                                      icon: <Redirect width={14} height={14} /> },
+                    { key: 'split-shipment', type: 'action', label: 'Split Shipment',                                     icon: <Add width={14} height={14} /> },
+                    { key: 'merge-shipments',type: 'action', label: 'Merge Shipments',                                    icon: <Bulkadd width={14} height={14} /> },
+                    { type: 'divider' },
+                    { key: 'assign-to',      type: 'action', label: 'Assign To',                                          icon: <User width={14} height={14} /> },
+                    { key: 'new-booking',    type: 'action', label: 'Initiate new booking request from this shipment',    icon: <Add width={14} height={14} />, disabled: true },
+                    { type: 'divider' },
+                    { key: 'cancel-booking', type: 'action', label: 'Cancel Booking', icon: <Block width={14} height={14} />, danger: true },
+                  ]}
+                >
+                  <div>
+                    <Button
+                      variant="secondary"
+                      size="md"
+                      icon={<MoreVert width={16} height={16} color="var(--theme-color-grey-70)" />}
+                    />
+                  </div>
+                </Dropdown>
               </div>
             </div>
 
@@ -787,24 +816,58 @@ export default function ShipmentDetailsPage({ params }: Props) {
             />
           </div>
 
-          {/* Right collapsible panel — border-left runs full card height */}
-          <div
-            className="sd-right-panel"
-            style={{
-              width: 320,
-              flexShrink: 0,
-              borderLeft: '2px solid var(--theme-color-grey-10)',
-              overflowY: 'auto',
-              padding: '24px',
-              scrollbarWidth: 'none',
-            }}
-          >
-            <Collapse
-              className="sd-sidebar-collapse"
-              ghost
-              items={collapseSections}
-              defaultActiveKey={['details', 'key-dates', 'internal-team']}
-            />
+          {/* Right panel wrapper — relative so toggle button can bleed left over the border */}
+          <div style={{ position: 'relative', flexShrink: 0 }}>
+            {/* Toggle button — floats on the border between panels */}
+            <button
+              onClick={() => setRightPanelCollapsed((c) => !c)}
+              style={{
+                position: 'absolute',
+                left: -14,
+                top: 20,
+                zIndex: 10,
+                width: 28,
+                height: 28,
+                border: '1px solid var(--theme-color-grey-10)',
+                borderRadius: 8,
+                background: 'var(--theme-color-pure-100)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer',
+                padding: 0,
+                boxShadow: '-2px 0px 8px rgba(136,136,136,0.06)',
+              }}
+            >
+              {rightPanelCollapsed
+                ? <Navclose width={14} height={14} color="var(--theme-color-grey-70)" />
+                : <Nav width={14} height={14} color="var(--theme-color-grey-70)" />
+              }
+            </button>
+
+            {/* Actual scrollable right panel */}
+            <div
+              className="sd-right-panel"
+              style={{
+                width: rightPanelCollapsed ? 24 : 320,
+                borderLeft: '2px solid var(--theme-color-grey-10)',
+                overflowX: 'hidden',
+                overflowY: rightPanelCollapsed ? 'hidden' : 'auto',
+                padding: rightPanelCollapsed ? 0 : '24px',
+                scrollbarWidth: 'none',
+                transition: 'width 0.25s ease, padding 0.25s ease',
+                height: '100%',
+              }}
+            >
+              {!rightPanelCollapsed && (
+                <Collapse
+                  className="sd-sidebar-collapse"
+                  ghost
+                  items={collapseSections}
+                  defaultActiveKey={['details', 'key-dates', 'internal-team']}
+                />
+              )}
+            </div>
           </div>
 
       </div>

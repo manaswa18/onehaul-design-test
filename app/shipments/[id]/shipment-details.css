@@ -82,3 +82,9 @@
   border-radius: 8px !important;
   overflow: hidden;
 }
+
+/* Overflow menu — danger item red */
+.sd-overflow-menu .ant-dropdown-menu-item-danger .onehaul-menu-action-label,
+.sd-overflow-menu .ant-dropdown-menu-item-danger .onehaul-menu-action-icon {
+  color: var(--theme-color-error-100) !important;
+}
