@@ -702,15 +702,25 @@ function AttentionCard({ shipmentNo, client, route, task, urgency }: AttentionCa
   );
 }
 
+// ─── Secondary tab filters ────────────────────────────────────────────────────
+
+const SECONDARY_TABS = [
+  { key: 'all', label: 'All' },
+  { key: 'active', label: 'Active' },
+  { key: 'needs_attention', label: 'Needs Attention' },
+  { key: 'completed', label: 'Completed' },
+];
+
 // ─── Main page ────────────────────────────────────────────────────────────────
 
 export default function ShipmentsPage() {
   const router = useRouter();
-  const [attentionExpanded, setAttentionExpanded] = useState(true);
+  const [attentionExpanded, setAttentionExpanded] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [activeTab, setActiveTab] = useState('fcl');
   const [shipmentView, setShipmentView] = useState('my');
   const [createDrawerOpen, setCreateDrawerOpen] = useState(false);
+  const [statusTab, setStatusTab] = useState('all');
 
   const filteredShipments = MOCK_SHIPMENTS.filter(s => {
     if (shipmentView === 'my' && !s.isMyShipment) return false;
@@ -727,13 +737,29 @@ export default function ShipmentsPage() {
     router.push(`/shipments/${data.id}`);
   };
 
+  const filteredByStatus = filteredShipments.filter(s => {
+    if (statusTab === 'all') return true;
+    if (statusTab === 'active') return s.stage !== 'Completed';
+    if (statusTab === 'needs_attention') return s.nextEvent?.urgency != null || s.tasks != null;
+    if (statusTab === 'completed') return s.stage === 'Completed';
+    return true;
+  });
+
   const tableContent = (
-    <div style={{ paddingTop: 16, display: 'flex', flexDirection: 'column', gap: 16 }}>
+    <div style={{ paddingTop: 8, display: 'flex', flexDirection: 'column', gap: 16 }}>
+      {/* Secondary tabs */}
+      <Tabs
+        type="secondary"
+        activeKey={statusTab}
+        onChange={(key: string) => setStatusTab(key)}
+        className="sh-status-tabs"
+        items={SECONDARY_TABS.map(t => ({ key: t.key, label: t.label }))}
+      />
       {/* Count + Actions row — standalone, no container */}
       <div className="shipments-table-toolbar">
         <div className="shipments-toolbar-left">
           <Text variant="body" size="sm" weight="medium" style={{ color: 'var(--theme-color-grey-70)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-            {filteredShipments.length} shipments
+            {filteredByStatus.length} shipments
           </Text>
         </div>
         <div className="shipments-toolbar-right">
@@ -770,7 +796,7 @@ export default function ShipmentsPage() {
 
       {/* Table — own border via .onehaul-table-wrapper */}
       <Table
-        data={filteredShipments}
+        data={filteredByStatus}
         columns={COLUMNS}
         onRowClick={handleRowClick}
         options={{}}
@@ -867,6 +893,7 @@ export default function ShipmentsPage() {
             activeKey={activeTab}
             onChange={setActiveTab}
             type="primary"
+            className="shipments-primary-tabs"
           />
 
         </div>

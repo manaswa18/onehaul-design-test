@@ -150,3 +150,17 @@
   background: var(--theme-color-primary-10) !important;
   color: var(--theme-color-primary-60) !important;
 }
+
+/* Primary tabs — reset AntD's 16px nav margin so content starts at paddingTop: 8 */
+.shipments-primary-tabs.onehaul-tabs .ant-tabs-nav {
+  margin-bottom: 0 !important;
+}
+
+/* Secondary status filter tabs — used as a filter, no content pane needed */
+.sh-status-tabs .ant-tabs-content-holder {
+  display: none;
+}
+
+.sh-status-tabs.onehaul-tabs .ant-tabs-nav {
+  margin-bottom: 0 !important;
+}
