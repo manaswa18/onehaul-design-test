@@ -1,7 +1,9 @@
 'use client';
 
 import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import Text from '@/components/Text';
+import BreadcrumbComponent from '@/components/Breadcrumb';
 import ButtonComponent from '@/components/Button';
 import Avatar from '@/components/Avatar';
 import PillComponent from '@/components/Pill';
@@ -18,6 +20,7 @@ const Chips = ChipsComponent as React.ComponentType<any>;
 const Checkbox = CheckboxComponent as React.ComponentType<any>;
 const Tabs = TabsComponent as React.ComponentType<any>;
 const Collapse = CollapseComponent as React.ComponentType<any>;
+const Breadcrumb = BreadcrumbComponent as React.ComponentType<any>;
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -248,6 +251,7 @@ function NavBar() {
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function TasksPage() {
+  const router = useRouter();
   const [activeFilter, setActiveFilter] = useState<string>('all');
   const [viewMode, setViewMode] = useState<string>('urgency');
   const [activeKeys, setActiveKeys] = useState<string[]>(['overdue', 'due-today']);
@@ -280,14 +284,22 @@ export default function TasksPage() {
           {/* Page header */}
           <div className="tasks-page-header">
             <div className="tasks-header-left">
-              <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+              <div style={{ marginBottom: 16 }}>
+                <Breadcrumb
+                  items={[
+                    { title: 'Shipments', onClick: () => router.push('/shipments'), style: { cursor: 'pointer' } },
+                    { title: 'All Tasks' },
+                  ]}
+                />
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
                 <Text variant="heading" size="lg" weight="semibold" style={{ color: 'var(--theme-color-grey-100)' }}>
-                  Tasks
+                  All Tasks
+                </Text>
+                <Text variant="body" size="sm" style={{ color: 'var(--theme-color-grey-50)' }}>
+                  {totalOpen} open tasks · {totalOverdue} overdue · Last updated just now
                 </Text>
               </div>
-              <Text variant="body" size="sm" style={{ color: 'var(--theme-color-grey-50)' }}>
-                {totalOpen} open tasks · {totalOverdue} overdue · Last updated just now
-              </Text>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
               <Tabs

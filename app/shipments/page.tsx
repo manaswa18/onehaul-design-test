@@ -9,7 +9,7 @@ import Avatar from '@/components/Avatar';
 import TabsComponent from '@/components/Tabs';
 import TableComponent from '@/components/Table';
 import ChipsComponent from '@/components/Chips';
-import { Search, Add, HelpIcon, NotificationIcon, DocIcon, Chevrondown, FilterIcon } from '@/icons';
+import { Search, Add, HelpIcon, NotificationIcon, DocIcon, Chevrondown, FilterIcon, ListIcon } from '@/icons';
 import CreateShipmentDrawer from './CreateShipmentDrawer';
 import './shipments.css';
 
@@ -35,20 +35,30 @@ interface Shipment {
   id: string;
   shipmentNo: string;
   client: string;
+  poc: string;
   carrier: string;
   carrierRef: string;
   origin: string;
   destination: string;
+  pol: string;
+  pod: string;
+  originPin: string;
   etd: string;
   eta: string;
+  transitDays: number;
   containers: string;
   commodity: string;
+  weight: string;
   stage: string;
   bookingStatus: string;
   lastMilestone: string;
   nextEvent: NextEvent | null;
   tasks: TaskMeta | null;
   isMyShipment: boolean;
+  lastUpdated: string;
+  lastUpdatedBy: string;
+  dateCreated: string;
+  dateCreatedBy: string;
 }
 
 // ─── Mock data ────────────────────────────────────────────────────────────────
@@ -58,286 +68,436 @@ const MOCK_SHIPMENTS: Shipment[] = [
     id: '1',
     shipmentNo: 'ONH-2026-04821',
     client: 'Techno Exports Ltd',
+    poc: 'Daniel Hughes',
     carrier: 'MSC',
     carrierRef: 'MSCUUK987654',
     origin: 'Shanghai, CN',
     destination: 'Rotterdam, NL',
+    pol: 'CNSHA',
+    pod: 'NLRTM',
+    originPin: '200000',
     etd: '15 May 2026',
     eta: '20 Jun 2026',
+    transitDays: 36,
     containers: '3 × 40GP',
     commodity: 'Electronics & Consumer Goods',
+    weight: '24MT',
     stage: 'In Transit',
     bookingStatus: 'CONFIRMED',
     lastMilestone: 'Departed POL • 15 May',
     nextEvent: { label: 'ETA in 10 days', urgency: null },
     tasks: null,
     isMyShipment: true,
+    lastUpdated: '15/05/26',
+    lastUpdatedBy: 'Sahil Kala',
+    dateCreated: '10/04/26',
+    dateCreatedBy: 'Priya Sharma',
   },
   {
     id: '2',
     shipmentNo: 'ONH-2026-04820',
     client: 'Global Traders Inc',
+    poc: 'Sarah Johnson',
     carrier: 'Maersk',
     carrierRef: 'PENDING',
     origin: 'Dubai, AE',
     destination: 'Hamburg, DE',
+    pol: 'AEDXB',
+    pod: 'DEHAM',
+    originPin: '00000',
     etd: '02 Jun 2026',
     eta: '18 Jul 2026',
+    transitDays: 46,
     containers: '1 × 20GP',
     commodity: 'Textiles & Apparel',
+    weight: '8MT',
     stage: 'Pre-Shipment',
     bookingStatus: 'RECEIVED',
     lastMilestone: 'Booking Confirmed • 28 May',
     nextEvent: { label: 'SI Cutoff — Today', urgency: 'due-today' },
     tasks: { count: 2, urgency: 'overdue' },
     isMyShipment: false,
+    lastUpdated: '02/06/26',
+    lastUpdatedBy: 'Rahul Menon',
+    dateCreated: '15/05/26',
+    dateCreatedBy: 'Rahul Menon',
   },
   {
     id: '3',
     shipmentNo: 'ONH-2026-04819',
     client: 'Sunrise Manufacturing',
+    poc: 'Ahmed Khan',
     carrier: 'Hapag-Lloyd',
     carrierRef: 'HLCUBN2026041',
     origin: 'Karachi, PK',
     destination: 'Felixstowe, GB',
+    pol: 'PKKAR',
+    pod: 'GBFXT',
+    originPin: '74000',
     etd: '08 Jun 2026',
     eta: '25 Jul 2026',
+    transitDays: 47,
     containers: '2 × 40GP, 1 × 20GP',
     commodity: 'Surgical Instruments',
+    weight: '18MT',
     stage: 'Booking Confirmed',
     bookingStatus: 'CONFIRMED',
     lastMilestone: 'VGM Submitted • 03 Jun',
     nextEvent: { label: 'VGM Cutoff Overdue', urgency: 'overdue' },
     tasks: { count: 1, urgency: 'overdue' },
     isMyShipment: true,
+    lastUpdated: '08/06/26',
+    lastUpdatedBy: 'Priya Sharma',
+    dateCreated: '20/05/26',
+    dateCreatedBy: 'Priya Sharma',
   },
   {
     id: '4',
     shipmentNo: 'ONH-2026-04818',
     client: 'Prime Commodities LLC',
+    poc: 'Nihal Perera',
     carrier: 'CMA CGM',
     carrierRef: 'CMADUB0049182',
     origin: 'Colombo, LK',
     destination: 'Los Angeles, US',
+    pol: 'LKCMB',
+    pod: 'USLAX',
+    originPin: '10000',
     etd: '12 Jun 2026',
     eta: '05 Jul 2026',
+    transitDays: 23,
     containers: '5 × 40HC',
     commodity: 'Tea & Spices',
+    weight: '45MT',
     stage: 'Cargo Ready',
     bookingStatus: 'CONFIRMED',
     lastMilestone: 'Cargo Arrived at CFS • 10 Jun',
     nextEvent: { label: 'Gate Cutoff in 2 days', urgency: null },
     tasks: { count: 1, urgency: 'due-week' },
     isMyShipment: true,
+    lastUpdated: '10/06/26',
+    lastUpdatedBy: 'Aisha Malik',
+    dateCreated: '28/05/26',
+    dateCreatedBy: 'Aisha Malik',
   },
   {
     id: '5',
     shipmentNo: 'ONH-2026-04817',
     client: 'Heritage Exports Pvt Ltd',
+    poc: 'Kavya Nair',
     carrier: 'COSCO',
     carrierRef: 'COSU6042817340',
     origin: 'Mumbai, IN',
     destination: 'Antwerp, BE',
+    pol: 'INBOM',
+    pod: 'BEANR',
+    originPin: '400001',
     etd: '20 Jun 2026',
     eta: '10 Aug 2026',
+    transitDays: 51,
     containers: '2 × 40GP',
     commodity: 'Pharmaceuticals',
+    weight: '12MT',
     stage: 'Booking Requested',
     bookingStatus: 'PENDING_UPDATE',
     lastMilestone: 'Booking Requested • 05 Jun',
     nextEvent: { label: 'Awaiting Confirmation', urgency: null },
     tasks: null,
     isMyShipment: false,
+    lastUpdated: '05/06/26',
+    lastUpdatedBy: 'Sahil Kala',
+    dateCreated: '18/05/26',
+    dateCreatedBy: 'Sahil Kala',
   },
   {
     id: '6',
     shipmentNo: 'ONH-2026-04816',
     client: 'BlueStar Trading Co',
+    poc: 'Wei Zhang',
     carrier: 'MSC',
     carrierRef: 'MSCYYZ662233',
     origin: 'Guangzhou, CN',
     destination: 'Jebel Ali, AE',
+    pol: 'CNGZH',
+    pod: 'AEJEA',
+    originPin: '510000',
     etd: '01 Jun 2026',
     eta: '22 Jun 2026',
+    transitDays: 21,
     containers: '1 × 40HC',
     commodity: 'Machinery Parts',
+    weight: '10MT',
     stage: 'On the Water',
     bookingStatus: 'CONFIRMED',
     lastMilestone: 'Transshipment at Colombo • 12 Jun',
     nextEvent: { label: 'ETA in 10 days', urgency: null },
     tasks: null,
     isMyShipment: false,
+    lastUpdated: '12/06/26',
+    lastUpdatedBy: 'Rahul Menon',
+    dateCreated: '22/05/26',
+    dateCreatedBy: 'Priya Sharma',
   },
   {
     id: '7',
     shipmentNo: 'ONH-2026-04815',
     client: 'Summit Industries',
+    poc: 'Rajan Pillai',
     carrier: 'Maersk',
     carrierRef: 'MAEU9987001',
     origin: 'Chennai, IN',
     destination: 'Sydney, AU',
+    pol: 'INMAA',
+    pod: 'AUSYD',
+    originPin: '600001',
     etd: '28 May 2026',
     eta: '30 Jun 2026',
+    transitDays: 33,
     containers: '3 × 20GP',
     commodity: 'Auto Components',
+    weight: '22MT',
     stage: 'In Transit',
     bookingStatus: 'CONFIRMED',
     lastMilestone: 'Departed Colombo • 05 Jun',
     nextEvent: { label: 'ETA in 24 days', urgency: null },
     tasks: { count: 1, urgency: 'due-week' },
     isMyShipment: true,
+    lastUpdated: '05/06/26',
+    lastUpdatedBy: 'Priya Sharma',
+    dateCreated: '15/05/26',
+    dateCreatedBy: 'Aisha Malik',
   },
   {
     id: '8',
     shipmentNo: 'ONH-2026-04814',
     client: 'Nexus Global Freight',
+    poc: 'Lisa Tan',
     carrier: 'Hapag-Lloyd',
     carrierRef: 'HLCUSYD220814',
     origin: 'Singapore, SG',
     destination: 'Durban, ZA',
+    pol: 'SGSIN',
+    pod: 'ZADUR',
+    originPin: '018920',
     etd: '25 May 2026',
     eta: '28 Jun 2026',
+    transitDays: 34,
     containers: '2 × 40GP',
     commodity: 'Plastic Resins',
+    weight: '18MT',
     stage: 'Arrived at POD',
     bookingStatus: 'CONFIRMED',
     lastMilestone: 'Vessel Arrived Durban • 28 Jun',
     nextEvent: { label: 'Customs Filing Due', urgency: 'due-today' },
     tasks: { count: 2, urgency: 'due-today' },
     isMyShipment: true,
+    lastUpdated: '28/06/26',
+    lastUpdatedBy: 'Aisha Malik',
+    dateCreated: '20/05/26',
+    dateCreatedBy: 'Aisha Malik',
   },
   {
     id: '9',
     shipmentNo: 'ONH-2026-04813',
     client: 'Falcon Freight Solutions',
+    poc: 'James Wu',
     carrier: 'CMA CGM',
     carrierRef: 'CMAXXI009813',
     origin: 'Qingdao, CN',
     destination: 'Valencia, ES',
+    pol: 'CNTAO',
+    pod: 'ESVLC',
+    originPin: '266000',
     etd: '18 May 2026',
     eta: '20 Jun 2026',
+    transitDays: 33,
     containers: '4 × 40HC',
     commodity: 'Steel Pipes & Tubes',
+    weight: '36MT',
     stage: 'Clearance & Delivery',
     bookingStatus: 'CONFIRMED',
     lastMilestone: 'Customs Cleared • 22 Jun',
     nextEvent: { label: 'Final Delivery Today', urgency: 'due-today' },
     tasks: null,
     isMyShipment: false,
+    lastUpdated: '22/06/26',
+    lastUpdatedBy: 'Rahul Menon',
+    dateCreated: '10/05/26',
+    dateCreatedBy: 'Sahil Kala',
   },
   {
     id: '10',
     shipmentNo: 'ONH-2026-04812',
     client: 'TechNova Supplies',
+    poc: 'Park Ji-won',
     carrier: 'COSCO',
     carrierRef: 'COSUQD88120291',
     origin: 'Busan, KR',
     destination: 'Genoa, IT',
+    pol: 'KRPUS',
+    pod: 'ITGOA',
+    originPin: '46051',
     etd: '10 Jun 2026',
     eta: '08 Jul 2026',
+    transitDays: 28,
     containers: '1 × 40GP',
     commodity: 'Semiconductor Equipment',
+    weight: '5MT',
     stage: 'Booking Confirmed',
     bookingStatus: 'CONFIRMED',
     lastMilestone: 'BL Issued • 09 Jun',
     nextEvent: { label: 'ETD in 0 days', urgency: null },
     tasks: null,
     isMyShipment: true,
+    lastUpdated: '09/06/26',
+    lastUpdatedBy: 'Priya Sharma',
+    dateCreated: '25/05/26',
+    dateCreatedBy: 'Priya Sharma',
   },
   {
     id: '11',
     shipmentNo: 'ONH-2026-04811',
     client: 'Eastern Logistics Pvt',
+    poc: 'Fahad Mirza',
     carrier: 'MSC',
     carrierRef: 'MSCPAK441200',
     origin: 'Port Qasim, PK',
     destination: 'Rotterdam, NL',
+    pol: 'PKPQZ',
+    pod: 'NLRTM',
+    originPin: '75010',
     etd: '05 Jun 2026',
     eta: '20 Jul 2026',
+    transitDays: 45,
     containers: '2 × 20GP, 1 × 40HC',
     commodity: 'Sporting Goods',
+    weight: '16MT',
     stage: 'Pre-Shipment',
     bookingStatus: 'PENDING_AMENDMENT',
     lastMilestone: 'Amendment Requested • 03 Jun',
     nextEvent: { label: 'BL Draft Due Tomorrow', urgency: null },
     tasks: { count: 1, urgency: 'due-week' },
     isMyShipment: false,
+    lastUpdated: '03/06/26',
+    lastUpdatedBy: 'Sahil Kala',
+    dateCreated: '12/05/26',
+    dateCreatedBy: 'Rahul Menon',
   },
   {
     id: '12',
     shipmentNo: 'ONH-2026-04810',
     client: 'Archway Distributors',
+    poc: 'Ananya Roy',
     carrier: 'Maersk',
     carrierRef: 'PENDING',
     origin: 'Nhava Sheva, IN',
     destination: 'New York, US',
+    pol: 'INNSA',
+    pod: 'USNYC',
+    originPin: '400707',
     etd: '22 Jun 2026',
     eta: '25 Jul 2026',
+    transitDays: 33,
     containers: '6 × 40HC',
     commodity: 'Home Furnishings',
+    weight: '52MT',
     stage: 'Booking Initiated',
     bookingStatus: 'RECEIVED',
     lastMilestone: 'Booking Initiated • 04 Jun',
     nextEvent: { label: 'Confirmation Pending', urgency: null },
     tasks: null,
     isMyShipment: true,
+    lastUpdated: '04/06/26',
+    lastUpdatedBy: 'Aisha Malik',
+    dateCreated: '28/05/26',
+    dateCreatedBy: 'Aisha Malik',
   },
   {
     id: '13',
     shipmentNo: 'ONH-2026-04809',
     client: 'Global Traders Inc',
+    poc: 'Emma Fischer',
     carrier: 'Hapag-Lloyd',
     carrierRef: 'HLCUHAM220809',
     origin: 'Hamburg, DE',
     destination: 'Auckland, NZ',
+    pol: 'DEHAM',
+    pod: 'NZAKL',
+    originPin: '20457',
     etd: '14 May 2026',
     eta: '18 Jun 2026',
+    transitDays: 35,
     containers: '1 × 20GP',
     commodity: 'Chemical Compounds',
+    weight: '6MT',
     stage: 'Completed',
     bookingStatus: 'CONFIRMED',
     lastMilestone: 'Delivery Confirmed • 19 Jun',
     nextEvent: null,
     tasks: null,
     isMyShipment: false,
+    lastUpdated: '19/06/26',
+    lastUpdatedBy: 'Rahul Menon',
+    dateCreated: '05/05/26',
+    dateCreatedBy: 'Priya Sharma',
   },
   {
     id: '14',
     shipmentNo: 'ONH-2026-04808',
     client: 'Coastal Cargo Ltd',
+    poc: 'Omar Al-Rashid',
     carrier: 'CMA CGM',
     carrierRef: 'CMADXB1120808',
     origin: 'Jebel Ali, AE',
     destination: 'Mombasa, KE',
+    pol: 'AEJEA',
+    pod: 'KEMBA',
+    originPin: '00000',
     etd: '30 May 2026',
     eta: '15 Jun 2026',
+    transitDays: 16,
     containers: '2 × 40GP',
     commodity: 'FMCG Products',
+    weight: '14MT',
     stage: 'In Transit',
     bookingStatus: 'CONFIRMED',
     lastMilestone: 'Departed Jebel Ali • 30 May',
     nextEvent: { label: 'ETA in 15 days', urgency: null },
     tasks: null,
     isMyShipment: true,
+    lastUpdated: '30/05/26',
+    lastUpdatedBy: 'Sahil Kala',
+    dateCreated: '18/05/26',
+    dateCreatedBy: 'Sahil Kala',
   },
   {
     id: '15',
     shipmentNo: 'ONH-2026-04807',
     client: 'Prime Commodities LLC',
+    poc: 'Chen Mei',
     carrier: 'COSCO',
     carrierRef: 'COSUSHA980807',
     origin: 'Shanghai, CN',
     destination: 'Chittagong, BD',
+    pol: 'CNSHA',
+    pod: 'BDCGP',
+    originPin: '200000',
     etd: '07 Jun 2026',
     eta: '28 Jun 2026',
+    transitDays: 21,
     containers: '3 × 40GP, 2 × 20GP',
     commodity: 'Raw Cotton',
+    weight: '28MT',
     stage: 'Cargo Ready',
     bookingStatus: 'CONFIRMED',
     lastMilestone: 'Cargo Stuffed at Depot • 05 Jun',
     nextEvent: { label: 'Gate Cutoff Tomorrow', urgency: null },
     tasks: { count: 1, urgency: 'due-week' },
     isMyShipment: false,
+    lastUpdated: '05/06/26',
+    lastUpdatedBy: 'Priya Sharma',
+    dateCreated: '22/05/26',
+    dateCreatedBy: 'Aisha Malik',
   },
 ];
 
@@ -381,23 +541,67 @@ const STATUS_STYLES: Record<string, { bg: string; color: string }> = {
   CANCELLED:         { bg: 'var(--theme-color-grey-10)', color: 'var(--theme-color-grey-60)' },
 };
 
+// SeaFclFreight icon — SVG paths extracted from @onehaul/ui/dist/icons/dual-tone
+const SHIP_SVG = `<svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M3.951 2.38446H3.3958C3.28534 2.38446 3.1958 2.474 3.1958 2.58446V3.46435C3.1958 3.57481 3.28534 3.66435 3.3958 3.66435H3.951C4.06145 3.66435 4.151 3.57481 4.151 3.46435V2.58446C4.151 2.474 4.06145 2.38446 3.951 2.38446Z" fill="var(--theme-color-grey-30)"/><path d="M6.28645 2.38446H5.73125C5.62079 2.38446 5.53125 2.474 5.53125 2.58446V3.46435C5.53125 3.57481 5.62079 3.66435 5.73125 3.66435H6.28645C6.3969 3.66435 6.48645 3.57481 6.48645 3.46435V2.58446C6.48645 2.474 6.3969 2.38446 6.28645 2.38446Z" fill="var(--theme-color-grey-30)"/><path d="M7.80556 1.97095C7.88378 1.97095 7.94719 1.90754 7.94719 1.82932C7.94719 1.7511 7.88378 1.68769 7.80556 1.68769H6.60201C6.49155 1.68769 6.40201 1.59814 6.40201 1.48769V1.2C6.40201 1.08954 6.31246 1 6.20201 1H5.81552C5.70507 1 5.61552 1.08954 5.61552 1.2V1.48769C5.61552 1.59814 5.52598 1.68769 5.41552 1.68769H4.21195C4.13372 1.68769 4.07031 1.7511 4.07031 1.82932C4.07031 1.90754 4.13372 1.97095 4.21194 1.97095H4.32192C4.43238 1.97095 4.52192 2.06049 4.52192 2.17095V2.30507C4.52192 2.34881 4.48646 2.38426 4.44273 2.38426C4.39899 2.38426 4.36353 2.41972 4.36353 2.46346V3.46415C4.36353 3.57461 4.45307 3.66415 4.56353 3.66415H5.11873C5.22918 3.66415 5.31873 3.57461 5.31873 3.46415V2.58426C5.31873 2.47381 5.22918 2.38426 5.11873 2.38426H4.95972C4.87314 2.38426 4.80295 2.31407 4.80295 2.22749C4.80295 2.14091 4.87314 2.07072 4.95972 2.07072H7.05781C7.1444 2.07072 7.21459 2.14091 7.21459 2.22749C7.21459 2.31407 7.1444 2.38426 7.05781 2.38426H6.89881C6.78835 2.38426 6.69881 2.47381 6.69881 2.58426V3.46415C6.69881 3.57461 6.78835 3.66415 6.89881 3.66415H7.454C7.56446 3.66415 7.654 3.57461 7.654 3.46415V2.46345C7.654 2.41972 7.61855 2.38426 7.57482 2.38426C7.53109 2.38426 7.49563 2.34881 7.49563 2.30508V2.17095C7.49563 2.06049 7.58518 1.97095 7.69563 1.97095H7.80556Z" fill="var(--theme-color-grey-30)"/><path d="M8.6219 2.38446H8.0667C7.95624 2.38446 7.8667 2.474 7.8667 2.58446V3.46435C7.8667 3.57481 7.95624 3.66435 8.0667 3.66435H8.6219C8.73235 3.66435 8.8219 3.57481 8.8219 3.46435V2.58446C8.8219 2.474 8.73235 2.38446 8.6219 2.38446Z" fill="var(--theme-color-grey-30)"/><path d="M7.8846 5.07507C8.13035 5.15705 8.34946 5.23825 8.54099 5.31455C8.67458 5.36778 8.82194 5.27068 8.82194 5.12687V4.04573C8.82194 3.93528 8.7324 3.84573 8.62194 3.84573H8.0667C7.95624 3.84573 7.8667 3.93528 7.8667 4.04573V5.05039C7.8667 5.06161 7.87397 5.07146 7.8846 5.07507Z" fill="var(--theme-color-grey-30)"/><path d="M6.54577 8.66549C6.97873 8.5297 7.1095 8.52025 7.57143 8.66549C8.02917 8.81063 8.20865 8.81063 8.66036 8.66549C8.67753 8.65995 8.68961 8.64481 8.6907 8.6268C8.7052 8.38722 8.74461 7.91733 8.84767 7.37998C8.92976 6.95189 9.03724 6.55586 9.11933 6.28045C9.1869 6.05376 9.09653 5.8082 8.88361 5.70515C8.63126 5.58301 8.24943 5.41535 7.74967 5.2444C7.39813 5.12412 7.01841 5.02956 6.70443 4.96151C6.40211 4.896 6.12402 5.13135 6.12402 5.44068V8.33239C6.12402 8.56373 6.32516 8.73517 6.54577 8.66549ZM6.69489 5.94386C6.76431 5.78198 6.89167 5.67403 6.97941 5.70286C7.06707 5.7316 7.08191 5.88612 7.01243 6.048C6.94311 6.20987 6.81565 6.31788 6.72801 6.28905C6.6403 6.26031 6.62555 6.10578 6.69489 5.94386Z" fill="var(--theme-color-primary-100)"/><path d="M9.68544 10.2155C9.24635 10.075 9.09903 10.075 8.66043 10.2155C8.2087 10.3608 8.02923 10.3608 7.57151 10.2155C7.10958 10.0704 6.9788 10.0798 6.54584 10.2155C6.08614 10.3608 5.90825 10.3608 5.45688 10.2155C5.01725 10.075 4.87086 10.075 4.43131 10.2155C3.97974 10.3608 3.80041 10.3608 3.34239 10.2155C3.11931 10.1453 2.94502 10.1094 2.82436 10.1094C2.71071 10.1094 2.54008 10.1453 2.31651 10.2155C2.27137 10.2299 2.22821 10.2426 2.18697 10.2538C1.98092 10.3099 1.81201 10.4879 1.81201 10.7014V10.9741C1.8128 10.9863 1.82594 10.9937 1.83717 10.989C1.92288 10.9525 2.08492 10.9171 2.28831 10.8533C2.75876 10.7042 2.92619 10.7125 3.37145 10.8533C3.80532 10.9896 3.93713 10.9991 4.39747 10.8533C4.85467 10.708 5.03181 10.708 5.49189 10.8533C5.95169 10.9985 6.08331 10.9896 6.51795 10.8533C6.9623 10.7112 7.12875 10.7037 7.60067 10.8533C8.03234 10.9896 8.16435 10.9985 8.62664 10.8533C9.08454 10.708 9.26385 10.708 9.71537 10.8533C9.77529 10.8726 9.83174 10.8893 9.88461 10.9033C10.0449 10.9458 10.1854 10.8182 10.1864 10.6523C10.1874 10.477 10.0312 10.3168 9.8624 10.2695C9.80757 10.2541 9.74836 10.2359 9.68544 10.2155Z" fill="var(--theme-color-primary-100)"/><path d="M9.68544 9.11068C9.24635 8.97022 9.09903 8.97022 8.66043 9.11068C8.2087 9.25591 8.02923 9.25591 7.57151 9.11068C7.10958 8.96544 6.9788 8.97494 6.54585 9.11068C6.08614 9.25591 5.90825 9.25591 5.45688 9.11068C5.01725 8.97022 4.87086 8.97022 4.43131 9.11068C3.97975 9.25591 3.80041 9.25591 3.34239 9.11068C3.11931 9.04045 2.94502 9.00455 2.82436 9.00455C2.71071 9.00455 2.54008 9.04045 2.31651 9.11068C2.27137 9.12503 2.22821 9.13778 2.18697 9.14901C1.98092 9.2051 1.81201 9.38303 1.81201 9.59657V9.86927C1.8128 9.88144 1.82594 9.88891 1.83716 9.88414C1.92288 9.84766 2.08492 9.81227 2.28831 9.74845C2.75876 9.59937 2.92619 9.60763 3.37145 9.74845C3.80532 9.88479 3.93713 9.89424 4.39747 9.74845C4.85467 9.60323 5.03181 9.60323 5.49189 9.74845C5.95169 9.89359 6.08331 9.88479 6.51795 9.74845C6.9623 9.60635 7.12875 9.59883 7.60067 9.74845C8.03234 9.88479 8.16435 9.89359 8.62664 9.74845C9.08454 9.60323 9.26385 9.60323 9.71537 9.74845C9.76982 9.76602 9.82139 9.78139 9.87003 9.79458C10.0377 9.84003 10.1846 9.7062 10.1846 9.53249C10.1846 9.36612 10.0496 9.22038 9.88982 9.1741C9.82831 9.15628 9.76028 9.13487 9.68544 9.11068Z" fill="var(--theme-color-primary-100)"/><path d="M7.39558 4.92941C7.5249 4.96404 7.65393 4.86784 7.65393 4.73397V4.04573C7.65393 3.93528 7.56438 3.84573 7.45393 3.84573H6.89873C6.78827 3.84573 6.69873 3.93528 6.69873 4.04573V4.60249C6.69873 4.69732 6.76535 4.77896 6.85799 4.79925C7.02685 4.83624 7.2098 4.87967 7.39558 4.92941Z" fill="var(--theme-color-grey-30)"/><path d="M5.98943 4.64608C6.00862 4.64311 6.02794 4.64312 6.04713 4.64609C6.0837 4.65176 6.1536 4.6629 6.24839 4.67941C6.37207 4.70097 6.48645 4.60658 6.48645 4.48104V4.04573C6.48645 3.93528 6.3969 3.84573 6.28645 3.84573H5.73125C5.62079 3.84573 5.53125 3.93528 5.53125 4.04573V4.48428C5.53125 4.60996 5.64584 4.70438 5.76963 4.68263C5.87387 4.66431 5.9505 4.6521 5.98943 4.64608Z" fill="var(--theme-color-grey-30)"/><path d="M5.16 4.80336C5.2525 4.78296 5.31897 4.70139 5.31897 4.60666V4.04573C5.31897 3.93528 5.22942 3.84573 5.11897 3.84573H4.56377C4.45331 3.84573 4.36377 3.93528 4.36377 4.04573V4.739C4.36377 4.87307 4.49315 4.9693 4.62259 4.93439C4.80789 4.88441 4.99072 4.8407 5.16 4.80336Z" fill="var(--theme-color-grey-30)"/><path d="M4.01455 5.12173C4.09587 5.09358 4.151 5.01732 4.151 4.93126V4.04573C4.151 3.93528 4.06145 3.84573 3.951 3.84573H3.3958C3.28534 3.84573 3.1958 3.93528 3.1958 4.04573V5.13432C3.1958 5.27829 3.34348 5.37539 3.47714 5.32188C3.63691 5.25792 3.81626 5.19037 4.01455 5.12173Z" fill="var(--theme-color-grey-30)"/><path d="M3.32211 8.32256C3.34153 8.52968 3.47755 8.71803 3.68233 8.75468C3.92641 8.79838 4.10998 8.76865 4.43118 8.66539C4.87073 8.52488 5.01714 8.52488 5.45675 8.66539C5.68615 8.7392 5.89364 8.5599 5.89364 8.31892V5.44493C5.89364 5.1352 5.61484 4.89966 5.31224 4.96573C5.00211 5.03345 4.63088 5.12656 4.28678 5.2443C3.78702 5.41525 3.4052 5.5829 3.15284 5.70504C2.9399 5.8081 2.84954 6.05366 2.91711 6.28037C2.9992 6.55578 3.10669 6.95181 3.18878 7.37988C3.2581 7.74118 3.29861 8.07185 3.32211 8.32256ZM5.03814 5.70273C5.1259 5.6739 5.25323 5.78186 5.32265 5.94373C5.39197 6.10566 5.37729 6.26018 5.28951 6.28892C5.20186 6.31775 5.07446 6.20975 5.00514 6.04788C4.93563 5.88598 4.95047 5.73147 5.03814 5.70273Z" fill="var(--theme-color-primary-100)"/></svg>`;
+
+// Trailer icon — SVG paths extracted from @onehaul/ui/dist/icons/dual-tone
+const TRUCK_SVG = `<svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M10.7651 6.88276H10.9878C10.9692 6.62641 10.9302 6.37006 10.874 6.11908H10.7666L10.7651 6.88276Z" fill="#102B46"/><path d="M1 6.11882V7.23993C1 7.29364 1.04493 7.33856 1.1001 7.33856H1.40736C1.60456 7.33856 1.76586 7.19023 1.85111 7.0124C2.04057 6.61723 2.44414 6.34344 2.91261 6.34344C3.37915 6.34344 3.78295 6.61725 3.97257 7.01244C4.05788 7.19023 4.21919 7.33856 4.41639 7.33856H6.91252C7.13343 7.33856 7.31252 7.15948 7.31252 6.93856V6.1558C7.31252 6.13266 7.28829 6.11687 7.26515 6.11687L1.00146 6.11736C1.00066 6.11736 1 6.11801 1 6.11882ZM6.7364 7.00115H4.44152C4.36046 7.00115 4.29405 6.93474 4.29405 6.85223C4.29405 6.77117 4.36046 6.70476 4.44152 6.70476H6.7364C6.81746 6.70476 6.88387 6.77117 6.88387 6.85223C6.8824 6.93475 6.81648 7.00115 6.7364 7.00115Z" fill="#102B46"/><path d="M11 7.24023C11 7.20574 10.9706 7.1778 10.9361 7.1778H10.7662C10.6036 7.1778 10.4712 7.04547 10.4712 6.88287V6.12016C10.4712 5.95756 10.6036 5.82524 10.7662 5.82524C10.7825 5.82524 10.7943 5.80954 10.7897 5.79384C10.6143 5.20191 10.3362 4.64168 9.96245 4.14647L9.57866 3.63768C9.5601 3.61278 9.53129 3.59911 9.49858 3.59911H8.00645C7.78553 3.59911 7.60645 3.77819 7.60645 3.99911V7.16562C7.60645 7.26076 7.68357 7.33789 7.77871 7.33789C7.86363 7.33789 7.93456 7.27546 7.95808 7.19386C8.09952 6.7032 8.55258 6.34277 9.08741 6.34277C9.55473 6.34277 9.95901 6.61658 10.1488 7.01177C10.2341 7.18954 10.3955 7.33789 10.5927 7.33789H10.9014C10.9551 7.33789 11 7.29296 11 7.24023ZM8.4727 6.03424H8.19388C8.11283 6.03424 8.04642 5.96783 8.04642 5.88677C8.04642 5.80425 8.11283 5.73785 8.19388 5.73785H8.4727C8.55375 5.73785 8.62016 5.80425 8.62016 5.88677C8.6187 5.96783 8.55278 6.03424 8.4727 6.03424ZM8.69023 5.02544C8.47409 5.02544 8.29887 4.85022 8.29887 4.63408C8.29887 4.41794 8.47409 4.24272 8.69023 4.24272H8.90143C9.02714 4.24272 9.1452 4.30311 9.21877 4.40504C9.40558 4.66387 9.22064 5.02544 8.90143 5.02544H8.69023Z" fill="#102B46"/><path d="M2.9126 6.63756C2.4253 6.63756 2.03027 7.03405 2.03027 7.51989C2.03027 8.00622 2.42676 8.40125 2.9126 8.40125C3.39893 8.40125 3.79396 8.00476 3.79396 7.51989C3.79396 7.03259 3.39747 6.63756 2.9126 6.63756ZM2.9126 7.66638C2.83008 7.66638 2.76514 7.59997 2.76514 7.51891C2.76514 7.43786 2.83008 7.37145 2.9126 7.37145C2.99366 7.37145 3.06007 7.43786 3.06007 7.51891C3.0586 7.60144 2.99268 7.66638 2.9126 7.66638Z" fill="#D1D1D1"/><path d="M9.08741 6.63756C8.60108 6.63756 8.20605 7.03405 8.20605 7.51989C8.20605 8.00622 8.60254 8.40125 9.08741 8.40125C9.57471 8.40125 9.96974 8.00476 9.96974 7.51989C9.97023 7.03259 9.57521 6.63756 9.08741 6.63756ZM9.08741 7.66638C9.00635 7.66638 8.93995 7.59997 8.93995 7.51891C8.93995 7.43786 9.00635 7.37145 9.08741 7.37145C9.16993 7.37145 9.23487 7.43786 9.23487 7.51891C9.23487 7.60144 9.16993 7.66638 9.08741 7.66638Z" fill="#D1D1D1"/></svg>`;
+
+function countryFlag(countryCode: string): string {
+  if (!countryCode || countryCode.length !== 2) return '';
+  const pts = [...countryCode.toUpperCase()].map(c => 0x1F1E6 + c.charCodeAt(0) - 65);
+  return String.fromCodePoint(...pts);
+}
+
 function shipmentNoFormatter(cell: any) {
   const val = cell.getValue();
   return `<span class="oh-cell-shipment-no">${val}</span>`;
 }
 
-function clientFormatter(cell: any) {
-  const val = cell.getValue();
-  return `<span class="oh-cell-text">${val}</span>`;
+function customerPocFormatter(cell: any) {
+  const row = cell.getRow().getData();
+  return `<div class="oh-cell-stack">
+    <span class="primary">${row.client}</span>
+    <span class="secondary">${row.poc}</span>
+  </div>`;
 }
 
-function carrierFormatter(cell: any) {
+function operatorFormatter(cell: any) {
   const carrier = cell.getValue();
   const bg = CARRIER_COLORS[carrier] || 'var(--theme-color-primary-60)';
   const abbr = carrier.substring(0, 3).toUpperCase();
-  return `<div class="oh-carrier-cell">
-    <div class="oh-carrier-logo" style="background:${bg};">${abbr}</div>
-    <span>${carrier}</span>
+  return `<div style="display:flex;flex-direction:column;align-items:center;gap:6px;width:100%;">
+    <div style="min-width:36px;height:22px;background:${bg};border-radius:3px;display:inline-flex;align-items:center;justify-content:center;padding:0 6px;">
+      <span style="font-size:9px;font-weight:700;color:white;letter-spacing:0.5px;">${abbr}</span>
+    </div>
+    <span style="font-size:12px;color:var(--theme-color-grey-100);white-space:nowrap;">${carrier}</span>
+  </div>`;
+}
+
+function routeDetailsFormatter(cell: any) {
+  const row = cell.getRow().getData();
+  const { origin, destination, pol, pod, originPin, weight, containers, commodity, transitDays } = row;
+  const originCC = (origin as string).split(', ')[1] || '';
+  const destCC = (destination as string).split(', ')[1] || '';
+  const sep = `<span style="display:inline-block;width:10px;height:1px;background:var(--theme-color-grey-30);margin:0 1px;vertical-align:middle;flex-shrink:0;"></span>`;
+  const shipMode = `<span style="display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;background:white;border:1px solid var(--theme-color-grey-30);border-radius:50%;flex-shrink:0;">${SHIP_SVG}</span>`;
+  const truckMode = `<span style="display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;background:var(--theme-color-grey-10);border-radius:50%;flex-shrink:0;">${TRUCK_SVG}</span>`;
+  const pipe = `<span style="color:var(--theme-color-grey-40);margin:0 4px;">|</span>`;
+  return `<div style="display:flex;flex-direction:column;gap:8px;padding:2px 0;min-width:0;">
+    <div style="display:flex;align-items:center;gap:6px;flex-wrap:nowrap;white-space:nowrap;">
+      <span style="font-size:18px;flex-shrink:0;">${countryFlag(originCC)}</span>
+      <span style="font-size:16px;color:var(--theme-color-grey-70);flex-shrink:0;">${originPin}</span>
+      ${sep}
+      <span style="font-size:18px;font-weight:600;color:var(--theme-color-orange-120);flex-shrink:0;">${pol}</span>
+      ${sep}${shipMode}${sep}
+      <span style="font-size:18px;font-weight:600;color:var(--theme-color-orange-120);flex-shrink:0;">${pod}</span>
+      ${truckMode}
+      <span style="font-size:18px;flex-shrink:0;">${countryFlag(destCC)}</span>
+    </div>
+    <div style="border-top:1px dashed var(--theme-color-grey-30);width:100%;"></div>
+    <div style="display:flex;align-items:center;flex-wrap:wrap;font-size:12px;color:var(--theme-color-grey-70);white-space:nowrap;">
+      <span>${weight}; ${commodity}</span>${pipe}<span>${containers}</span>${pipe}<span>Direct shipment</span>${pipe}<span>${transitDays} days est. transit</span>
+    </div>
   </div>`;
 }
 
@@ -409,27 +613,41 @@ function carrierRefFormatter(cell: any) {
   return `<span class="oh-cell-text">${val}</span>`;
 }
 
-function routeFormatter(cell: any) {
-  const val = cell.getValue();
-  const [city, code] = val.split(', ');
+function estTransitTimeFormatter(cell: any) {
+  const row = cell.getRow().getData();
+  const { etd, eta, transitDays } = row;
+  const months: Record<string, string> = {
+    Jan: '01', Feb: '02', Mar: '03', Apr: '04', May: '05', Jun: '06',
+    Jul: '07', Aug: '08', Sep: '09', Oct: '10', Nov: '11', Dec: '12',
+  };
+  function fmtDate(d: string) {
+    const parts = d.split(' ');
+    if (parts.length === 3) {
+      const [day, mon, year] = parts;
+      return `${day.padStart(2, '0')}/${months[mon] || '??'}/${year.slice(2)}`;
+    }
+    return d;
+  }
   return `<div class="oh-cell-stack">
-    <span class="primary">${city}</span>
-    <span class="secondary">${code || ''}</span>
+    <span class="primary" style="font-weight:500;">${fmtDate(etd)} - ${fmtDate(eta)}</span>
+    <span class="secondary">${transitDays} days</span>
   </div>`;
 }
 
-function dateFormatter(cell: any) {
-  return `<span class="oh-cell-text">${cell.getValue()}</span>`;
+function lastUpdatedFormatter(cell: any) {
+  const row = cell.getRow().getData();
+  return `<div class="oh-cell-stack">
+    <span class="primary">${row.lastUpdated}</span>
+    <span class="secondary">by ${row.lastUpdatedBy}</span>
+  </div>`;
 }
 
-function commodityFormatter(cell: any) {
-  const val: string = cell.getValue();
-  return `<span class="oh-cell-text" title="${val}">${val}</span>`;
-}
-
-function containersFormatter(cell: any) {
-  const val: string = cell.getValue();
-  return `<span class="oh-cell-text">${val}</span>`;
+function dateCreatedFormatter(cell: any) {
+  const row = cell.getRow().getData();
+  return `<div class="oh-cell-stack">
+    <span class="primary">${row.dateCreated}</span>
+    <span class="secondary">by ${row.dateCreatedBy}</span>
+  </div>`;
 }
 
 function stageFormatter(cell: any) {
@@ -465,21 +683,6 @@ function nextEventFormatter(cell: any) {
     ? 'var(--theme-color-orange-120)'
     : 'var(--theme-color-grey-100)';
   return `<span class="oh-cell-text" style="color:${color};font-weight:${event.urgency ? 500 : 400};">${event.label}</span>`;
-}
-
-function tasksFormatter(cell: any) {
-  const tasks = cell.getValue() as TaskMeta | null;
-  if (!tasks) return '<span style="color:var(--theme-color-grey-30);">—</span>';
-  const dotColor = tasks.urgency === 'overdue'
-    ? 'var(--theme-color-error-100)'
-    : tasks.urgency === 'due-today'
-    ? 'var(--theme-color-orange-100)'
-    : 'var(--theme-color-yellow-120)';
-  const label = tasks.urgency === 'overdue' ? `${tasks.count} overdue` : `${tasks.count} due`;
-  return `<div class="oh-tasks-cell">
-    <div class="oh-urgency-dot" style="background:${dotColor};"></div>
-    <span style="font-size:12px;color:var(--theme-color-grey-100);">${label}</span>
-  </div>`;
 }
 
 function actionsFormatter() {
@@ -547,21 +750,18 @@ const COLUMNS = [
     resizable: false,
     frozen: true,
   },
-  { title: 'SHIPMENT NO.', field: 'shipmentNo', width: 200, minWidth: 180, headerSort: false, formatter: shipmentNoFormatter },
-  { title: 'CLIENT', field: 'client', width: 220, minWidth: 180, headerSort: false, formatter: clientFormatter },
-  { title: 'CARRIER', field: 'carrier', width: 180, minWidth: 160, headerSort: false, formatter: carrierFormatter },
-  { title: 'BOOKING REF', field: 'carrierRef', width: 190, minWidth: 170, headerSort: false, formatter: carrierRefFormatter },
-  { title: 'ORIGIN', field: 'origin', width: 150, minWidth: 130, headerSort: false, formatter: routeFormatter },
-  { title: 'DESTINATION', field: 'destination', width: 160, minWidth: 140, headerSort: false, formatter: routeFormatter },
-  { title: 'ETD', field: 'etd', width: 130, minWidth: 110, headerSort: false, formatter: dateFormatter },
-  { title: 'ETA', field: 'eta', width: 130, minWidth: 110, headerSort: false, formatter: dateFormatter },
-  { title: 'CONTAINERS', field: 'containers', width: 180, minWidth: 150, headerSort: false, formatter: containersFormatter },
-  { title: 'COMMODITY', field: 'commodity', width: 180, minWidth: 150, headerSort: false, formatter: commodityFormatter },
-  { title: 'STAGE', field: 'stage', width: 190, minWidth: 160, headerSort: false, formatter: stageFormatter },
-  { title: 'BOOKING STATUS', field: 'bookingStatus', width: 190, minWidth: 160, headerSort: false, formatter: bookingStatusFormatter },
-  { title: 'LAST MILESTONE', field: 'lastMilestone', width: 230, minWidth: 200, headerSort: false, formatter: milestoneFormatter },
+  { title: 'SHIPMENT NO.', field: 'shipmentNo', width: 190, minWidth: 170, headerSort: false, formatter: shipmentNoFormatter },
+  { title: 'STAGE', field: 'stage', width: 170, minWidth: 150, headerSort: false, formatter: stageFormatter },
+  { title: 'CUSTOMER & POC', field: 'client', width: 200, minWidth: 170, headerSort: false, formatter: customerPocFormatter },
+  { title: 'ROUTE DETAILS', field: 'origin', width: 440, minWidth: 380, headerSort: false, formatter: routeDetailsFormatter },
+  { title: 'OPERATOR', field: 'carrier', width: 120, minWidth: 100, headerSort: false, formatter: operatorFormatter, hozAlign: 'center', headerHozAlign: 'center' },
+  { title: 'BOOKING REF', field: 'carrierRef', width: 160, minWidth: 140, headerSort: false, formatter: carrierRefFormatter },
+  { title: 'EST. TRANSIT TIME', field: 'etd', width: 210, minWidth: 190, headerSort: false, formatter: estTransitTimeFormatter },
+  { title: 'BOOKING STATUS', field: 'bookingStatus', width: 180, minWidth: 160, headerSort: false, formatter: bookingStatusFormatter },
+  { title: 'LAST MILESTONE', field: 'lastMilestone', width: 220, minWidth: 190, headerSort: false, formatter: milestoneFormatter },
   { title: 'NEXT EVENT', field: 'nextEvent', width: 210, minWidth: 180, headerSort: false, formatter: nextEventFormatter },
-  { title: 'TASKS', field: 'tasks', width: 130, minWidth: 110, headerSort: false, formatter: tasksFormatter },
+  { title: 'LAST UPDATED', field: 'lastUpdated', width: 175, minWidth: 155, headerSort: false, formatter: lastUpdatedFormatter },
+  { title: 'DATE CREATED', field: 'dateCreated', width: 175, minWidth: 155, headerSort: false, formatter: dateCreatedFormatter },
   {
     title: '',
     field: 'id',
@@ -812,6 +1012,15 @@ export default function ShipmentsPage() {
               Filters
             </Button>
           </div>
+          <Button
+            variant="secondary"
+            size="md"
+            icon={<ListIcon width={14} height={14} />}
+            onClick={() => router.push('/tasks')}
+            style={{ marginLeft: 8 }}
+          >
+            All Tasks
+          </Button>
         </div>
       </div>
 
@@ -820,7 +1029,7 @@ export default function ShipmentsPage() {
         data={filteredByStatus}
         columns={COLUMNS}
         onRowClick={handleRowClick}
-        options={{}}
+        options={{ rowHeight: 104 }}
       />
     </div>
   );

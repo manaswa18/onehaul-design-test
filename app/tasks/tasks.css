@@ -7,14 +7,13 @@
   align-items: flex-start;
   justify-content: space-between;
   gap: 16px;
-  padding: 28px 28px 0;
+  padding: 40px 40px 24px;
   flex-shrink: 0;
 }
 
 .tasks-header-left {
   display: flex;
   flex-direction: column;
-  gap: 4px;
 }
 
 /* ── Filter bar ──────────────────────────────────── */
@@ -23,7 +22,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 16px 28px;
+  padding: 16px 40px;
   flex-shrink: 0;
   flex-wrap: nowrap;
   overflow-x: auto;
@@ -79,7 +78,7 @@
 /* ── Column header — plain, no background/border ─── */
 
 .tasks-col-header {
-  padding: 8px 0;
+  padding: 8px 40px;
   flex-shrink: 0;
 }
 
@@ -119,7 +118,7 @@
 
 .tasks-sections {
   flex: 1;
-  padding: 0 28px 28px;
+  padding: 0 40px 40px;
   margin-top: 8px;
 }
 
