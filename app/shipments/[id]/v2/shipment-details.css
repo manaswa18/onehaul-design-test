@@ -1,0 +1,63 @@
+/* ── Main tabs — nav only, content rendered manually below ───────────────────── */
+.sd-main-tabs {
+  flex: 1;
+}
+
+.sd-main-tabs > .ant-tabs-nav {
+  margin-bottom: 0;
+  flex-shrink: 0;
+}
+
+.sd-main-tabs .ant-tabs-content-holder {
+  display: none;
+}
+
+/* ── Tab content scroll area ──────────────────────────────────────────────────── */
+.sd-tab-content {
+  scrollbar-width: none;
+}
+
+.sd-tab-content::-webkit-scrollbar {
+  display: none;
+}
+
+/* ── Overview accordion sections ─────────────────────────────────────────────── */
+.sd-overview-collapse {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sd-overview-collapse .ant-collapse-header {
+  padding: 12px 20px !important;
+  align-items: center !important;
+}
+
+.sd-overview-collapse .ant-collapse-content-box {
+  padding: 20px !important;
+}
+
+.sd-overview-collapse .onehaul-collapse-item {
+  border-radius: 8px !important;
+  overflow: hidden;
+}
+
+/* ── Recent Activity accordion — match card border-radius ────────────────────── */
+.sd-activity-collapse .onehaul-collapse-item {
+  border-radius: 12px !important;
+  overflow: hidden;
+}
+
+.sd-activity-collapse .onehaul-collapse-item .ant-collapse-header {
+  border-radius: 12px !important;
+}
+
+.sd-activity-collapse .onehaul-collapse-item.ant-collapse-item-active .ant-collapse-header {
+  border-radius: 12px 12px 0 0 !important;
+}
+
+/* Overflow menu — danger item red */
+.sd-overflow-menu .ant-dropdown-menu-item-danger .onehaul-menu-action-label,
+.sd-overflow-menu .ant-dropdown-menu-item-danger .onehaul-menu-action-icon {
+  color: var(--theme-color-error-100) !important;
+}
