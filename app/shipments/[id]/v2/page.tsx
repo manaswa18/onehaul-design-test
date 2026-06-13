@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { useRouter, useParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import BreadcrumbComponent from '@/components/Breadcrumb';
 import ButtonComponent from '@/components/Button';
 import TabsComponent from '@/components/Tabs';
@@ -13,7 +13,8 @@ import PillComponent from '@/components/Pill';
 import SelectComponent from '@/components/Select';
 import DrawerComponent from '@/components/Drawer';
 import DropdownComponent from '@/components/Dropdown';
-import { MoreVert, DocIcon, HelpIcon, NotificationIcon, EditPencil, Add, Delete, Leftpanelopen, Leftpanelclose, User, Block, Redirect, Bulkadd, Upload, Tick, Building, ShipmentIcon, MailOutline, Attachment, FilterIcon, Chevrondown } from '@/icons';
+import CheckboxComponent from '@/components/Checkbox';
+import { MoreVert, DocIcon, HelpIcon, NotificationIcon, EditPencil, Add, Delete, Leftpanelopen, Leftpanelclose, User, Block, Bulkadd, Upload, Tick, Building, ShipmentIcon, MailOutline, Attachment, FilterIcon, Chevrondown, ChevronRight } from '@/icons';
 import './shipment-details.css';
 
 const Breadcrumb = BreadcrumbComponent as React.ComponentType<any>;
@@ -262,7 +263,6 @@ function InternalTeamContent() {
   const openDrawer = (index: number) => {
     setDrawerIndex(index);
     setPendingValue(assignments[index]);
-    setHoveredIndex(null);
   };
 
   const closeDrawer = () => {
@@ -290,30 +290,42 @@ function InternalTeamContent() {
 
   return (
     <>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
         {ROLES.map((r, i) => {
           const assignedKey = assignments[i];
           const person = PEOPLE_OPTIONS.find((p) => p.value === assignedKey);
           const isAssigned = !!person;
+
+          const taskCounts = isAssigned ? (() => {
+            const personTasks = TASKS_DATA.filter(t => t.assignee?.initials === person!.initials);
+            return {
+              overdue:  personTasks.filter(t => t.urgency === 'overdue').length,
+              dueToday: personTasks.filter(t => t.urgency === 'due-today').length,
+            };
+          })() : { overdue: 0, dueToday: 0 };
+
+          const hasUrgentTasks = taskCounts.overdue > 0 || taskCounts.dueToday > 0;
           const isHovered = hoveredIndex === i;
 
           return (
+            <React.Fragment key={r.role}>
+              {i > 0 && <div style={{ height: 1, background: 'var(--theme-color-grey-5)' }} />}
             <div
-              key={r.role}
-              style={{ display: 'flex', alignItems: 'center', gap: 10 }}
+              onClick={() => openDrawer(i)}
               onMouseEnter={() => setHoveredIndex(i)}
               onMouseLeave={() => setHoveredIndex(null)}
+              style={{
+                background: 'var(--theme-color-pure-100)',
+                display: 'flex',
+                alignItems: 'flex-start',
+                gap: 10,
+                cursor: 'pointer',
+              }}
             >
-              {/* Avatar with pencil overlay (assigned) or clickable dashed circle (unassigned) */}
+              {/* Avatar (assigned) or dashed placeholder (unassigned) */}
               {isAssigned ? (
-                <div
-                  style={{ position: 'relative', flexShrink: 0, cursor: 'pointer', width: 32, height: 32 }}
-                  onClick={() => openDrawer(i)}
-                >
-                  <Avatar
-                    size={32}
-                    style={{ background: person!.bg, fontSize: 11, fontWeight: 600, color: '#fff' }}
-                  >
+                <div style={{ position: 'relative', flexShrink: 0, width: 32, height: 32 }}>
+                  <Avatar size={32} style={{ background: person!.bg, fontSize: 11, fontWeight: 600, color: '#fff' }}>
                     {person!.initials}
                   </Avatar>
                   {isHovered && (
@@ -327,48 +339,60 @@ function InternalTeamContent() {
                   )}
                 </div>
               ) : (
-                <div
-                  onClick={() => openDrawer(i)}
-                  style={{
-                    width: 32, height: 32, flexShrink: 0, borderRadius: '50%', cursor: 'pointer',
-                    border: `1.5px ${isHovered ? 'solid' : 'dashed'} ${isHovered ? 'var(--theme-color-grey-40)' : 'var(--theme-color-grey-30)'}`,
-                    background: isHovered ? 'var(--theme-color-grey-10)' : 'transparent',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    transition: 'all 0.15s ease',
-                  }}
-                >
+                <div style={{
+                  width: 32, height: 32, flexShrink: 0, borderRadius: '50%',
+                  border: `1.5px ${isHovered ? 'solid' : 'dashed'} ${isHovered ? 'var(--theme-color-grey-40)' : 'var(--theme-color-grey-30)'}`,
+                  background: isHovered ? 'var(--theme-color-grey-10)' : 'transparent',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  transition: 'all 0.15s ease',
+                }}>
                   <Add style={{ fontSize: 14, color: isHovered ? 'var(--theme-color-grey-60)' : 'var(--theme-color-grey-30)' }} />
                 </div>
               )}
 
-              {/* Name + email (assigned) or Unassigned placeholder */}
-              <div style={{ flex: 1, minWidth: 0 }}>
-                {isAssigned ? (
-                  <>
-                    <Text variant="body" size="sm" weight="medium" style={{ color: 'var(--theme-color-grey-100)' }}>
-                      {person!.label}
+              {/* Content */}
+              <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 2 }}>
+                {/* Row 1: Name | Role chip */}
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
+                  <Text variant="body" size="sm" weight="medium" style={{ color: isAssigned ? 'var(--theme-color-grey-100)' : 'var(--theme-color-grey-40)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flexShrink: 1 }}>
+                    {isAssigned ? displayName(person!.label, person!.initials) : 'Unassigned'}
+                  </Text>
+                  <div style={{ background: 'var(--theme-color-grey-10)', borderRadius: 4, padding: '1px 6px', flexShrink: 0 }}>
+                    <Text variant="body" size="sm" style={{ color: 'var(--theme-color-grey-60)', fontSize: 10, fontWeight: 500, whiteSpace: 'nowrap' }}>
+                      {r.role}
                     </Text>
-                    <Text variant="body" size="sm" style={{ color: 'var(--theme-color-grey-50)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                      {person!.email}
-                    </Text>
-                  </>
-                ) : (
-                  <>
-                    <Text variant="body" size="sm" weight="medium" style={{ color: 'var(--theme-color-grey-40)' }}>
-                      Unassigned
-                    </Text>
-                    <Text variant="body" size="sm" style={{ color: 'var(--theme-color-grey-30)' }}>
-                      No member added yet
-                    </Text>
-                  </>
+                  </div>
+                </div>
+
+                {/* Row 2: Email or placeholder */}
+                <Text variant="body" size="sm" style={{ color: isAssigned ? 'var(--theme-color-grey-50)' : 'var(--theme-color-grey-30)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'block' }}>
+                  {isAssigned ? person!.email : 'No member added yet'}
+                </Text>
+
+                {/* Row 3: Task urgency chips — only when there are urgent tasks */}
+                {hasUrgentTasks && (
+                  <div style={{ display: 'flex', gap: 6, marginTop: 4 }}>
+                    {taskCounts.overdue > 0 && (
+                      <div style={{ display: 'inline-flex', alignItems: 'center', gap: 4, background: 'var(--theme-color-error-20)', borderRadius: 4, padding: '1px 6px' }}>
+                        <span style={{ width: 5, height: 5, borderRadius: '50%', background: 'var(--theme-color-error-100)', display: 'inline-block', flexShrink: 0 }} />
+                        <Text variant="body" size="sm" style={{ color: 'var(--theme-color-error-100)', fontSize: 10, fontWeight: 600 }}>
+                          {taskCounts.overdue} overdue
+                        </Text>
+                      </div>
+                    )}
+                    {taskCounts.dueToday > 0 && (
+                      <div style={{ display: 'inline-flex', alignItems: 'center', gap: 4, background: 'var(--theme-color-yellow-20)', borderRadius: 4, padding: '1px 6px' }}>
+                        <span style={{ width: 5, height: 5, borderRadius: '50%', background: 'var(--theme-color-yellow-60)', display: 'inline-block', flexShrink: 0 }} />
+                        <Text variant="body" size="sm" style={{ color: 'var(--theme-color-yellow-120)', fontSize: 10, fontWeight: 600 }}>
+                          {taskCounts.dueToday} due today
+                        </Text>
+                      </div>
+                    )}
+                  </div>
                 )}
               </div>
-
-              {/* Right: role label for both assigned and unassigned */}
-              <Text variant="body" size="sm" style={{ color: 'var(--theme-color-grey-40)', flexShrink: 0 }}>
-                {r.role}
-              </Text>
             </div>
+            </React.Fragment>
           );
         })}
       </div>
@@ -994,7 +1018,7 @@ const ACTIVITY_FEED: ActivityItem[] = [
   },
   {
     avatarType: 'email',
-    actor: 'Sahil Kala → Voltas India',
+    actor: 'Sahil Kala (You) → Voltas India',
     tag: 'OUTBOUND',
     time: '5 days ago',
     description: 'Re: ONH-2026-04821 — ETD Update & New Carrier Cut-offs',
@@ -1002,7 +1026,7 @@ const ACTIVITY_FEED: ActivityItem[] = [
   {
     avatarType: 'person',
     avatarLabel: 'SK',
-    actor: 'Sahil Kala',
+    actor: 'Sahil Kala (You)',
     tag: 'INTERNAL',
     time: '14 Jan 2026',
     description: 'Customer requires original BL sent via courier to Voltas Mumbai office. Confirm details with Rohan More.',
@@ -1191,23 +1215,47 @@ function OverviewContent() {
   );
 }
 
+const CURRENT_USER_INITIALS = 'SK';
+function displayName(name: string, initials: string): string {
+  return initials === CURRENT_USER_INITIALS ? `${name} (You)` : name;
+}
+
 // ─── Right Panel: Tasks ───────────────────────────────────────────────────────
 
-const URGENCY_CONFIG: Record<string, { label: string; dateColor: string; accent: string | null }> = {
-  'overdue':   { label: 'Overdue',   dateColor: 'var(--theme-color-error-100)',   accent: 'var(--theme-color-error-100)' },
-  'due-today': { label: 'Due Today', dateColor: 'var(--theme-color-orange-120)', accent: 'var(--theme-color-orange-100)' },
-  'this-week': { label: 'This Week', dateColor: 'var(--theme-color-grey-50)',    accent: null },
-  'upcoming':  { label: 'Upcoming',  dateColor: 'var(--theme-color-grey-50)',    accent: null },
+const URGENCY_CONFIG: Record<string, { label: string; dateColor: string }> = {
+  'overdue':   { label: 'Overdue',   dateColor: 'var(--theme-color-error-100)'  },
+  'due-today': { label: 'Due Today', dateColor: 'var(--theme-color-orange-120)' },
+  'this-week': { label: 'This Week', dateColor: 'var(--theme-color-grey-50)'    },
+  'upcoming':  { label: 'Upcoming',  dateColor: 'var(--theme-color-grey-50)'    },
 };
 
-const TASKS_DATA = [
-  { id: 1, title: 'Submit Shipping Instructions',     urgency: 'overdue',   stage: 'Pre-Shipment', dateLabel: 'Overdue since 05 May 26, 17:00', assignee: { initials: 'SK', name: 'Sahil K.', color: '#1D3A5F' } },
-  { id: 2, title: 'Upload VGM Certificate',           urgency: 'overdue',   stage: 'Pre-Shipment', dateLabel: 'Overdue since 03 May 26, 23:59', assignee: { initials: 'PS', name: 'Priya S.', color: '#4A90D9' } },
-  { id: 3, title: 'BL Draft Review & Approval',       urgency: 'due-today', stage: 'Pre-Shipment', dateLabel: 'Due today, 17:00',               assignee: { initials: 'SK', name: 'Sahil K.', color: '#1D3A5F' } },
-  { id: 4, title: 'Confirm Cargo Ready Date',         urgency: 'this-week', stage: 'Pre-Shipment', dateLabel: 'Due 09 May 26',                  assignee: { initials: 'SK', name: 'Sahil K.', color: '#1D3A5F' } },
-  { id: 5, title: 'Arrange Inland Transport to Port', urgency: 'this-week', stage: 'Cargo Ready',  dateLabel: 'Due 10 May 26',                  assignee: { initials: 'RN', name: 'Ravi N.',  color: '#34A853' } },
-  { id: 6, title: 'Notify Customer — Departure',      urgency: 'upcoming',  stage: 'On the Water', dateLabel: 'Due 18 May 26',                  assignee: { initials: 'AM', name: 'Amir M.',  color: '#D32F2F' } },
+type TaskCategory = 'document' | 'booking' | 'communication' | 'logistics' | 'customs' | 'finance' | 'custom';
+interface Task {
+  id: number; title: string; urgency: string; stage: string; dateLabel: string;
+  assignee: { initials: string; name: string; color: string } | null;
+  category: TaskCategory; linkedCTA?: string;
+}
+
+const TASKS_DATA: Task[] = [
+  { id: 1, title: 'Submit Shipping Instructions',     urgency: 'overdue',   stage: 'Pre-Shipment', dateLabel: 'Overdue since 05 May 26, 17:00', assignee: { initials: 'SK', name: 'Sahil Kala', color: '#1D3A5F' }, category: 'document',      linkedCTA: 'Submit SI'   },
+  { id: 2, title: 'Upload VGM Certificate',           urgency: 'overdue',   stage: 'Pre-Shipment', dateLabel: 'Overdue since 03 May 26, 23:59', assignee: { initials: 'PS', name: 'Priya Sharma', color: '#4A90D9' }, category: 'document'                        },
+  { id: 3, title: 'BL Draft Review & Approval',       urgency: 'due-today', stage: 'Pre-Shipment', dateLabel: 'Due today, 17:00',               assignee: { initials: 'SK', name: 'Sahil Kala', color: '#1D3A5F' }, category: 'document',      linkedCTA: 'Review BL'  },
+  { id: 4, title: 'Confirm Cargo Ready Date',         urgency: 'this-week', stage: 'Pre-Shipment', dateLabel: 'Due 09 May 26',                  assignee: { initials: 'SK', name: 'Sahil Kala', color: '#1D3A5F' }, category: 'logistics'                       },
+  { id: 5, title: 'Arrange Inland Transport to Port', urgency: 'this-week', stage: 'Cargo Ready',  dateLabel: 'Due 10 May 26',                  assignee: null,                                                   category: 'logistics'                       },
+  { id: 6, title: 'Notify Customer — Departure',      urgency: 'upcoming',  stage: 'On the Water', dateLabel: 'Due 18 May 26',                  assignee: { initials: 'AM', name: 'Amir Mohsin',  color: '#D32F2F' }, category: 'communication', linkedCTA: 'Send Mail'      },
+  { id: 7, title: 'File Export Customs Declaration',  urgency: 'upcoming',  stage: 'Pre-Shipment', dateLabel: 'Due 20 May 26',                  assignee: null,                                                   category: 'customs'                         },
 ];
+
+function getCategoryIcon(category: TaskCategory, color: string): React.ReactNode {
+  const p = { width: 12, height: 12, color };
+  switch (category) {
+    case 'document': case 'customs': case 'finance': return <DocIcon {...p} />;
+    case 'booking':       return <Building     {...p} />;
+    case 'communication': return <MailOutline  {...p} />;
+    case 'logistics':     return <ShipmentIcon {...p} />;
+    case 'custom':        return <HelpIcon     {...p} />;
+  }
+}
 
 const TASK_TYPES = [
   'Submit Shipping Instructions', 'Submit VGM Declaration', 'BL Draft Review & Approval',
@@ -1224,11 +1272,11 @@ const LIFECYCLE_STAGES = [
 ];
 
 const PANEL_ASSIGNEES = [
-  { initials: 'SK', name: 'Sahil K.', color: '#1D3A5F' },
-  { initials: 'RA', name: 'Ravi A.',  color: '#34A853' },
-  { initials: 'PS', name: 'Priya S.', color: '#4A90D9' },
-  { initials: 'NT', name: 'Neha T.',  color: '#9E9E9E' },
-  { initials: 'AM', name: 'Amir M.',  color: '#D32F2F' },
+  { initials: 'SK', name: 'Sahil Kala', color: '#1D3A5F' },
+  { initials: 'RA', name: 'Ravi Arora',  color: '#34A853' },
+  { initials: 'PS', name: 'Priya Sharma', color: '#4A90D9' },
+  { initials: 'NT', name: 'Neha Tiwari',  color: '#9E9E9E' },
+  { initials: 'AM', name: 'Amir Mohsin',  color: '#D32F2F' },
 ];
 
 const DROPDOWN_PANEL: React.CSSProperties = {
@@ -1270,34 +1318,111 @@ function FilterDropdownChip({
   );
 }
 
-function TaskCard({ task }: { task: typeof TASKS_DATA[0] }) {
+function TaskCard({ task, completed, onToggleComplete }: {
+  task: Task; completed: boolean; onToggleComplete: () => void;
+}) {
+  const [menuOpen, setMenuOpen] = useState(false);
   const cfg = URGENCY_CONFIG[task.urgency];
+
+  const menuItems = [
+    { key: 'complete', type: 'action' as const, label: completed ? 'Reopen' : 'Mark Complete' },
+    { key: 'reassign', type: 'action' as const, label: 'Reassign' },
+    { key: 'deadline', type: 'action' as const, label: 'Edit Deadline' },
+  ];
+
+  const handleMenuAction = (key: string) => {
+    if (key === 'complete') onToggleComplete();
+    setMenuOpen(false);
+  };
+
   return (
-    <div style={{
-      background: 'var(--theme-color-pure-100)',
-      border: '1px solid var(--theme-color-grey-10)',
-      borderLeft: cfg.accent ? `3px solid ${cfg.accent}` : '1px solid var(--theme-color-grey-10)',
-      borderRadius: 8, padding: '10px 12px', display: 'flex', alignItems: 'center', gap: 8,
-    }}>
-      <div style={{ flex: 1, minWidth: 0 }}>
-        <Text variant="body" size="sm" weight="medium" style={{ color: 'var(--theme-color-grey-100)', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+    <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8 }}>
+
+      {/* Content */}
+      <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 2 }}>
+
+        {/* Row 1 — task name */}
+        <Text variant="body" size="sm" weight="medium" style={{
+          color: completed ? 'var(--theme-color-grey-40)' : 'var(--theme-color-grey-100)',
+          textDecoration: completed ? 'line-through' : 'none',
+          display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+        }}>
           {task.title}
         </Text>
-        <Text variant="body" size="sm" style={{ color: cfg.dateColor, display: 'block', marginTop: 2 }}>
-          {task.dateLabel}
-        </Text>
+
+        {/* Row 2 — icon + date */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+          {getCategoryIcon(task.category, completed ? 'var(--theme-color-grey-30)' : cfg.dateColor)}
+          <Text variant="body" size="sm" style={{
+            color: completed ? 'var(--theme-color-grey-30)' : cfg.dateColor,
+            fontSize: 11,
+          }}>
+            {completed ? 'Completed' : task.dateLabel}
+          </Text>
+        </div>
+
+        {/* Row 3 — assignee */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 4 }}>
+          {task.assignee ? (
+            <>
+              <Avatar size={18} style={{ background: task.assignee.color, fontSize: 9, fontWeight: 600, flexShrink: 0 }}>
+                {task.assignee.initials}
+              </Avatar>
+              <Text variant="body" size="sm" style={{ color: 'var(--theme-color-grey-50)', fontSize: 11 }}>
+                {displayName(task.assignee.name, task.assignee.initials)}
+              </Text>
+            </>
+          ) : (
+            <>
+              <div style={{
+                width: 18, height: 18, flexShrink: 0, borderRadius: '50%',
+                border: '1.5px dashed var(--theme-color-grey-30)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+              }}>
+                <User width={10} height={10} color="var(--theme-color-grey-30)" />
+              </div>
+              <Text variant="body" size="sm" style={{ color: 'var(--theme-color-grey-30)', fontSize: 11 }}>
+                Unassigned
+              </Text>
+            </>
+          )}
+        </div>
+
       </div>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexShrink: 0 }}>
-        <Avatar size={24} style={{ background: task.assignee.color, fontSize: 10, fontWeight: 600, flexShrink: 0 }}>
-          {task.assignee.initials}
-        </Avatar>
-        <Text variant="body" size="sm" style={{ color: 'var(--theme-color-grey-50)', flexShrink: 0 }}>
-          {task.assignee.name}
-        </Text>
-        <button style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 2, display: 'flex', alignItems: 'center', flexShrink: 0 }}>
-          <MoreVert width={14} height={14} color="var(--theme-color-grey-40)" />
+
+      {/* Right side — CTA link button + overflow, centre-aligned with each other */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 2, flexShrink: 0 }}>
+        {task.linkedCTA && !completed && task.assignee?.initials === 'SK' && (
+          <Button
+            variant="link"
+            size="sm"
+            icon={<ChevronRight width={10} height={10} />}
+            iconPosition="end"
+            onClick={(e: React.MouseEvent) => e.stopPropagation()}
+          >
+            {task.linkedCTA}
+          </Button>
+        )}
+
+      {/* Three-dot menu */}
+      <Dropdown
+        trigger={['click']}
+        open={menuOpen}
+        onOpenChange={(v: boolean) => setMenuOpen(v)}
+        placement="bottomRight"
+        items={menuItems}
+        onAction={handleMenuAction}
+        showTick={false}
+      >
+        <button
+          onClick={(e) => e.stopPropagation()}
+          style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 2, display: 'flex', alignItems: 'center', flexShrink: 0 }}
+        >
+          <MoreVert width={14} height={14} color="var(--theme-color-grey-100)" />
         </button>
+      </Dropdown>
       </div>
+
     </div>
   );
 }
@@ -1310,14 +1435,24 @@ function RightPanelTasks() {
   const [stageFilter, setStageFilter]     = useState<string[]>([]);
   const [dateFrom, setDateFrom]           = useState('');
   const [dateTo, setDateTo]               = useState('');
+  const [completedIds, setCompletedIds]   = useState<Set<number>>(new Set());
+
+  const toggleComplete = (id: number) => setCompletedIds(prev => {
+    const next = new Set(prev);
+    next.has(id) ? next.delete(id) : next.add(id);
+    return next;
+  });
 
   const toggleFilter  = (key: string) => setOpenFilter(p => p === key ? null : key);
   const toggleType    = (v: string) => setTypeFilter(p => p.includes(v) ? p.filter(x => x !== v) : [...p, v]);
   const toggleStage   = (v: string) => setStageFilter(p => p.includes(v) ? p.filter(x => x !== v) : [...p, v]);
 
   const filtered = TASKS_DATA.filter(t => {
+    const done = completedIds.has(t.id);
+    if (urgencyFilter === 'completed') return done;
+    if (done) return false;
     if (urgencyFilter !== 'all' && t.urgency !== urgencyFilter) return false;
-    if (assigneeFilter !== 'all' && assigneeFilter !== 'mine' && t.assignee.initials !== assigneeFilter) return false;
+    if (assigneeFilter !== 'all' && assigneeFilter !== 'mine' && t.assignee?.initials !== assigneeFilter) return false;
     if (typeFilter.length > 0 && !typeFilter.includes(t.title)) return false;
     if (stageFilter.length > 0 && !stageFilter.includes(t.stage)) return false;
     return true;
@@ -1360,7 +1495,7 @@ function RightPanelTasks() {
     <div style={{ display: 'flex', flexDirection: 'column' }}>
 
       {/* ── Filter chips row ── */}
-      <div className="sd-tab-content" style={{ display: 'flex', gap: 6, padding: '10px 20px', borderBottom: '1px solid var(--theme-color-grey-10)', flexShrink: 0, overflowX: 'auto' }}>
+      <div className="sd-tab-content" style={{ display: 'flex', gap: 6, padding: '10px 16px', minHeight: 48, borderBottom: '1px solid var(--theme-color-grey-10)', flexShrink: 0, overflowX: 'auto' }}>
 
         {/* Urgency Tier */}
         <FilterDropdownChip
@@ -1368,7 +1503,7 @@ function RightPanelTasks() {
           open={openFilter === 'urgency'} onOpenChange={v => setOpenFilter(v ? 'urgency' : null)}
           dropdownContent={
             <div style={{ padding: '6px 0' }}>
-              {[{ key: 'all', label: 'All' }, { key: 'overdue', label: 'Overdue' }, { key: 'due-today', label: 'Due Today' }, { key: 'this-week', label: 'This Week' }, { key: 'upcoming', label: 'Upcoming' }].map(opt => (
+              {[{ key: 'all', label: 'All' }, { key: 'overdue', label: 'Overdue' }, { key: 'due-today', label: 'Due Today' }, { key: 'this-week', label: 'This Week' }, { key: 'upcoming', label: 'Upcoming' }, { key: 'completed', label: 'Completed' }].map(opt => (
                 <div key={opt.key} style={ddRow(urgencyFilter === opt.key)} onClick={() => { setUrgencyFilter(opt.key); setOpenFilter(null); }}>
                   <Text variant="body" size="sm" style={{ color: 'inherit' }}>{opt.label}</Text>
                   {urgencyFilter === opt.key && <Tick width={12} height={12} color="var(--theme-color-primary-60)" />}
@@ -1482,14 +1617,19 @@ function RightPanelTasks() {
       </div>
 
       {/* ── Flat task list ── */}
-      <div style={{ padding: '12px 20px 16px' }}>
+      <div style={{ padding: 16 }}>
         {filtered.length === 0 ? (
           <Text variant="body" size="sm" style={{ color: 'var(--theme-color-grey-40)', display: 'block', textAlign: 'center', marginTop: 24 }}>
             No tasks match the selected filters
           </Text>
         ) : (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-            {filtered.map(t => <TaskCard key={t.id} task={t} />)}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            {filtered.map((t, i) => (
+              <React.Fragment key={t.id}>
+                {i > 0 && <div style={{ height: 1, background: 'var(--theme-color-grey-5)' }} />}
+                <TaskCard task={t} completed={completedIds.has(t.id)} onToggleComplete={() => toggleComplete(t.id)} />
+              </React.Fragment>
+            ))}
           </div>
         )}
       </div>
@@ -1498,12 +1638,185 @@ function RightPanelTasks() {
   );
 }
 
+// ─── Right Panel: Messages ────────────────────────────────────────────────────
+
+type EmailDirection = 'inbound' | 'outbound' | 'carrier';
+type EmailState = 'reply-required' | 'awaiting-reply' | 'none';
+
+interface Email {
+  id: number;
+  otherParty: string;       // always the non-INBRIT party
+  initials: string;
+  avatarColor: string;
+  direction: EmailDirection;
+  subject: string;
+  time: string;
+  state: EmailState;
+}
+
+const EMAILS: Email[] = [
+  {
+    id: 1,
+    otherParty: 'Rohan More (Voltas)',
+    initials: 'RM',
+    avatarColor: '#1D3A5F',
+    direction: 'inbound',
+    subject: 'RE: Booking Request — Metal Scrap April Shipment',
+    time: '02 May, 10:05',
+    state: 'reply-required',
+  },
+  {
+    id: 2,
+    otherParty: 'MSC Notifications',
+    initials: 'MSC',
+    avatarColor: '#102B46',
+    direction: 'carrier',
+    subject: 'Booking MSCUUK987654 — Schedule Update',
+    time: '05 May, 11:42',
+    state: 'none',
+  },
+  {
+    id: 3,
+    otherParty: 'Rohan More (Voltas)',
+    initials: 'RM',
+    avatarColor: '#1D3A5F',
+    direction: 'outbound',
+    subject: 'Booking Confirmation — ONH-2026-04821 / MSCUUK987654',
+    time: '03 May, 16:20',
+    state: 'awaiting-reply',
+  },
+  {
+    id: 4,
+    otherParty: 'Rohan More (Voltas)',
+    initials: 'RM',
+    avatarColor: '#1D3A5F',
+    direction: 'outbound',
+    subject: 'Booking Request Received — Metal Scrap INMUN→AEJEA',
+    time: '14 Jan, 09:30',
+    state: 'none',
+  },
+];
+
+const EMAIL_DIR_STYLE: Record<EmailDirection, { bg: string; color: string; label: string }> = {
+  inbound:  { bg: 'var(--theme-color-success-20)', color: 'var(--theme-color-success-120)', label: 'INBOUND'  },
+  outbound: { bg: 'var(--theme-color-primary-10)', color: 'var(--theme-color-primary-70)',  label: 'OUTBOUND' },
+  carrier:  { bg: 'var(--theme-color-grey-10)',    color: 'var(--theme-color-grey-60)',     label: 'CARRIER'  },
+};
+
+function EmailDirTag({ direction }: { direction: EmailDirection }) {
+  const s = EMAIL_DIR_STYLE[direction];
+  return (
+    <div style={{ display: 'inline-flex', alignItems: 'center', background: s.bg, borderRadius: 4, padding: '1px 6px', flexShrink: 0 }}>
+      <Text variant="body" size="sm" style={{ color: s.color, fontSize: 10, fontWeight: 600, letterSpacing: '0.4px' }}>
+        {s.label}
+      </Text>
+    </div>
+  );
+}
+
+function EmailStateChip({ state }: { state: EmailState }) {
+  if (state === 'reply-required') {
+    return (
+      <div style={{ display: 'inline-flex', alignItems: 'center', gap: 4, background: 'var(--theme-color-orange-10)', borderRadius: 4, padding: '1px 6px', flexShrink: 0 }}>
+        <span style={{ width: 5, height: 5, borderRadius: '50%', background: 'var(--theme-color-orange-100)', display: 'inline-block', flexShrink: 0 }} />
+        <Text variant="body" size="sm" style={{ color: 'var(--theme-color-orange-120)', fontSize: 10, fontWeight: 600 }}>
+          REPLY REQUIRED
+        </Text>
+      </div>
+    );
+  }
+  if (state === 'awaiting-reply') {
+    return (
+      <div style={{ display: 'inline-flex', alignItems: 'center', background: 'var(--theme-color-grey-10)', borderRadius: 4, padding: '1px 6px', flexShrink: 0 }}>
+        <Text variant="body" size="sm" style={{ color: 'var(--theme-color-grey-50)', fontSize: 10, fontWeight: 500 }}>
+          AWAITING REPLY
+        </Text>
+      </div>
+    );
+  }
+  return null;
+}
+
+function MessageCard({ email }: { email: Email }) {
+  return (
+    <div style={{
+      background: 'var(--theme-color-pure-100)',
+      display: 'flex',
+      alignItems: 'flex-start',
+      gap: 10,
+      cursor: 'pointer',
+    }}>
+      {/* Avatar */}
+      <Avatar size={32} style={{ background: email.avatarColor, fontSize: 10, fontWeight: 700, color: '#fff', flexShrink: 0 }}>
+        {email.initials}
+      </Avatar>
+
+      {/* Content */}
+      <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 2 }}>
+        {/* Row 1: Name + direction tag */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6, minWidth: 0 }}>
+          <Text variant="body" size="sm" weight="medium" style={{ color: 'var(--theme-color-grey-100)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flexShrink: 1 }}>
+            {email.otherParty}
+          </Text>
+          <EmailDirTag direction={email.direction} />
+        </div>
+
+        {/* Row 2: Timestamp */}
+        <Text variant="body" size="sm" style={{ color: 'var(--theme-color-grey-50)', fontSize: 11 }}>
+          {email.time}
+        </Text>
+
+        {/* Row 3: Subject */}
+        <Text variant="body" size="sm" style={{ color: 'var(--theme-color-grey-70)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'block', marginTop: 4 }}>
+          {email.subject}
+        </Text>
+      </div>
+
+      {/* CTA — same position and style as task card */}
+      <Button
+        variant="link"
+        size="sm"
+        icon={<ChevronRight width={10} height={10} />}
+        iconPosition="end"
+        onClick={(e: React.MouseEvent) => e.stopPropagation()}
+      >
+        View Mail
+      </Button>
+    </div>
+  );
+}
+
+function RightPanelMessages() {
+  return (
+    <div>
+      {/* Header */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 16px', height: 48, flexShrink: 0, borderBottom: '1px solid var(--theme-color-grey-10)' }}>
+        <Text variant="body" size="sm" style={{ color: 'var(--theme-color-grey-50)' }}>
+          {EMAILS.length} emails
+        </Text>
+        <Button variant="secondary" size="sm" icon={<Add width={12} height={12} />}>
+          Compose
+        </Button>
+      </div>
+
+      {/* Email list */}
+      <div style={{ padding: 16, display: 'flex', flexDirection: 'column', gap: 12 }}>
+        {EMAILS.map((email, i) => (
+          <React.Fragment key={email.id}>
+            {i > 0 && <div style={{ height: 1, background: 'var(--theme-color-grey-5)' }} />}
+            <MessageCard email={email} />
+          </React.Fragment>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function ShipmentDetailsPage({ params }: Props) {
   const router = useRouter();
-  const { id } = useParams<{ id: string }>();
-  const [rightPanelOpen, setRightPanelOpen] = useState(false);
+const [rightPanelOpen, setRightPanelOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('overview');
   const [rightPanelTab, setRightPanelTab] = useState('tasks');
 
@@ -1533,23 +1846,24 @@ export default function ShipmentDetailsPage({ params }: Props) {
     <div style={{ height: '100vh', overflow: 'hidden', background: 'var(--theme-color-grey-5)', position: 'relative' }}>
       <NavBar />
 
-      {/* White card — flex column: header (breadcrumb + title) then body (tabs + right panel) */}
-      <div
-        style={{
-          position: 'absolute',
-          top: 72, left: 12, right: 12, bottom: 12,
-          background: 'var(--theme-color-pure-100)',
-          borderRadius: 16,
-          display: 'flex',
-          flexDirection: 'column',
-          overflowY: 'auto',
-          overflowX: 'hidden',
-          boxShadow: '-2px 0px 8px rgba(136, 136, 136, 0.06)',
-        }}
-      >
-        {/* Header: breadcrumb + title/CTAs — spans full width, does not scroll */}
-        <div style={{ padding: '40px 40px 0', flexShrink: 0 }}>
-          <div style={{ marginBottom: 16 }}>
+      {/* White card — single flex row: left content + right panel inside */}
+      <div style={{
+        position: 'absolute',
+        top: 72, left: 12, right: 12, bottom: 12,
+        background: 'var(--theme-color-pure-100)',
+        borderRadius: 16,
+        display: 'flex',
+        flexDirection: 'row',
+        padding: '40px 0 0 40px',
+        overflowY: 'auto',
+        boxShadow: '-2px 0px 8px rgba(136, 136, 136, 0.06)',
+      }}>
+
+        {/* Left column: breadcrumb + title + tabs + scrollable content */}
+        <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', paddingRight: rightPanelOpen ? 0 : 40 }}>
+
+          {/* Breadcrumb */}
+          <div style={{ marginBottom: 24, flexShrink: 0 }}>
             <Breadcrumb
               items={[
                 {
@@ -1573,7 +1887,8 @@ export default function ShipmentDetailsPage({ params }: Props) {
             />
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'flex-start', gap: 16, marginBottom: 24 }}>
+          {/* Title row */}
+          <div style={{ display: 'flex', alignItems: 'flex-start', gap: 16, marginBottom: 32, flexShrink: 0 }}>
             <div style={{ flex: 1, minWidth: 0 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                 <Text variant="heading" size="lg" weight="semibold" style={{ color: 'var(--theme-color-grey-100)' }}>
@@ -1595,13 +1910,12 @@ export default function ShipmentDetailsPage({ params }: Props) {
               </div>
             </div>
             <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexShrink: 0 }}>
-              <Button variant="secondary" size="md" onClick={() => router.push(`/shipments/${id}/booking`)}>Manage Booking</Button>
-              <Dropdown
+<Dropdown
                 trigger={['click']}
                 placement="bottomRight"
                 overlayClassName="sd-overflow-menu"
                 items={[
-                  { key: 'amend-booking',   type: 'action', label: 'Amend Booking',                                   icon: <Redirect width={14} height={14} /> },
+                  { key: 'amend-booking',   type: 'action', label: 'Amend Booking',                                   icon: <ChevronRight width={14} height={14} /> },
                   { key: 'split-shipment',  type: 'action', label: 'Split Shipment',                                  icon: <Add width={14} height={14} /> },
                   { key: 'merge-shipments', type: 'action', label: 'Merge Shipments',                                 icon: <Bulkadd width={14} height={14} /> },
                   { type: 'divider' },
@@ -1615,78 +1929,79 @@ export default function ShipmentDetailsPage({ params }: Props) {
                   <Button variant="secondary" size="md" icon={<MoreVert width={16} height={16} />} />
                 </div>
               </Dropdown>
+              {expandButton}
             </div>
           </div>
-        </div>
 
-        {/* Body: tab nav row + content row — 40px padding on both sides */}
-        <div style={{ display: 'flex', flexDirection: 'column', padding: '0 40px' }}>
-          {/* Tab nav row: primary tabs on the left, expand toggle on the right */}
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0, gap: 12 }}>
+          {/* Tabs nav */}
+          <div style={{ flexShrink: 0 }}>
             <Tabs
               className="sd-main-tabs"
               activeKey={activeTab}
               onChange={setActiveTab}
               items={mainTabItems}
             />
-            {expandButton}
           </div>
 
-          {/* Content row: tab content + right panel side by side */}
-          <div style={{ display: 'flex' }}>
-            {/* Left: rendered tab content */}
-            <div style={{ flex: 1, minWidth: 0, padding: '24px 0 40px' }}>
-              {activeTab === 'overview' && <OverviewContent />}
+          {/* Tab content */}
+          <div style={{ paddingTop: 24, paddingBottom: 40 }}>
+            {activeTab === 'overview' && <OverviewContent />}
+          </div>
+
+        </div>
+
+        {/* Right panel — animated flex sibling, slides in from card's right wall */}
+        <div style={{
+          flexShrink: 0,
+          alignSelf: 'flex-start',
+          width: rightPanelOpen ? 504 : 0,  // 24px gap + 440px panel + 40px right margin
+          overflow: 'hidden',
+          transition: 'width 0.25s ease',
+        }}>
+          {/* Panel card: normal flow so bottom border is never clipped by the wrapper */}
+          <div style={{
+            marginTop: 40,
+            marginLeft: 24,
+            marginRight: 40,
+            marginBottom: 40,
+            width: 440,
+            border: '1px solid var(--theme-color-grey-10)',
+            borderRadius: 16,
+            overflow: 'hidden',
+          }}>
+            {/* Tab nav */}
+            <div style={{ display: 'flex', gap: 8, padding: '12px 16px', borderBottom: '1px solid var(--theme-color-grey-10)', flexShrink: 0 }}>
+              {[
+                { key: 'tasks',    label: 'Tasks',    icon: <ShipmentIcon width={14} height={14} /> },
+                { key: 'messages', label: 'Messages', icon: <MailOutline width={14} height={14} /> },
+                { key: 'team',     label: 'Team',     icon: <Building width={14} height={14} /> },
+              ].map(tab => (
+                <Button
+                  key={tab.key}
+                  variant="secondary"
+                  size="md"
+                  icon={tab.icon}
+                  style={rightPanelTab === tab.key ? { background: 'var(--theme-color-primary-10)', borderColor: 'transparent' } : {}}
+                  onClick={() => setRightPanelTab(tab.key)}
+                >
+                  {tab.label}
+                </Button>
+              ))}
             </div>
 
-            {/* Right: animated container (456 = 16px gap + 440px card) */}
-            <div style={{
-              flexShrink: 0,
-              width: rightPanelOpen ? 456 : 0,
-              overflowX: 'hidden',
-              transition: 'width 0.25s ease',
-            }}>
-              <div style={{
-                width: 440,
-                marginLeft: 16,
-                marginTop: 24,
-                marginBottom: 40,
-                border: '1px solid var(--theme-color-grey-10)',
-                borderRadius: 16,
-                overflow: 'hidden',
-                display: 'flex',
-                flexDirection: 'column',
-              }}>
-                {/* Button-style tab nav */}
-                <div style={{ display: 'flex', gap: 8, padding: '12px 16px', borderBottom: '1px solid var(--theme-color-grey-10)', flexShrink: 0 }}>
-                  {[
-                    { key: 'tasks',    label: 'Tasks',    icon: <ShipmentIcon width={14} height={14} /> },
-                    { key: 'messages', label: 'Messages', icon: <MailOutline width={14} height={14} /> },
-                    { key: 'team',     label: 'Team',     icon: <Building width={14} height={14} /> },
-                  ].map(tab => (
-                    <Button
-                      key={tab.key}
-                      variant="secondary"
-                      size="md"
-                      icon={tab.icon}
-                      style={rightPanelTab === tab.key ? { background: 'var(--theme-color-primary-10)', borderColor: 'transparent' } : {}}
-                      onClick={() => setRightPanelTab(tab.key)}
-                    >
-                      {tab.label}
-                    </Button>
-                  ))}
+            {/* Tab content */}
+            {rightPanelTab === 'tasks'    && <RightPanelTasks />}
+            {rightPanelTab === 'messages' && <RightPanelMessages />}
+            {rightPanelTab === 'team'     && (
+              <div>
+                <div style={{ display: 'flex', alignItems: 'center', padding: '0 16px', height: 48, flexShrink: 0, borderBottom: '1px solid var(--theme-color-grey-10)' }}>
+                  <Text variant="body" size="sm" style={{ color: 'var(--theme-color-grey-50)' }}>
+                    {ROLES.length} members
+                  </Text>
                 </div>
-
-                {/* Tab content — tasks manages its own scroll/filter layout */}
-                {rightPanelTab === 'tasks' ? (
-                  <RightPanelTasks />
-                ) : (
-                  <div className="sd-tab-content" style={{ padding: '16px 20px' }}>
-                    {rightPanelTab === 'team' && <InternalTeamContent />}
-                  </div>
-                )}
+                <div style={{ padding: 16 }}><InternalTeamContent /></div>
               </div>
-            </div>
+            )}
           </div>
         </div>
 
