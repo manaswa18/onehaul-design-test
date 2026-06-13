@@ -6,13 +6,14 @@ import BreadcrumbComponent from '@/components/Breadcrumb';
 import ButtonComponent from '@/components/Button';
 import TabsComponent from '@/components/Tabs';
 import CollapseComponent from '@/components/Collapse';
+import InputComponent from '@/components/Input';
 import Text from '@/components/Text';
 import Avatar from '@/components/Avatar';
 import PillComponent from '@/components/Pill';
 import SelectComponent from '@/components/Select';
 import DrawerComponent from '@/components/Drawer';
 import DropdownComponent from '@/components/Dropdown';
-import { MoreVert, DocIcon, HelpIcon, NotificationIcon, EditPencil, Add, Delete, Nav, Navclose, User, Block, Redirect, Bulkadd } from '@/icons';
+import { MoreVert, DocIcon, HelpIcon, NotificationIcon, EditPencil, Add, Delete, Nav, Navclose, User, Block, Redirect, Bulkadd, Upload, Tick, Building } from '@/icons';
 import './shipment-details.css';
 
 const Breadcrumb = BreadcrumbComponent as React.ComponentType<any>;
@@ -21,6 +22,7 @@ const Tabs = TabsComponent as React.ComponentType<any>;
 const Collapse = CollapseComponent as React.ComponentType<any>;
 const Pill = PillComponent as React.ComponentType<any>;
 const Select = SelectComponent as React.ComponentType<any>;
+const Input = InputComponent as React.ComponentType<any>;
 const Drawer = DrawerComponent as React.ComponentType<any>;
 const Dropdown = DropdownComponent as React.ComponentType<any>;
 
@@ -425,264 +427,767 @@ function InternalTeamContent() {
   );
 }
 
-// ─── Overview tab components ──────────────────────────────────────────────────
+// ─── Overview Tab ─────────────────────────────────────────────────────────────
 
-function Field({
-  label,
-  value,
-  isLink = false,
-  isItalic = false,
+function OverviewCard({
+  title,
+  badge,
+  cta,
+  children,
+  style,
 }: {
-  label: string;
-  value: React.ReactNode;
-  isLink?: boolean;
-  isItalic?: boolean;
+  title?: string;
+  badge?: React.ReactNode;
+  cta?: React.ReactNode;
+  children: React.ReactNode;
+  style?: React.CSSProperties;
 }) {
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-      <Text
-        variant="body"
-        size="sm"
-        style={{ color: 'var(--theme-color-grey-40)', textTransform: 'uppercase', letterSpacing: '0.4px', fontSize: 11 }}
-      >
+    <div
+      style={{
+        background: 'var(--theme-color-pure-100)',
+        border: '1px solid var(--theme-color-grey-10)',
+        borderRadius: 12,
+        padding: 20,
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 16,
+        minWidth: 0,
+        overflow: 'hidden',
+        ...style,
+      }}
+    >
+      {(title || cta) && (
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, flexShrink: 0 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
+            {title && (
+              <Text variant="body" size="md" weight="semibold" style={{ color: 'var(--theme-color-grey-100)', whiteSpace: 'nowrap' }}>
+                {title}
+              </Text>
+            )}
+            {badge}
+          </div>
+          {cta && <div style={{ flexShrink: 0 }}>{cta}</div>}
+        </div>
+      )}
+      {children}
+    </div>
+  );
+}
+
+function CardRow({ label, value }: { label: string; value: React.ReactNode }) {
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
+      <Text variant="body" size="sm" style={{ color: 'var(--theme-color-grey-50)', flexShrink: 0 }}>
         {label}
       </Text>
-      <Text
-        variant="body"
-        size="md"
-        style={{
-          color: isLink ? 'var(--theme-color-primary-60)' : 'var(--theme-color-grey-100)',
-          fontStyle: isItalic ? 'italic' : 'normal',
-        }}
-      >
+      <div>{value}</div>
+    </div>
+  );
+}
+
+function InlineBadge({ label, bg, color }: { label: string; bg: string; color: string }) {
+  return (
+    <div style={{ background: bg, borderRadius: 32, padding: '2px 10px', display: 'inline-flex', alignItems: 'center' }}>
+      <Text variant="body" size="sm" style={{ color, whiteSpace: 'nowrap' }}>{label}</Text>
+    </div>
+  );
+}
+
+function MetricBox({
+  value, label, bg, borderColor, valueColor,
+}: {
+  value: number; label: string; bg: string; borderColor: string; valueColor: string;
+}) {
+  return (
+    <div style={{
+      background: bg,
+      border: `1px solid ${borderColor}`,
+      borderRadius: 10,
+      padding: '14px 16px',
+      display: 'flex',
+      flexDirection: 'column',
+      gap: 4,
+      flex: 1,
+    }}>
+      <Text variant="heading" size="md" weight="semibold" style={{ color: valueColor, lineHeight: 1 }}>
         {value}
+      </Text>
+      <Text variant="body" size="sm" style={{ color: 'var(--theme-color-grey-60)' }}>
+        {label}
       </Text>
     </div>
   );
 }
 
-function TwoColGrid({ fields }: { fields: Array<{ label: string; value: React.ReactNode; isLink?: boolean; isItalic?: boolean }> }) {
+function ShipmentHealthCard() {
   return (
-    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px 40px' }}>
-      {fields.map((f) => (
-        <Field key={f.label} label={f.label} value={f.value} isLink={f.isLink} isItalic={f.isItalic} />
-      ))}
-    </div>
+    <OverviewCard
+      title="Shipment Health"
+      badge={
+        <div style={{
+          display: 'flex', alignItems: 'center', gap: 5,
+          background: 'var(--theme-color-yellow-10)',
+          border: '1px solid var(--theme-color-yellow-30)',
+          borderRadius: 20,
+          padding: '3px 10px',
+        }}>
+          <svg width="10" height="10" viewBox="0 0 16 16" fill="none">
+            <path d="M8 1.5L14.5 13H1.5L8 1.5Z" stroke="var(--theme-color-yellow-100)" strokeWidth="1.6" strokeLinejoin="round"/>
+            <path d="M8 6v3" stroke="var(--theme-color-yellow-100)" strokeWidth="1.6" strokeLinecap="round"/>
+            <circle cx="8" cy="11.5" r="0.8" fill="var(--theme-color-yellow-100)"/>
+          </svg>
+          <Text variant="body" size="sm" style={{ color: 'var(--theme-color-yellow-120)', whiteSpace: 'nowrap' }}>
+            Attention Required
+          </Text>
+        </div>
+      }
+      style={{ flex: 1 }}
+    >
+      {/* Metric boxes */}
+      <div style={{ display: 'flex', gap: 10 }}>
+        <MetricBox
+          value={2} label="Overdue Tasks"
+          bg="var(--theme-color-error-10)" borderColor="var(--theme-color-error-20)" valueColor="var(--theme-color-error-100)"
+        />
+        <MetricBox
+          value={3} label="Due Today"
+          bg="var(--theme-color-yellow-10)" borderColor="var(--theme-color-yellow-20)" valueColor="var(--theme-color-yellow-120)"
+        />
+        <MetricBox
+          value={1} label="Open Exceptions"
+          bg="var(--theme-color-primary-5)" borderColor="var(--theme-color-primary-20)" valueColor="var(--theme-color-primary-60)"
+        />
+      </div>
+
+      {/* Footer */}
+      <div style={{
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        borderTop: '1px solid var(--theme-color-grey-10)', paddingTop: 14,
+      }}>
+        <Button variant="secondary" size="sm">View All Tasks</Button>
+        <div style={{
+          display: 'flex', alignItems: 'center', gap: 8,
+          background: 'var(--theme-color-error-10)',
+          border: '1px solid var(--theme-color-error-20)',
+          borderRadius: 8,
+          padding: '7px 12px',
+        }}>
+          <Text variant="body" size="sm" style={{ color: 'var(--theme-color-grey-60)', whiteSpace: 'nowrap' }}>
+            Next Critical Event
+          </Text>
+          <div style={{ width: 1, height: 12, background: 'var(--theme-color-error-20)', flexShrink: 0 }} />
+          <Text variant="body" size="sm" weight="semibold" style={{ color: 'var(--theme-color-grey-100)', whiteSpace: 'nowrap' }}>
+            SI Cutoff
+          </Text>
+          <span style={{ width: 5, height: 5, borderRadius: '50%', background: 'var(--theme-color-error-60)', display: 'inline-block', flexShrink: 0 }} />
+          <Text variant="body" size="sm" weight="semibold" style={{ color: 'var(--theme-color-error-100)', whiteSpace: 'nowrap' }}>
+            In 4h 15m
+          </Text>
+        </div>
+      </div>
+    </OverviewCard>
   );
 }
 
-function KeyReferencesContent() {
+// Inline SVG icons for route stops (no matching icon in library)
+function RouteStopIcon({ type, active }: { type: 'factory' | 'port' | 'warehouse'; active: boolean }) {
+  const color = active ? 'var(--theme-color-primary-60)' : 'var(--theme-color-grey-40)';
+  if (type === 'factory') {
+    return (
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+        <rect x="2" y="11" width="20" height="11" rx="1" stroke={color} strokeWidth="1.6"/>
+        <path d="M6 11V7.5L10 11V7.5L14 11V7.5L18 11" stroke={color} strokeWidth="1.6" strokeLinejoin="round"/>
+        <rect x="9.5" y="15" width="5" height="7" rx="0.5" stroke={color} strokeWidth="1.6"/>
+      </svg>
+    );
+  }
+  if (type === 'port') {
+    return (
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+        <path d="M4 13l2-3h12l2 3v4H4v-4z" stroke={color} strokeWidth="1.6" strokeLinejoin="round"/>
+        <path d="M9 10V7h6v3" stroke={color} strokeWidth="1.6"/>
+        <path d="M12 7V4" stroke={color} strokeWidth="1.6"/>
+        <path d="M4 17c1 1.5 3 1.5 4 0s3-1.5 4 0 3 1.5 4 0" stroke={color} strokeWidth="1.4" strokeLinecap="round"/>
+      </svg>
+    );
+  }
   return (
-    <TwoColGrid
-      fields={[
-        { label: 'Carrier Booking Ref', value: 'MSCUUK048912', isLink: true },
-        { label: 'BL Numbers', value: 'Awaiting BL draft', isItalic: true },
-        { label: 'Contract Ref', value: 'EINBRIT-MSC-2026', isLink: true },
-        { label: 'Movement Type', value: 'Door to Door' },
-        { label: 'Vessel / Voyage', value: 'MSC MIRIAM · AE6/PEX · V26023' },
-        { label: 'Assigned To', value: 'Sahil Kala' },
-        { label: 'Commodity', value: 'Metal Scrap (HMS 1&2)' },
-        { label: 'Created', value: '14 Jan 2026' },
-      ]}
-    />
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+      <path d="M3 21V9.5L12 4l9 5.5V21H3z" stroke={color} strokeWidth="1.6" strokeLinejoin="round"/>
+      <rect x="9" y="14" width="6" height="7" rx="0.5" stroke={color} strokeWidth="1.6"/>
+      <path d="M9 11h6" stroke={color} strokeWidth="1.4" strokeLinecap="round"/>
+    </svg>
   );
 }
 
-function ContainerSummaryContent() {
-  return (
-    <TwoColGrid
-      fields={[
-        { label: 'Container Type', value: '2 × 40GP' },
-        { label: 'Cargo Weight', value: '18 MT per unit' },
-        { label: 'Total Weight', value: '36 MT' },
-        { label: 'Cargo Type', value: 'Standard / FCL' },
-      ]}
-    />
-  );
-}
-
-// ─── Routing timeline ─────────────────────────────────────────────────────────
-
-type StopStatus = 'completed' | 'active' | 'pending';
-
-interface RouteStop {
-  location: string;
-  subType: string;
-  status: StopStatus;
-  dates: Array<{ label: string; value: string; alert?: boolean; italic?: boolean; tick?: boolean }>;
-  leg?: { mode: string; detail: string; status: StopStatus };
-}
-
-const ROUTE_STOPS: RouteStop[] = [
-  {
-    location: 'Ferozabad, IN',
-    subType: 'Origin Door',
-    status: 'completed',
-    dates: [{ label: 'Pickup', value: '14 Apr 2026', tick: true }],
-    leg: { mode: 'Inland Haulage', detail: 'Truck · ~3 days', status: 'completed' },
-  },
-  {
-    location: 'INMUN · Mumbai (Nhava Sheva)',
-    subType: 'Port of Loading',
-    status: 'active',
-    dates: [
-      { label: 'ETD', value: '28 Apr 2026' },
-      { label: 'CY Cutoff', value: '01 May 26 !', alert: true },
-    ],
-    leg: { mode: 'Ocean · In Progress', detail: 'MSC MIRIAM · AE6/PEX · V26023 · ~16 days', status: 'active' },
-  },
-  {
-    location: 'AEJEA · Jebel Ali',
-    subType: 'Port of Discharge',
-    status: 'pending',
-    dates: [{ label: 'ETA', value: '14 May 2026' }],
-    leg: { mode: 'Destination Haulage', detail: 'Pending confirmation', status: 'pending' },
-  },
-  {
-    location: 'Dubai, AE',
-    subType: 'Destination Door',
-    status: 'pending',
-    dates: [{ label: 'Delivery ETA', value: 'TBC', italic: true }],
-  },
+const OVERVIEW_STOPS = [
+  { code: 'PRE', name: 'Mumbai Factory',      iconType: 'factory'   as const, active: true  },
+  { code: 'POL', name: 'Nhava Sheva',          iconType: 'port'      as const, active: true  },
+  { code: 'POD', name: 'Jebel Ali',            iconType: 'port'      as const, active: false },
+  { code: 'PDE', name: 'Jebel Ali Warehouse',  iconType: 'warehouse' as const, active: false },
 ];
 
-function verticalLine(legStatus: StopStatus | undefined) {
-  if (!legStatus) return {};
-  if (legStatus === 'completed') return { background: 'var(--theme-color-primary-60)' };
-  if (legStatus === 'active') {
-    return {
-      background: `repeating-linear-gradient(
-        to bottom,
-        var(--theme-color-primary-60) 0,
-        var(--theme-color-primary-60) 6px,
-        transparent 6px,
-        transparent 10px
-      )`,
-    };
-  }
-  return {
-    background: `repeating-linear-gradient(
-      to bottom,
-      var(--theme-color-grey-20) 0,
-      var(--theme-color-grey-20) 4px,
-      transparent 4px,
-      transparent 8px
-    )`,
-  };
-}
-
-function RoutingContent() {
+function RoutingSummaryCard() {
   return (
-    <div style={{ display: 'flex', gap: 24 }}>
-      {/* Timeline */}
-      <div style={{ flex: 1 }}>
-        {ROUTE_STOPS.map((stop, i) => {
-          const isLast = i === ROUTE_STOPS.length - 1;
-          const nodeColor = stop.status !== 'pending' ? 'var(--theme-color-primary-60)' : 'transparent';
-          const nodeBorder = stop.status === 'pending' ? '2px solid var(--theme-color-grey-30)' : 'none';
+    <OverviewCard
+      title="Routing Summary"
+      cta={<Button variant="link" size="sm" style={{ marginRight: -4 }}>View full routing →</Button>}
+      style={{ flex: 1 }}
+    >
+      {/* Horizontal stop timeline */}
+      <div style={{ display: 'flex', alignItems: 'flex-start' }}>
+        {OVERVIEW_STOPS.map((stop, i) => {
+          const isLast = i === OVERVIEW_STOPS.length - 1;
+          const lineColor = i < 1 ? 'var(--theme-color-primary-60)' : 'var(--theme-color-grey-15)';
+          const iconBg = stop.active ? 'var(--theme-color-primary-5)' : 'var(--theme-color-grey-5)';
+          const iconBorder = stop.active ? 'var(--theme-color-primary-20)' : 'var(--theme-color-grey-15)';
 
           return (
-            <div key={stop.location} style={{ display: 'flex', gap: 16 }}>
-              {/* Left: node + line */}
-              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: 14, flexShrink: 0 }}>
+            <React.Fragment key={stop.code}>
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, flex: 1 }}>
                 <div style={{
-                  width: 14, height: 14, borderRadius: '50%',
-                  background: nodeColor, border: nodeBorder,
-                  flexShrink: 0, marginTop: 3,
-                }} />
-                {!isLast && (
-                  <div style={{ flex: 1, width: 2, minHeight: 32, ...verticalLine(stop.leg?.status) }} />
-                )}
-              </div>
-
-              {/* Right: stop content + leg badge */}
-              <div style={{ flex: 1, paddingBottom: isLast ? 0 : 20 }}>
-                <Text variant="body" size="md" weight="semibold" style={{ color: 'var(--theme-color-grey-100)' }}>
-                  {stop.location}
-                </Text>
-                <div style={{ marginTop: 2 }}>
-                  <Text variant="body" size="sm" style={{ color: 'var(--theme-color-grey-50)' }}>
-                    {stop.subType}
-                  </Text>
+                  width: 44, height: 44, borderRadius: 10,
+                  background: iconBg, border: `1px solid ${iconBorder}`,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                }}>
+                  <RouteStopIcon type={stop.iconType} active={stop.active} />
                 </div>
-                {stop.dates.length > 0 && (
-                  <div style={{ display: 'flex', gap: 24, marginTop: 10 }}>
-                    {stop.dates.map((d) => (
-                      <div key={d.label}>
-                        <Text variant="body" size="sm" style={{ color: 'var(--theme-color-grey-40)', textTransform: 'uppercase', letterSpacing: '0.4px', fontSize: 10 }}>
-                          {d.label}
-                        </Text>
-                        <div style={{ marginTop: 2 }}>
-                          <Text variant="body" size="md" style={{
-                            color: d.alert ? 'var(--theme-color-error-100)' : 'var(--theme-color-grey-100)',
-                            fontStyle: d.italic ? 'italic' : 'normal',
-                          }}>
-                            {d.value}{d.tick ? ' ✓' : ''}
-                          </Text>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-                {stop.leg && (
-                  <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginTop: 12 }}>
-                    <div style={{
-                      display: 'inline-flex', alignItems: 'center', gap: 5, flexShrink: 0,
-                      background: stop.leg.status === 'active' ? 'var(--theme-color-primary-5)' : 'var(--theme-color-grey-5)',
-                      border: `1px solid ${stop.leg.status === 'active' ? 'var(--theme-color-primary-20)' : 'var(--theme-color-grey-20)'}`,
-                      borderRadius: 16, padding: '3px 10px',
-                    }}>
-                      {stop.leg.status === 'active' && (
-                        <div style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--theme-color-primary-60)', flexShrink: 0 }} />
-                      )}
-                      <Text variant="body" size="sm" style={{ color: stop.leg.status === 'active' ? 'var(--theme-color-primary-60)' : 'var(--theme-color-grey-70)' }}>
-                        {stop.leg.mode}
-                      </Text>
-                    </div>
-                    <Text variant="body" size="sm" style={{ color: 'var(--theme-color-grey-50)' }}>
-                      {stop.leg.detail}
-                    </Text>
-                  </div>
-                )}
+                <Text variant="body" size="sm" style={{ color: 'var(--theme-color-grey-40)', fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.4px', textAlign: 'center' }}>
+                  {stop.code}
+                </Text>
+                <Text variant="body" size="sm" weight="medium" style={{ color: stop.active ? 'var(--theme-color-grey-90)' : 'var(--theme-color-grey-60)', textAlign: 'center', fontSize: 12, lineHeight: '16px' }}>
+                  {stop.name}
+                </Text>
               </div>
-            </div>
+              {!isLast && (
+                <div style={{ height: 1, background: lineColor, flex: 0.4, flexShrink: 0, marginTop: 22 }} />
+              )}
+            </React.Fragment>
           );
         })}
       </div>
 
-      {/* Route map placeholder */}
+      {/* Detail row */}
       <div style={{
-        width: 240, flexShrink: 0,
-        background: 'var(--theme-color-grey-5)',
-        borderRadius: 8, border: '1px solid var(--theme-color-grey-10)',
-        display: 'flex', flexDirection: 'column', padding: 16, minHeight: 220, gap: 8,
+        display: 'grid',
+        gridTemplateColumns: 'repeat(5, 1fr)',
+        gap: '0 12px',
+        paddingTop: 14,
+        borderTop: '1px solid var(--theme-color-grey-10)',
       }}>
-        <Text variant="body" size="sm" style={{ color: 'var(--theme-color-grey-40)', textTransform: 'uppercase', letterSpacing: '0.5px', fontSize: 11 }}>
-          Route Map
-        </Text>
+        {[
+          { label: 'Vessel / Voyage',    value: 'MSC MIRIAM / AE6' },
+          { label: 'ETD (Nhava Sheva)',   value: '28 Apr 2026' },
+          { label: 'ETA (Jebel Ali)',     value: '14 May 2026' },
+          { label: 'Transit Time',        value: '16 Days' },
+          { label: 'Movement Type',       value: 'Door to Door' },
+        ].map(({ label, value }) => (
+          <div key={label}>
+            <Text variant="body" size="sm" style={{ color: 'var(--theme-color-grey-50)', display: 'block', marginBottom: 3, fontSize: 11 }}>
+              {label}
+            </Text>
+            <Text variant="body" size="sm" weight="semibold" style={{ color: 'var(--theme-color-grey-100)' }}>
+              {value}
+            </Text>
+          </div>
+        ))}
       </div>
+    </OverviewCard>
+  );
+}
+
+function BookingSummaryCard() {
+  return (
+    <OverviewCard
+      title="Booking Summary"
+      cta={<Button variant="link" size="sm" style={{ marginRight: -4 }}>View Details →</Button>}
+      style={{ flex: 1 }}
+    >
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 11 }}>
+        <CardRow label="Internal Request" value={
+          <Text variant="body" size="sm" weight="medium" style={{ color: 'var(--theme-color-success-120)' }}>Confirmed by Ops</Text>
+        } />
+        <CardRow label="Carrier Booking Ref" value={
+          <Text variant="body" size="sm" weight="medium" style={{ color: 'var(--theme-color-primary-60)' }}>MSCUUK048912</Text>
+        } />
+        <CardRow label="Booking Channel Ref" value={
+          <Text variant="body" size="sm" weight="medium" style={{ color: 'var(--theme-color-grey-100)' }}>INB20260501A</Text>
+        } />
+        <CardRow label="Contract / Rate Ref" value={
+          <Text variant="body" size="sm" weight="medium" style={{ color: 'var(--theme-color-grey-100)' }}>CTR-2026-0192</Text>
+        } />
+        <CardRow label="Last Carrier Response" value={
+          <InlineBadge label="Pending Update" bg="var(--theme-color-yellow-20)" color="var(--theme-color-yellow-120)" />
+        } />
+        <CardRow label="Booking Status" value={
+          <InlineBadge label="Confirmed" bg="var(--theme-color-success-20)" color="var(--theme-color-success-120)" />
+        } />
+      </div>
+    </OverviewCard>
+  );
+}
+
+// SVG donut chart — arc path approach
+function describeArc(cx: number, cy: number, r: number, startDeg: number, endDeg: number): string {
+  const toRad = (d: number) => (d - 90) * (Math.PI / 180);
+  const x1 = cx + r * Math.cos(toRad(startDeg));
+  const y1 = cy + r * Math.sin(toRad(startDeg));
+  const x2 = cx + r * Math.cos(toRad(endDeg));
+  const y2 = cy + r * Math.sin(toRad(endDeg));
+  const large = endDeg - startDeg > 180 ? 1 : 0;
+  return `M ${x1.toFixed(3)} ${y1.toFixed(3)} A ${r} ${r} 0 ${large} 1 ${x2.toFixed(3)} ${y2.toFixed(3)}`;
+}
+
+const TASK_DATA = [
+  { label: 'Overdue',       value: 2, color: 'var(--theme-color-error-60)' },
+  { label: 'Due Today',     value: 3, color: 'var(--theme-color-yellow-60)' },
+  { label: 'Due This Week', value: 5, color: 'var(--theme-color-primary-40)' },
+  { label: 'Due Later',     value: 0, color: 'var(--theme-color-grey-20)' },
+];
+
+function DonutChart() {
+  const cx = 44, cy = 44, r = 33;
+  const total = TASK_DATA.reduce((s, d) => s + d.value, 0);
+  let angle = 0;
+  return (
+    <svg width={88} height={88} viewBox="0 0 88 88" style={{ flexShrink: 0 }}>
+      <circle cx={cx} cy={cy} r={r} fill="none" stroke="var(--theme-color-grey-10)" strokeWidth={11} />
+      {TASK_DATA.map((seg, i) => {
+        if (seg.value === 0) return null;
+        const sweep = (seg.value / total) * 359.99;
+        const path = describeArc(cx, cy, r, angle, angle + sweep);
+        angle += sweep;
+        return <path key={i} d={path} fill="none" stroke={seg.color} strokeWidth={11} strokeLinecap="butt" />;
+      })}
+      <text x={cx} y={cy - 5} textAnchor="middle" style={{ fontSize: 19, fontWeight: 700, fill: 'var(--theme-color-grey-100)' }}>{total}</text>
+      <text x={cx} y={cy + 13} textAnchor="middle" style={{ fontSize: 10, fill: 'var(--theme-color-grey-50)' }}>Tasks</text>
+    </svg>
+  );
+}
+
+function TasksSummaryCard() {
+  return (
+    <OverviewCard
+      title="Tasks Summary"
+      cta={<Button variant="link" size="sm" style={{ marginRight: -4 }}>View All Tasks →</Button>}
+      style={{ flex: 1 }}
+    >
+      <div style={{ display: 'flex', gap: 16, alignItems: 'center' }}>
+        <DonutChart />
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 9 }}>
+          {TASK_DATA.map((seg) => (
+            <div key={seg.label} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
+                <span style={{ width: 8, height: 8, borderRadius: 2, background: seg.color, display: 'inline-block', flexShrink: 0 }} />
+                <Text variant="body" size="sm" style={{ color: 'var(--theme-color-grey-70)' }}>{seg.label}</Text>
+              </div>
+              <Text variant="body" size="sm" weight="semibold" style={{ color: 'var(--theme-color-grey-100)' }}>{seg.value}</Text>
+            </div>
+          ))}
+        </div>
+      </div>
+      <div style={{ borderTop: '1px solid var(--theme-color-grey-10)', paddingTop: 12, display: 'flex', justifyContent: 'space-between' }}>
+        <div>
+          <Text variant="body" size="sm" style={{ color: 'var(--theme-color-grey-50)', display: 'block', marginBottom: 2 }}>Most Urgent</Text>
+          <Text variant="body" size="sm" weight="semibold" style={{ color: 'var(--theme-color-error-100)' }}>SI Cutoff</Text>
+        </div>
+        <div style={{ textAlign: 'right' }}>
+          <Text variant="body" size="sm" style={{ color: 'var(--theme-color-grey-50)', display: 'block', marginBottom: 2 }}>Due In</Text>
+          <Text variant="body" size="sm" weight="semibold" style={{ color: 'var(--theme-color-error-100)' }}>4h 15m</Text>
+        </div>
+      </div>
+    </OverviewCard>
+  );
+}
+
+const BL_LIST = [
+  { id: 'MSCUUK048912', isPrimary: true,  containers: '4 (2 × 40GP, 2 × 20GP)', status: 'Draft' },
+  { id: 'MSCUUK048913', isPrimary: false, containers: '2 (2 × 40GP)',            status: 'Draft' },
+];
+
+function BLSummaryCard() {
+  return (
+    <OverviewCard
+      title="BL Summary"
+      cta={<Button variant="link" size="sm" style={{ marginRight: -4 }}>View All BLs →</Button>}
+      style={{ flex: 1 }}
+    >
+      {/* Totals */}
+      <div style={{ display: 'flex', gap: 20 }}>
+        {[
+          { label: 'Total BLs',        value: '2' },
+          { label: 'Total Containers', value: '6' },
+          { label: 'Total Weight',     value: '36 MT' },
+        ].map(({ label, value }) => (
+          <div key={label}>
+            <Text variant="body" size="sm" style={{ color: 'var(--theme-color-grey-50)', display: 'block', marginBottom: 2 }}>{label}</Text>
+            <Text variant="body" size="sm" weight="semibold" style={{ color: 'var(--theme-color-grey-100)' }}>{value}</Text>
+          </div>
+        ))}
+      </div>
+
+      {/* BL rows */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+        {BL_LIST.map((bl) => (
+          <div key={bl.id} style={{
+            background: 'var(--theme-color-grey-5)',
+            borderRadius: 8,
+            padding: '10px 12px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            gap: 8,
+          }}>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 2 }}>
+                <Text variant="body" size="sm" weight="semibold" style={{ color: 'var(--theme-color-primary-60)' }}>
+                  {bl.id}
+                </Text>
+                {bl.isPrimary && (
+                  <div style={{ background: 'var(--theme-color-primary-20)', borderRadius: 32, padding: '0 7px', height: 18, display: 'inline-flex', alignItems: 'center' }}>
+                    <Text variant="body" size="sm" style={{ color: 'var(--theme-color-primary-80)', fontSize: 11 }}>Primary</Text>
+                  </div>
+                )}
+              </div>
+              <Text variant="body" size="sm" style={{ color: 'var(--theme-color-grey-50)' }}>
+                Containers: {bl.containers}
+              </Text>
+            </div>
+            <InlineBadge label={bl.status} bg="var(--theme-color-grey-20)" color="var(--theme-color-grey-70)" />
+          </div>
+        ))}
+      </div>
+    </OverviewCard>
+  );
+}
+
+function CarrierFeedbackCard() {
+  return (
+    <OverviewCard
+      title="Carrier Feedback"
+      badge={<InlineBadge label="1 Pending" bg="var(--theme-color-yellow-20)" color="var(--theme-color-yellow-120)" />}
+      cta={<Button variant="link" size="sm" style={{ marginRight: -4 }}>Review in Booking Tab →</Button>}
+      style={{ flex: 1 }}
+    >
+      <Text variant="body" size="sm" weight="semibold" style={{ color: 'var(--theme-color-grey-100)' }}>
+        MSC has requested an update
+      </Text>
+
+      <div style={{
+        background: 'var(--theme-color-grey-5)',
+        borderRadius: 8,
+        padding: '12px 14px',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 10,
+      }}>
+        {[
+          { label: 'Field',     value: 'Place of Receipt' },
+          { label: 'Original',  value: 'Mumbai Factory' },
+          { label: 'Requested', value: 'Mumbai ICD' },
+          { label: 'Reason',    value: 'Carrier operational requirement' },
+        ].map(({ label, value }) => (
+          <div key={label} style={{ display: 'flex', gap: 12 }}>
+            <Text variant="body" size="sm" style={{ color: 'var(--theme-color-grey-50)', width: 72, flexShrink: 0 }}>{label}</Text>
+            <Text variant="body" size="sm" weight="medium" style={{ color: 'var(--theme-color-grey-100)' }}>{value}</Text>
+          </div>
+        ))}
+      </div>
+
+      <Text variant="body" size="sm" style={{ color: 'var(--theme-color-grey-40)' }}>
+        Received on 23 Apr 2026, 14:44 by MSC
+      </Text>
+    </OverviewCard>
+  );
+}
+
+function ChargesSummaryCard() {
+  return (
+    <OverviewCard
+      title="Charges Summary"
+      cta={<Button variant="link" size="sm" style={{ marginRight: -4 }}>View Charges →</Button>}
+      style={{ flex: 1 }}
+    >
+      <div style={{ display: 'flex', gap: 20 }}>
+        <div style={{ flex: 1 }}>
+          <Text variant="body" size="sm" style={{ color: 'var(--theme-color-grey-50)', display: 'block', marginBottom: 3 }}>
+            Total Revenue
+          </Text>
+          <Text variant="body" size="md" weight="semibold" style={{ color: 'var(--theme-color-grey-100)' }}>
+            USD 15,240.00
+          </Text>
+        </div>
+        <div style={{ flex: 1 }}>
+          <Text variant="body" size="sm" style={{ color: 'var(--theme-color-grey-50)', display: 'block', marginBottom: 3 }}>
+            Total Margin
+          </Text>
+          <div style={{ display: 'flex', alignItems: 'baseline', gap: 5 }}>
+            <Text variant="body" size="md" weight="semibold" style={{ color: 'var(--theme-color-success-120)' }}>
+              USD 2,860.00
+            </Text>
+            <Text variant="body" size="sm" style={{ color: 'var(--theme-color-success-100)' }}>
+              (18.8%)
+            </Text>
+          </div>
+        </div>
+      </div>
+
+      <div style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        background: 'var(--theme-color-yellow-10)',
+        border: '1px solid var(--theme-color-yellow-30)',
+        borderRadius: 8,
+        padding: '8px 12px',
+      }}>
+        <Text variant="body" size="sm" style={{ color: 'var(--theme-color-yellow-120)' }}>
+          Pending Approvals
+        </Text>
+        <div style={{
+          width: 22, height: 22, borderRadius: '50%',
+          background: 'var(--theme-color-yellow-60)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          flexShrink: 0,
+        }}>
+          <Text variant="body" size="sm" weight="semibold" style={{ color: '#fff', fontSize: 11, lineHeight: 1 }}>1</Text>
+        </div>
+      </div>
+    </OverviewCard>
+  );
+}
+
+type ActivityTag = 'SYSTEM' | 'CARRIER' | 'OUTBOUND' | 'INTERNAL';
+
+interface ActivityItem {
+  avatarType: 'system' | 'carrier' | 'email' | 'person';
+  avatarLabel?: string;
+  actor: string;
+  tag: ActivityTag;
+  time: string;
+  description: string;
+}
+
+const ACTIVITY_FEED: ActivityItem[] = [
+  {
+    avatarType: 'system',
+    actor: 'System Event',
+    tag: 'SYSTEM',
+    time: 'Today, 09:00',
+    description: 'Submit Shipping Instructions overdue since 05 May 2026, 17:00 — task flagged to Sahil Kala',
+  },
+  {
+    avatarType: 'carrier',
+    avatarLabel: 'MSC',
+    actor: 'MSC Carrier',
+    tag: 'CARRIER',
+    time: '3 days ago',
+    description: 'Booking MSCUUK048912 confirmed. SI cutoff 05 May 2026 17:00. VGM cutoff 08 May 2026 23:59.',
+  },
+  {
+    avatarType: 'system',
+    actor: 'ETD Updated',
+    tag: 'SYSTEM',
+    time: '4 days ago',
+    description: 'ETD changed to 28 Apr 2026 (+2 days). Vessel rescheduled — port congestion at Nhava Sheva.',
+  },
+  {
+    avatarType: 'email',
+    actor: 'Sahil Kala → Voltas India',
+    tag: 'OUTBOUND',
+    time: '5 days ago',
+    description: 'Re: ONH-2026-04821 — ETD Update & New Carrier Cut-offs',
+  },
+  {
+    avatarType: 'person',
+    avatarLabel: 'SK',
+    actor: 'Sahil Kala',
+    tag: 'INTERNAL',
+    time: '14 Jan 2026',
+    description: 'Customer requires original BL sent via courier to Voltas Mumbai office. Confirm details with Rohan More.',
+  },
+];
+
+const TAG_STYLES: Record<ActivityTag, { bg?: string; color: string; chip: boolean }> = {
+  SYSTEM:   { color: 'var(--theme-color-grey-50)',    chip: false },
+  CARRIER:  { color: 'var(--theme-color-grey-50)',    chip: false },
+  OUTBOUND: { bg: 'var(--theme-color-primary-10)', color: 'var(--theme-color-primary-70)', chip: true },
+  INTERNAL: { bg: 'var(--theme-color-teal-10)',    color: 'var(--theme-color-teal-100)',   chip: true },
+};
+
+function ActivityAvatar({ type, label }: { type: ActivityItem['avatarType']; label?: string }) {
+  if (type === 'system') {
+    return (
+      <div style={{
+        width: 36, height: 36, borderRadius: '50%', flexShrink: 0,
+        background: 'var(--theme-color-grey-10)',
+        border: '1px solid var(--theme-color-grey-20)',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+      }}>
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
+          <circle cx="12" cy="12" r="9" stroke="var(--theme-color-grey-50)" strokeWidth="1.6"/>
+          <path d="M12 7v5l3 3" stroke="var(--theme-color-grey-50)" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
+        </svg>
+      </div>
+    );
+  }
+  if (type === 'carrier') {
+    return (
+      <div style={{
+        width: 36, height: 36, borderRadius: '50%', flexShrink: 0,
+        background: '#102B46',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+      }}>
+        <span style={{ color: '#fff', fontSize: 10, fontWeight: 700, letterSpacing: -0.3 }}>{label}</span>
+      </div>
+    );
+  }
+  if (type === 'email') {
+    return (
+      <div style={{
+        width: 36, height: 36, borderRadius: '50%', flexShrink: 0,
+        background: 'var(--theme-color-primary-10)',
+        border: '1px solid var(--theme-color-primary-20)',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+      }}>
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
+          <rect x="3" y="5" width="18" height="14" rx="2" stroke="var(--theme-color-primary-60)" strokeWidth="1.6"/>
+          <path d="M3 8l9 6 9-6" stroke="var(--theme-color-primary-60)" strokeWidth="1.6" strokeLinecap="round"/>
+        </svg>
+      </div>
+    );
+  }
+  // person
+  return (
+    <div style={{
+      width: 36, height: 36, borderRadius: '50%', flexShrink: 0,
+      background: '#1D3A5F',
+      display: 'flex', alignItems: 'center', justifyContent: 'center',
+    }}>
+      <span style={{ color: '#fff', fontSize: 11, fontWeight: 600 }}>{label}</span>
     </div>
   );
 }
 
-function OverviewContent() {
-  const sections = [
-    { key: 'key-refs',   label: 'Key References',   children: <KeyReferencesContent /> },
-    {
-      key: 'routing',
-      label: 'Routing',
-      suffix: '3 legs · Ocean in progress',
-      children: <RoutingContent />,
-    },
-    { key: 'containers', label: 'Container Summary', children: <ContainerSummaryContent /> },
-  ];
+function ActivityTag({ tag }: { tag: ActivityTag }) {
+  const s = TAG_STYLES[tag];
+  if (s.chip) {
+    return (
+      <div style={{
+        display: 'inline-flex', alignItems: 'center',
+        background: s.bg, borderRadius: 4,
+        padding: '1px 6px',
+      }}>
+        <Text variant="body" size="sm" style={{ color: s.color, fontSize: 10, fontWeight: 600, letterSpacing: '0.4px' }}>
+          {tag}
+        </Text>
+      </div>
+    );
+  }
+  return (
+    <Text variant="body" size="sm" style={{ color: s.color, fontSize: 11, fontWeight: 500, letterSpacing: '0.4px' }}>
+      {tag}
+    </Text>
+  );
+}
+
+function RecentActivityCard() {
+  const content = (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+      {/* Note composer */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+        <div style={{
+          width: 32, height: 32, borderRadius: '50%', flexShrink: 0,
+          background: '#1D3A5F',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+        }}>
+          <span style={{ color: '#fff', fontSize: 11, fontWeight: 600 }}>SK</span>
+        </div>
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <Input placeholder="Add a note to this shipment..." floated={false} />
+        </div>
+      </div>
+
+      {/* Feed */}
+      <div style={{ display: 'flex', flexDirection: 'column' }}>
+        {ACTIVITY_FEED.map((item, i) => (
+          <div
+            key={i}
+            style={{
+              display: 'flex', gap: 12, alignItems: 'flex-start',
+              paddingTop: i === 0 ? 0 : 14,
+              paddingBottom: i < ACTIVITY_FEED.length - 1 ? 14 : 0,
+              borderBottom: i < ACTIVITY_FEED.length - 1 ? '1px solid var(--theme-color-grey-10)' : 'none',
+            }}
+          >
+            <ActivityAvatar type={item.avatarType} label={item.avatarLabel} />
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 7, marginBottom: 3, flexWrap: 'wrap' }}>
+                <Text variant="body" size="sm" weight="semibold" style={{ color: 'var(--theme-color-grey-100)' }}>
+                  {item.actor}
+                </Text>
+                <ActivityTag tag={item.tag} />
+              </div>
+              <Text variant="body" size="sm" style={{ color: 'var(--theme-color-grey-60)', lineHeight: '20px' }}>
+                {item.description}
+              </Text>
+            </div>
+            <Text variant="body" size="sm" style={{ color: 'var(--theme-color-grey-40)', flexShrink: 0, whiteSpace: 'nowrap', marginTop: 1 }}>
+              {item.time}
+            </Text>
+          </div>
+        ))}
+      </div>
+
+      {/* Footer */}
+      <div style={{ display: 'flex', justifyContent: 'flex-end', borderTop: '1px solid var(--theme-color-grey-10)', paddingTop: 12 }}>
+        <Button variant="link" size="sm" style={{ marginRight: -4 }}>View all communications →</Button>
+      </div>
+    </div>
+  );
 
   return (
     <Collapse
-      className="sd-overview-collapse"
-      items={sections}
-      defaultActiveKey={['key-refs', 'routing', 'containers']}
+      className="sd-activity-collapse"
+      defaultActiveKey={['recent-activity']}
+      items={[{
+        key: 'recent-activity',
+        label: 'Recent Activity',
+        extra: <Button variant="link" size="sm" style={{ marginRight: -4 }}>View all →</Button>,
+        showArrow: false,
+        collapsible: 'icon',
+        children: content,
+      }]}
     />
+  );
+}
+
+function OverviewContent() {
+  const showCarrierFeedback = true;
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+      {/* Row 1: Shipment Health + Charges Summary */}
+      <div style={{ display: 'flex', gap: 16 }}>
+        <ShipmentHealthCard />
+        <ChargesSummaryCard />
+      </div>
+
+      {/* Row 2: Routing Summary full width */}
+      <RoutingSummaryCard />
+
+      {/* Row 3: 4 summary cards */}
+      <div style={{ display: 'flex', gap: 16 }}>
+        <BookingSummaryCard />
+        <TasksSummaryCard />
+        <BLSummaryCard />
+        {showCarrierFeedback && <CarrierFeedbackCard />}
+      </div>
+
+      {/* Row 4: Recent Activity */}
+      <RecentActivityCard />
+    </div>
   );
 }
 

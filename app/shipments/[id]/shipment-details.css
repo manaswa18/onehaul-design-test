@@ -83,6 +83,20 @@
   overflow: hidden;
 }
 
+/* ── Recent Activity accordion — match card border-radius ────────────────────── */
+.sd-activity-collapse .onehaul-collapse-item {
+  border-radius: 12px !important;
+  overflow: hidden;
+}
+
+.sd-activity-collapse .onehaul-collapse-item .ant-collapse-header {
+  border-radius: 12px !important;
+}
+
+.sd-activity-collapse .onehaul-collapse-item.ant-collapse-item-active .ant-collapse-header {
+  border-radius: 12px 12px 0 0 !important;
+}
+
 /* Overflow menu — danger item red */
 .sd-overflow-menu .ant-dropdown-menu-item-danger .onehaul-menu-action-label,
 .sd-overflow-menu .ant-dropdown-menu-item-danger .onehaul-menu-action-icon {
