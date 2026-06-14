@@ -219,19 +219,22 @@ const KEY_DATES = [
 
 function KeyDatesContent() {
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-      {KEY_DATES.map((d) => (
-        <div key={d.label} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <div style={{ flex: 1, minWidth: 0 }}>
-            <Text variant="body" size="sm" weight="medium" style={{ color: 'var(--theme-color-grey-100)' }}>
-              {d.label}
-            </Text>
-            <Text variant="body" size="sm" style={{ color: 'var(--theme-color-grey-50)' }}>
-              {d.date}
-            </Text>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+      {KEY_DATES.map((d, i) => (
+        <React.Fragment key={d.label}>
+          {i > 0 && <div style={{ height: 1, background: 'var(--theme-color-grey-5)' }} />}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <Text variant="body" size="sm" weight="medium" style={{ color: 'var(--theme-color-grey-100)' }}>
+                {d.label}
+              </Text>
+              <Text variant="body" size="sm" style={{ color: 'var(--theme-color-grey-50)' }}>
+                {d.date}
+              </Text>
+            </div>
+            <StatusChip label={d.status} bg={d.bg} color={d.color} />
           </div>
-          <StatusChip label={d.status} bg={d.bg} color={d.color} />
-        </div>
+        </React.Fragment>
       ))}
     </div>
   );
@@ -611,26 +614,6 @@ function BookingDetailsCard() {
   );
 }
 
-function ContainerSummaryCard() {
-  const content = (
-    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px 24px' }}>
-      {BOOKING_CONTAINER_FIELDS.map(({ label, value }) => (
-        <FieldItem key={label} label={label} value={value} />
-      ))}
-    </div>
-  );
-
-  return (
-    <Collapse
-      defaultActiveKey={[]}
-      items={[{
-        key: 'container-summary',
-        label: 'Container Summary',
-                children: content,
-      }]}
-    />
-  );
-}
 
 function TasksSummaryCard({ stage }: { stage: PreviewStage }) {
   const [view, setView] = useState<'mine' | 'all'>('mine');
@@ -688,7 +671,7 @@ function TasksSummaryCard({ stage }: { stage: PreviewStage }) {
 
       {/* Most Urgent task — or spacer to fill height when no urgent task */}
       {nextTask ? (
-        <div style={{ paddingTop: 12, display: 'flex', flexDirection: 'column', gap: 10, flex: 1 }}>
+        <div style={{ paddingTop: 12, display: 'flex', flexDirection: 'column', gap: 8, flex: 1 }}>
           <Text variant="body" size="sm" style={{ color: 'var(--theme-color-grey-50)' }}>
             Most Urgent
           </Text>
@@ -1012,6 +995,269 @@ function ChargesCard({ stage }: { stage: PreviewStage }) {
   );
 }
 
+// ─── Documents Card ───────────────────────────────────────────────────────────
+
+type DocState = 'received' | 'pending-review' | 'missing';
+
+interface DocItem {
+  name: string;
+  state: DocState;
+  carrier?: string;
+  date?: string;
+}
+
+type DocsData = {
+  pill: { label: string; color: string };
+  received: number;
+  pendingAction: number;
+  missing: number;
+  docs: DocItem[];
+};
+
+const DOCS_BY_STAGE: Record<PreviewStage, DocsData> = {
+  booking: {
+    pill: { label: 'Not Started', color: 'default' },
+    received: 0, pendingAction: 0, missing: 3,
+    docs: [
+      { name: 'Booking Confirmation', state: 'missing',  carrier: 'MSC' },
+      { name: 'Commercial Invoice',   state: 'missing' },
+      { name: 'Packing List',         state: 'missing' },
+    ],
+  },
+  'pre-shipment': {
+    pill: { label: 'Incomplete', color: 'yellow' },
+    received: 1, pendingAction: 0, missing: 2,
+    docs: [
+      { name: 'Commercial Invoice',   state: 'missing' },
+      { name: 'Packing List',         state: 'missing' },
+      { name: 'Booking Confirmation', state: 'received', carrier: 'MSC', date: '19 Feb 2026' },
+    ],
+  },
+  'cargo-ready': {
+    pill: { label: 'Action Required', color: 'orange' },
+    received: 3, pendingAction: 1, missing: 1,
+    docs: [
+      { name: 'BL Draft',              state: 'pending-review', carrier: 'MSC', date: '07 May 2026' },
+      { name: 'Packing List',          state: 'missing' },
+      { name: 'VGM Certificate',       state: 'received', date: '05 May 2026' },
+      { name: 'Shipping Instructions', state: 'received', date: '04 May 2026' },
+      { name: 'Booking Confirmation',  state: 'received', carrier: 'MSC', date: '19 Feb 2026' },
+    ],
+  },
+  'in-transit': {
+    pill: { label: 'All Received', color: 'success' },
+    received: 4, pendingAction: 0, missing: 0,
+    docs: [
+      { name: 'Original BL',           state: 'received', carrier: 'MSC', date: '10 May 2026' },
+      { name: 'BL Draft',              state: 'received', carrier: 'MSC', date: '09 May 2026' },
+      { name: 'Shipping Instructions', state: 'received', date: '04 May 2026' },
+      { name: 'VGM Certificate',       state: 'received', date: '05 May 2026' },
+    ],
+  },
+  completed: {
+    pill: { label: 'All Received', color: 'success' },
+    received: 6, pendingAction: 0, missing: 0,
+    docs: [
+      { name: 'Delivery Order',        state: 'received', carrier: 'MSC', date: '28 May 2026' },
+      { name: 'Arrival Notice',        state: 'received', carrier: 'MSC', date: '25 May 2026' },
+      { name: 'Original BL',          state: 'received', carrier: 'MSC', date: '10 May 2026' },
+    ],
+  },
+};
+
+const DOC_STATE_CHIP: Record<DocState, { label: string; bg: string; color: string }> = {
+  'pending-review': { label: 'Pending Review', bg: 'var(--theme-color-orange-10)', color: 'var(--theme-color-orange-120)' },
+  'missing':        { label: 'Not Uploaded',   bg: 'var(--theme-color-grey-10)',   color: 'var(--theme-color-grey-50)'   },
+  'received':       { label: 'Received',        bg: 'var(--theme-color-success-20)', color: 'var(--theme-color-success-100)' },
+};
+
+function DocRow({ doc }: { doc: DocItem }) {
+  const chip = DOC_STATE_CHIP[doc.state];
+  const isMissing = doc.state === 'missing';
+  const isPending = doc.state === 'pending-review';
+
+  return (
+    <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
+      {/* Content: name / date / status chip */}
+      <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 6 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+          <Text variant="body" size="sm" weight="medium" style={{
+            color: isMissing ? 'var(--theme-color-grey-40)' : 'var(--theme-color-grey-100)',
+            overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'block',
+          }}>
+            {doc.name}
+            {doc.carrier && <span style={{ color: 'var(--theme-color-grey-40)', fontWeight: 400 }}> · {doc.carrier}</span>}
+          </Text>
+          {doc.date && (
+            <Text variant="body" size="sm" style={{ color: 'var(--theme-color-grey-40)', fontSize: 11 }}>
+              {doc.date}
+            </Text>
+          )}
+        </div>
+
+        {/* Row 3 — status chip */}
+        <div style={{ display: 'flex', gap: 6 }}>
+          <div style={{ display: 'inline-flex', alignItems: 'center', background: chip.bg, borderRadius: 4, padding: '1px 6px' }}>
+            <Text variant="body" size="sm" style={{ color: chip.color, fontSize: 10, fontWeight: 600 }}>
+              {chip.label}
+            </Text>
+          </div>
+        </div>
+      </div>
+
+      {/* Right — CTA buttons only */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 4, flexShrink: 0 }}>
+        {isPending && (
+          <Button variant="link" size="sm" icon={<ChevronRight width={9} height={9} />} iconPosition="end">Review</Button>
+        )}
+        {isMissing && (
+          <Button variant="link" size="sm" icon={<Upload width={9} height={9} />} iconPosition="end">Upload</Button>
+        )}
+        {doc.state === 'received' && (
+          <>
+            <Button variant="link" size="sm">View</Button>
+            <Button variant="link" size="sm">Download</Button>
+          </>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function DocumentsCard({ stage }: { stage: PreviewStage }) {
+  const data = DOCS_BY_STAGE[stage];
+
+  const prioritized = [...data.docs].sort((a, b) => {
+    const order: Record<DocState, number> = { 'received': 0, 'pending-review': 1, 'missing': 2 };
+    return order[a.state] - order[b.state];
+  }).slice(0, 2);
+
+  return (
+    <div style={{ background: 'var(--theme-color-pure-100)', border: '1px solid var(--theme-color-grey-10)', borderRadius: 12, padding: 20, display: 'flex', flexDirection: 'column', gap: 0, flex: 1 }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingBottom: 16 }}>
+        <Text variant="body" size="md" weight="medium" style={{ color: 'var(--theme-color-grey-100)', fontSize: 16 }}>Documents Summary</Text>
+        <Pill color={data.pill.color} theme="light" size="sm" showIcon={false}>{data.pill.label}</Pill>
+      </div>
+
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 8, paddingBottom: 16 }}>
+        <Text variant="body" size="sm" style={{ color: 'var(--theme-color-grey-50)' }}>Received</Text>
+        <span style={{ fontSize: 36, fontWeight: 700, lineHeight: 1, color: 'var(--theme-color-grey-100)', fontFamily: 'var(--font-inter)' }}>
+          {data.received}
+        </span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginTop: 2 }}>
+          {data.pendingAction > 0 && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+              <span style={{ width: 7, height: 7, borderRadius: '50%', background: 'var(--theme-color-orange-60)', flexShrink: 0 }} />
+              <Text variant="body" size="sm" style={{ color: 'var(--theme-color-orange-120)' }}>{data.pendingAction} pending action</Text>
+            </div>
+          )}
+          {data.missing > 0 && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+              <span style={{ width: 7, height: 7, borderRadius: '50%', background: 'var(--theme-color-grey-30)', flexShrink: 0 }} />
+              <Text variant="body" size="sm" style={{ color: 'var(--theme-color-grey-50)' }}>{data.missing} missing</Text>
+            </div>
+          )}
+          {data.pendingAction === 0 && data.missing === 0 && data.received > 0 && (
+            <Text variant="body" size="sm" style={{ color: 'var(--theme-color-success-100)' }}>All received</Text>
+          )}
+          {data.received === 0 && data.pendingAction === 0 && (
+            <Text variant="body" size="sm" style={{ color: 'var(--theme-color-grey-30)' }}>No documents yet</Text>
+          )}
+        </div>
+      </div>
+
+      <div style={{ height: 1, background: 'var(--theme-color-grey-10)' }} />
+
+      <div style={{ paddingTop: 12, display: 'flex', flexDirection: 'column', gap: 8, flex: 1 }}>
+        <Text variant="body" size="sm" style={{ color: 'var(--theme-color-grey-50)' }}>Recently Uploaded</Text>
+        {prioritized.map((doc, i) => (
+          <React.Fragment key={doc.name}>
+            {i > 0 && <div style={{ height: 1, background: 'var(--theme-color-grey-5)' }} />}
+            <DocRow doc={doc} />
+          </React.Fragment>
+        ))}
+      </div>
+
+      <div style={{ borderTop: '1px solid var(--theme-color-grey-10)', paddingTop: 12, marginTop: 12 }}>
+        <Button variant="link" size="sm" icon={<ChevronRight width={10} height={10} />} iconPosition="end" style={{ marginLeft: -4 }}>
+          View all documents
+        </Button>
+      </div>
+    </div>
+  );
+}
+
+const VGM_STATUS_BY_STAGE: Record<PreviewStage, { label: string; dot: string | null; color: string }> = {
+  'booking':      { label: '3 VGM pending',    dot: 'var(--theme-color-orange-60)',  color: 'var(--theme-color-orange-120)'  },
+  'pre-shipment': { label: '2 VGM pending',    dot: 'var(--theme-color-orange-60)',  color: 'var(--theme-color-orange-120)'  },
+  'cargo-ready':  { label: '1 VGM pending',    dot: 'var(--theme-color-orange-60)',  color: 'var(--theme-color-orange-120)'  },
+  'in-transit':   { label: 'All VGM confirmed', dot: null, color: 'var(--theme-color-success-100)' },
+  'completed':    { label: 'All VGM confirmed', dot: null, color: 'var(--theme-color-success-100)' },
+};
+
+function ContainersCard({ stage }: { stage: PreviewStage }) {
+  const total = 3;
+  const vgm = VGM_STATUS_BY_STAGE[stage];
+
+  return (
+    <div style={{ background: 'var(--theme-color-pure-100)', border: '1px solid var(--theme-color-grey-10)', borderRadius: 12, padding: 20, display: 'flex', flexDirection: 'column', gap: 0, flex: 1 }}>
+      <div style={{ paddingBottom: 16 }}>
+        <Text variant="body" size="md" weight="medium" style={{ color: 'var(--theme-color-grey-100)', fontSize: 16 }}>Containers Summary</Text>
+      </div>
+
+      <div style={{ paddingBottom: 16 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+          <Text variant="body" size="sm" style={{ color: 'var(--theme-color-grey-50)' }}>Total</Text>
+          <span style={{ fontSize: 36, fontWeight: 700, lineHeight: 1, color: 'var(--theme-color-grey-100)', fontFamily: 'var(--font-inter)' }}>
+            {total}
+          </span>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 5, marginTop: 10 }}>
+          {vgm.dot && <span style={{ width: 7, height: 7, borderRadius: '50%', background: vgm.dot, flexShrink: 0 }} />}
+          <Text variant="body" size="sm" style={{ color: vgm.color }}>{vgm.label}</Text>
+        </div>
+      </div>
+
+      <div style={{ height: 1, background: 'var(--theme-color-grey-10)' }} />
+
+      <div style={{ paddingTop: 16, display: 'flex', flexDirection: 'column', gap: 16 }}>
+        {[BOOKING_CONTAINER_FIELDS.slice(0, 2), BOOKING_CONTAINER_FIELDS.slice(2)].map((row, ri) => (
+          <div key={ri} style={{ display: 'flex', gap: 16 }}>
+            {row.map(({ label, value }) => (
+              <div key={label} style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 2 }}>
+                <Text variant="body" size="sm" style={{ color: 'var(--theme-color-grey-50)' }}>{label}</Text>
+                <Text variant="body" size="md" style={{ color: 'var(--theme-color-grey-100)' }}>{value}</Text>
+              </div>
+            ))}
+          </div>
+        ))}
+      </div>
+
+      <div style={{ flex: 1 }} />
+
+      <div style={{ borderTop: '1px solid var(--theme-color-grey-10)', paddingTop: 12, marginTop: 16 }}>
+        <Button variant="link" size="sm" icon={<ChevronRight width={10} height={10} />} iconPosition="end" style={{ marginLeft: -4 }}>View all containers</Button>
+      </div>
+    </div>
+  );
+}
+
+function KeyDatesCard() {
+  const overdueCount = KEY_DATES.filter(d => d.status === 'Overdue').length;
+
+  return (
+    <div style={{ background: 'var(--theme-color-pure-100)', border: '1px solid var(--theme-color-grey-10)', borderRadius: 12, padding: 20, display: 'flex', flexDirection: 'column', gap: 0 }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingBottom: 16 }}>
+        <Text variant="body" size="md" weight="medium" style={{ color: 'var(--theme-color-grey-100)', fontSize: 16 }}>Key Dates</Text>
+        {overdueCount > 0 && (
+          <Text variant="body" size="sm" style={{ color: 'var(--theme-color-error-100)' }}>{overdueCount} overdue</Text>
+        )}
+      </div>
+      <KeyDatesContent />
+    </div>
+  );
+}
+
 function OverviewContent({ previewStage, setPreviewStage }: { previewStage: PreviewStage; setPreviewStage: (s: PreviewStage) => void }) {
   const [switcherOpen, setSwitcherOpen] = React.useState(false);
   const activeStage = PREVIEW_STAGES.find(s => s.key === previewStage)!;
@@ -1022,8 +1268,17 @@ function OverviewContent({ previewStage, setPreviewStage }: { previewStage: Prev
         <TasksSummaryCard stage={previewStage} />
         <ChargesCard stage={previewStage} />
       </div>
+
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+        <DocumentsCard stage={previewStage} />
+        <ContainersCard stage={previewStage} />
+      </div>
+
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+        <KeyDatesCard />
+      </div>
+
       <BookingDetailsCard />
-      <ContainerSummaryCard />
 
       <div style={{
         position: 'fixed',
