@@ -12,6 +12,7 @@ import Avatar from '@/components/Avatar';
 import PillComponent from '@/components/Pill';
 import SelectComponent from '@/components/Select';
 import DrawerComponent from '@/components/Drawer';
+import ChipsComponent from '@/components/Chips';
 import DropdownComponent from '@/components/Dropdown';
 import CheckboxComponent from '@/components/Checkbox';
 import { MoreVert, DocIcon, HelpIcon, NotificationIcon, EditPencil, Add, Delete, Leftpanelopen, Leftpanelclose, User, Block, Bulkadd, Upload, Tick, Building, ShipmentIcon, MailOutline, Attachment, FilterIcon, Chevrondown, ChevronRight } from '@/icons';
@@ -351,27 +352,30 @@ function InternalTeamContent() {
               )}
 
               {/* Content */}
-              <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 2 }}>
-                {/* Row 1: Name | Role chip */}
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
-                  <Text variant="body" size="sm" weight="medium" style={{ color: isAssigned ? 'var(--theme-color-grey-100)' : 'var(--theme-color-grey-40)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flexShrink: 1 }}>
-                    {isAssigned ? displayName(person!.label, person!.initials) : 'Unassigned'}
-                  </Text>
-                  <div style={{ background: 'var(--theme-color-grey-10)', borderRadius: 4, padding: '1px 6px', flexShrink: 0 }}>
-                    <Text variant="body" size="sm" style={{ color: 'var(--theme-color-grey-60)', fontSize: 10, fontWeight: 500, whiteSpace: 'nowrap' }}>
-                      {r.role}
+              <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 8 }}>
+                {/* Rows 1+2 container */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                  {/* Row 1: Name | Role chip */}
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
+                    <Text variant="body" size="sm" weight="medium" style={{ color: isAssigned ? 'var(--theme-color-grey-100)' : 'var(--theme-color-grey-40)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flexShrink: 1 }}>
+                      {isAssigned ? displayName(person!.label, person!.initials) : 'Unassigned'}
                     </Text>
+                    <div style={{ background: 'var(--theme-color-grey-10)', borderRadius: 4, padding: '1px 6px', flexShrink: 0 }}>
+                      <Text variant="body" size="sm" style={{ color: 'var(--theme-color-grey-60)', fontSize: 10, fontWeight: 500, whiteSpace: 'nowrap' }}>
+                        {r.role}
+                      </Text>
+                    </div>
                   </div>
-                </div>
 
-                {/* Row 2: Email or placeholder */}
-                <Text variant="body" size="sm" style={{ color: isAssigned ? 'var(--theme-color-grey-50)' : 'var(--theme-color-grey-30)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'block' }}>
-                  {isAssigned ? person!.email : 'No member added yet'}
-                </Text>
+                  {/* Row 2: Email or placeholder */}
+                  <Text variant="body" size="sm" style={{ color: isAssigned ? 'var(--theme-color-grey-50)' : 'var(--theme-color-grey-30)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'block' }}>
+                    {isAssigned ? person!.email : 'No member added yet'}
+                  </Text>
+                </div>
 
                 {/* Row 3: Task urgency chips — only when there are urgent tasks */}
                 {hasUrgentTasks && (
-                  <div style={{ display: 'flex', gap: 6, marginTop: 4 }}>
+                  <div style={{ display: 'flex', gap: 6 }}>
                     {taskCounts.overdue > 0 && (
                       <div style={{ display: 'inline-flex', alignItems: 'center', gap: 4, background: 'var(--theme-color-error-20)', borderRadius: 4, padding: '1px 6px' }}>
                         <span style={{ width: 5, height: 5, borderRadius: '50%', background: 'var(--theme-color-error-100)', display: 'inline-block', flexShrink: 0 }} />
@@ -427,7 +431,7 @@ function InternalTeamContent() {
         }
       >
         <div style={{ display: 'flex', flexDirection: 'column', gap: 28 }}>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
             <Text variant="body" size="md" weight="medium" style={{ color: 'var(--theme-color-grey-100)', textTransform: 'uppercase' }}>
               {isDrawerAssigned ? 'Replace With' : 'Assign To'}
             </Text>
@@ -453,63 +457,6 @@ function InternalTeamContent() {
 
 // ─── Overview Tab ─────────────────────────────────────────────────────────────
 
-function OverviewCard({
-  title,
-  badge,
-  cta,
-  children,
-  style,
-}: {
-  title?: string;
-  badge?: React.ReactNode;
-  cta?: React.ReactNode;
-  children: React.ReactNode;
-  style?: React.CSSProperties;
-}) {
-  return (
-    <div
-      style={{
-        background: 'var(--theme-color-pure-100)',
-        border: '1px solid var(--theme-color-grey-10)',
-        borderRadius: 12,
-        padding: 20,
-        display: 'flex',
-        flexDirection: 'column',
-        gap: 16,
-        minWidth: 0,
-        overflow: 'hidden',
-        ...style,
-      }}
-    >
-      {(title || cta) && (
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, flexShrink: 0 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
-            {title && (
-              <Text variant="body" size="md" weight="semibold" style={{ color: 'var(--theme-color-grey-100)', whiteSpace: 'nowrap' }}>
-                {title}
-              </Text>
-            )}
-            {badge}
-          </div>
-          {cta && <div style={{ flexShrink: 0 }}>{cta}</div>}
-        </div>
-      )}
-      {children}
-    </div>
-  );
-}
-
-function CardRow({ label, value }: { label: string; value: React.ReactNode }) {
-  return (
-    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
-      <Text variant="body" size="sm" style={{ color: 'var(--theme-color-grey-50)', flexShrink: 0 }}>
-        {label}
-      </Text>
-      <div>{value}</div>
-    </div>
-  );
-}
-
 function InlineBadge({ label, bg, color }: { label: string; bg: string; color: string }) {
   return (
     <div style={{ background: bg, borderRadius: 32, padding: '2px 10px', display: 'inline-flex', alignItems: 'center' }}>
@@ -518,467 +465,247 @@ function InlineBadge({ label, bg, color }: { label: string; bg: string; color: s
   );
 }
 
-function MetricBox({
-  value, label, bg, borderColor, valueColor,
-}: {
-  value: number; label: string; bg: string; borderColor: string; valueColor: string;
-}) {
+function FieldItem({ label, value }: { label: string; value: React.ReactNode }) {
   return (
-    <div style={{
-      background: bg,
-      border: `1px solid ${borderColor}`,
-      borderRadius: 10,
-      padding: '14px 16px',
-      display: 'flex',
-      flexDirection: 'column',
-      gap: 4,
-      flex: 1,
-    }}>
-      <Text variant="heading" size="md" weight="semibold" style={{ color: valueColor, lineHeight: 1 }}>
-        {value}
-      </Text>
-      <Text variant="body" size="sm" style={{ color: 'var(--theme-color-grey-60)' }}>
-        {label}
-      </Text>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+      <Text variant="body" size="sm" style={{ color: 'var(--theme-color-grey-40)', fontSize: 12 }}>{label}</Text>
+      {typeof value === 'string'
+        ? <Text variant="body" size="md" style={{ color: 'var(--theme-color-grey-100)' }}>{value}</Text>
+        : value}
     </div>
   );
 }
 
-function ShipmentHealthCard() {
-  return (
-    <OverviewCard
-      title="Shipment Health"
-      badge={
-        <div style={{
-          display: 'flex', alignItems: 'center', gap: 5,
-          background: 'var(--theme-color-yellow-10)',
-          border: '1px solid var(--theme-color-yellow-30)',
-          borderRadius: 20,
-          padding: '3px 10px',
-        }}>
-          <svg width="10" height="10" viewBox="0 0 16 16" fill="none">
-            <path d="M8 1.5L14.5 13H1.5L8 1.5Z" stroke="var(--theme-color-yellow-100)" strokeWidth="1.6" strokeLinejoin="round"/>
-            <path d="M8 6v3" stroke="var(--theme-color-yellow-100)" strokeWidth="1.6" strokeLinecap="round"/>
-            <circle cx="8" cy="11.5" r="0.8" fill="var(--theme-color-yellow-100)"/>
-          </svg>
-          <Text variant="body" size="sm" style={{ color: 'var(--theme-color-yellow-120)', whiteSpace: 'nowrap' }}>
-            Attention Required
-          </Text>
-        </div>
-      }
-      style={{ flex: 1 }}
-    >
-      {/* Metric boxes */}
-      <div style={{ display: 'flex', gap: 10 }}>
-        <MetricBox
-          value={2} label="Overdue Tasks"
-          bg="var(--theme-color-error-10)" borderColor="var(--theme-color-error-20)" valueColor="var(--theme-color-error-100)"
-        />
-        <MetricBox
-          value={3} label="Due Today"
-          bg="var(--theme-color-yellow-10)" borderColor="var(--theme-color-yellow-20)" valueColor="var(--theme-color-yellow-120)"
-        />
-        <MetricBox
-          value={1} label="Open Exceptions"
-          bg="var(--theme-color-primary-5)" borderColor="var(--theme-color-primary-20)" valueColor="var(--theme-color-primary-60)"
-        />
-      </div>
-
-      {/* Footer */}
-      <div style={{
-        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        borderTop: '1px solid var(--theme-color-grey-10)', paddingTop: 14,
-      }}>
-        <Button variant="secondary" size="sm">View All Tasks</Button>
-        <div style={{
-          display: 'flex', alignItems: 'center', gap: 8,
-          background: 'var(--theme-color-error-10)',
-          border: '1px solid var(--theme-color-error-20)',
-          borderRadius: 8,
-          padding: '7px 12px',
-        }}>
-          <Text variant="body" size="sm" style={{ color: 'var(--theme-color-grey-60)', whiteSpace: 'nowrap' }}>
-            Next Critical Event
-          </Text>
-          <div style={{ width: 1, height: 12, background: 'var(--theme-color-error-20)', flexShrink: 0 }} />
-          <Text variant="body" size="sm" weight="semibold" style={{ color: 'var(--theme-color-grey-100)', whiteSpace: 'nowrap' }}>
-            SI Cutoff
-          </Text>
-          <span style={{ width: 5, height: 5, borderRadius: '50%', background: 'var(--theme-color-error-60)', display: 'inline-block', flexShrink: 0 }} />
-          <Text variant="body" size="sm" weight="semibold" style={{ color: 'var(--theme-color-error-100)', whiteSpace: 'nowrap' }}>
-            In 4h 15m
-          </Text>
-        </div>
-      </div>
-    </OverviewCard>
-  );
-}
-
-// Inline SVG icons for route stops (no matching icon in library)
-function RouteStopIcon({ type, active }: { type: 'factory' | 'port' | 'warehouse'; active: boolean }) {
-  const color = active ? 'var(--theme-color-primary-60)' : 'var(--theme-color-grey-40)';
-  if (type === 'factory') {
-    return (
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-        <rect x="2" y="11" width="20" height="11" rx="1" stroke={color} strokeWidth="1.6"/>
-        <path d="M6 11V7.5L10 11V7.5L14 11V7.5L18 11" stroke={color} strokeWidth="1.6" strokeLinejoin="round"/>
-        <rect x="9.5" y="15" width="5" height="7" rx="0.5" stroke={color} strokeWidth="1.6"/>
-      </svg>
-    );
-  }
-  if (type === 'port') {
-    return (
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-        <path d="M4 13l2-3h12l2 3v4H4v-4z" stroke={color} strokeWidth="1.6" strokeLinejoin="round"/>
-        <path d="M9 10V7h6v3" stroke={color} strokeWidth="1.6"/>
-        <path d="M12 7V4" stroke={color} strokeWidth="1.6"/>
-        <path d="M4 17c1 1.5 3 1.5 4 0s3-1.5 4 0 3 1.5 4 0" stroke={color} strokeWidth="1.4" strokeLinecap="round"/>
-      </svg>
-    );
-  }
-  return (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-      <path d="M3 21V9.5L12 4l9 5.5V21H3z" stroke={color} strokeWidth="1.6" strokeLinejoin="round"/>
-      <rect x="9" y="14" width="6" height="7" rx="0.5" stroke={color} strokeWidth="1.6"/>
-      <path d="M9 11h6" stroke={color} strokeWidth="1.4" strokeLinecap="round"/>
-    </svg>
-  );
-}
-
-const OVERVIEW_STOPS = [
-  { code: 'PRE', name: 'Mumbai Factory',      iconType: 'factory'   as const, active: true  },
-  { code: 'POL', name: 'Nhava Sheva',          iconType: 'port'      as const, active: true  },
-  { code: 'POD', name: 'Jebel Ali',            iconType: 'port'      as const, active: false },
-  { code: 'PDE', name: 'Jebel Ali Warehouse',  iconType: 'warehouse' as const, active: false },
+const BOOKING_CARGO_FIELDS = [
+  { label: 'Client',               value: 'Voltas India Limited' },
+  { label: 'Customer Reference',   value: 'VOL-2026-1234' },
+  { label: 'Commodity',            value: 'Metal Scrap (HMS 1&2)' },
+  { label: 'HS Code',              value: '7204.49' },
+  { label: 'Incoterms',            value: 'FOB Mumbai' },
+  { label: 'Special Requirements', value: 'None' },
 ];
 
-function RoutingSummaryCard() {
-  return (
-    <OverviewCard
-      title="Routing Summary"
-      cta={<Button variant="link" size="sm" style={{ marginRight: -4 }}>View full routing →</Button>}
-      style={{ flex: 1 }}
-    >
-      {/* Horizontal stop timeline */}
-      <div style={{ display: 'flex', alignItems: 'flex-start' }}>
-        {OVERVIEW_STOPS.map((stop, i) => {
-          const isLast = i === OVERVIEW_STOPS.length - 1;
-          const lineColor = i < 1 ? 'var(--theme-color-primary-60)' : 'var(--theme-color-grey-15)';
-          const iconBg = stop.active ? 'var(--theme-color-primary-5)' : 'var(--theme-color-grey-5)';
-          const iconBorder = stop.active ? 'var(--theme-color-primary-20)' : 'var(--theme-color-grey-15)';
+const BOOKING_CONTAINER_FIELDS = [
+  { label: 'Container Type',  value: '2 × 40GP, 1 × 20GP' },
+  { label: 'Cargo Weight',    value: '18 MT per unit' },
+  { label: 'Total Weight',    value: '36 MT' },
+  { label: 'Cargo Type',      value: 'Standard / FCL' },
+];
 
-          return (
-            <React.Fragment key={stop.code}>
-              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, flex: 1 }}>
-                <div style={{
-                  width: 44, height: 44, borderRadius: 10,
-                  background: iconBg, border: `1px solid ${iconBorder}`,
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                }}>
-                  <RouteStopIcon type={stop.iconType} active={stop.active} />
-                </div>
-                <Text variant="body" size="sm" style={{ color: 'var(--theme-color-grey-40)', fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.4px', textAlign: 'center' }}>
-                  {stop.code}
-                </Text>
-                <Text variant="body" size="sm" weight="medium" style={{ color: stop.active ? 'var(--theme-color-grey-90)' : 'var(--theme-color-grey-60)', textAlign: 'center', fontSize: 12, lineHeight: '16px' }}>
-                  {stop.name}
-                </Text>
-              </div>
-              {!isLast && (
-                <div style={{ height: 1, background: lineColor, flex: 0.4, flexShrink: 0, marginTop: 22 }} />
-              )}
-            </React.Fragment>
-          );
-        })}
+function SectionLabel({ children }: { children: string }) {
+  return (
+    <Text variant="body" size="sm" style={{ color: 'var(--theme-color-grey-40)', fontSize: 10, fontWeight: 600, letterSpacing: '0.6px', textTransform: 'uppercase' as const, display: 'block' }}>
+      {children}
+    </Text>
+  );
+}
+
+const SHIPMENT_STATUS_DATA = {
+  status: 'In Transit',
+  bls: ['MSCUBLMUM654321', 'MSCUBLMUM654322'],
+  origin:      { port: 'Nhava Sheva', country: 'IN', date: '19 Mar 2026', label: 'Departed' },
+  destination: { port: 'Jebel Ali',   country: 'AE', date: '28 Mar 2026', label: 'ETA'      },
+  vessel: 'MSC MIRIAM · AE6/PEX · V26023',
+};
+
+function ShipmentStatusCard() {
+  const { origin, destination } = SHIPMENT_STATUS_DATA;
+  return (
+    <div style={{ background: 'var(--theme-color-pure-100)', border: '1px solid var(--theme-color-grey-10)', borderRadius: 12, padding: 20, display: 'flex', flexDirection: 'column', gap: 16 }}>
+      {/* Header */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <Text variant="body" size="md" weight="semibold" style={{ color: 'var(--theme-color-grey-100)' }}>Shipment Status</Text>
+        <Pill color="teal" theme="light" size="sm" showIcon={false}>{SHIPMENT_STATUS_DATA.status}</Pill>
       </div>
 
-      {/* Detail row */}
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(5, 1fr)',
-        gap: '0 12px',
-        paddingTop: 14,
-        borderTop: '1px solid var(--theme-color-grey-10)',
-      }}>
-        {[
-          { label: 'Vessel / Voyage',    value: 'MSC MIRIAM / AE6' },
-          { label: 'ETD (Nhava Sheva)',   value: '28 Apr 2026' },
-          { label: 'ETA (Jebel Ali)',     value: '14 May 2026' },
-          { label: 'Transit Time',        value: '16 Days' },
-          { label: 'Movement Type',       value: 'Door to Door' },
-        ].map(({ label, value }) => (
-          <div key={label}>
-            <Text variant="body" size="sm" style={{ color: 'var(--theme-color-grey-50)', display: 'block', marginBottom: 3, fontSize: 11 }}>
-              {label}
-            </Text>
-            <Text variant="body" size="sm" weight="semibold" style={{ color: 'var(--theme-color-grey-100)' }}>
-              {value}
-            </Text>
+      {/* BL Numbers row */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <Text variant="body" size="sm" style={{ color: 'var(--theme-color-grey-40)' }}>BL Numbers</Text>
+          {SHIPMENT_STATUS_DATA.bls.map(bl => (
+            <Pill key={bl} color="blue" theme="light" size="sm" showIcon={false}>{bl}</Pill>
+          ))}
+        </div>
+        <Button variant="link" size="sm" icon={<ChevronRight width={10} height={10} />} iconPosition="end">Track</Button>
+      </div>
+
+      <div style={{ height: 1, background: 'var(--theme-color-grey-10)' }} />
+
+      {/* Route strip */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 2, minWidth: 160 }}>
+          <Text variant="body" size="md" weight="semibold" style={{ color: 'var(--theme-color-grey-100)' }}>{origin.port}</Text>
+          <Text variant="body" size="sm" style={{ color: 'var(--theme-color-grey-40)' }}>{origin.country} · {origin.label}</Text>
+          <Text variant="body" size="sm" style={{ color: 'var(--theme-color-grey-60)' }}>{origin.date}</Text>
+        </div>
+
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
+          <div style={{ display: 'flex', alignItems: 'center', width: '100%', gap: 8 }}>
+            <div style={{ flex: 1, borderTop: '1px dashed var(--theme-color-grey-20)' }} />
+            <ShipmentIcon width={18} height={18} color="var(--theme-color-grey-40)" />
+            <div style={{ flex: 1, borderTop: '1px dashed var(--theme-color-grey-20)' }} />
           </div>
-        ))}
+          <Text variant="body" size="sm" style={{ color: 'var(--theme-color-grey-40)', textAlign: 'center' as const }}>{SHIPMENT_STATUS_DATA.vessel}</Text>
+        </div>
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 2, minWidth: 160, alignItems: 'flex-end' }}>
+          <Text variant="body" size="md" weight="semibold" style={{ color: 'var(--theme-color-grey-100)' }}>{destination.port}</Text>
+          <Text variant="body" size="sm" style={{ color: 'var(--theme-color-grey-40)' }}>{destination.country} · {destination.label}</Text>
+          <Text variant="body" size="sm" style={{ color: 'var(--theme-color-grey-60)' }}>{destination.date}</Text>
+        </div>
       </div>
-    </OverviewCard>
+    </div>
   );
 }
 
-function BookingSummaryCard() {
-  return (
-    <OverviewCard
-      title="Booking Summary"
-      cta={<Button variant="link" size="sm" style={{ marginRight: -4 }}>View Details →</Button>}
-      style={{ flex: 1 }}
-    >
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 11 }}>
-        <CardRow label="Internal Request" value={
-          <Text variant="body" size="sm" weight="medium" style={{ color: 'var(--theme-color-success-120)' }}>Confirmed by Ops</Text>
-        } />
-        <CardRow label="Carrier Booking Ref" value={
-          <Text variant="body" size="sm" weight="medium" style={{ color: 'var(--theme-color-primary-60)' }}>MSCUUK048912</Text>
-        } />
-        <CardRow label="Booking Channel Ref" value={
-          <Text variant="body" size="sm" weight="medium" style={{ color: 'var(--theme-color-grey-100)' }}>INB20260501A</Text>
-        } />
-        <CardRow label="Contract / Rate Ref" value={
-          <Text variant="body" size="sm" weight="medium" style={{ color: 'var(--theme-color-grey-100)' }}>CTR-2026-0192</Text>
-        } />
-        <CardRow label="Last Carrier Response" value={
-          <InlineBadge label="Pending Update" bg="var(--theme-color-yellow-20)" color="var(--theme-color-yellow-120)" />
-        } />
-        <CardRow label="Booking Status" value={
-          <InlineBadge label="Confirmed" bg="var(--theme-color-success-20)" color="var(--theme-color-success-120)" />
-        } />
-      </div>
-    </OverviewCard>
-  );
-}
-
-// SVG donut chart — arc path approach
-function describeArc(cx: number, cy: number, r: number, startDeg: number, endDeg: number): string {
-  const toRad = (d: number) => (d - 90) * (Math.PI / 180);
-  const x1 = cx + r * Math.cos(toRad(startDeg));
-  const y1 = cy + r * Math.sin(toRad(startDeg));
-  const x2 = cx + r * Math.cos(toRad(endDeg));
-  const y2 = cy + r * Math.sin(toRad(endDeg));
-  const large = endDeg - startDeg > 180 ? 1 : 0;
-  return `M ${x1.toFixed(3)} ${y1.toFixed(3)} A ${r} ${r} 0 ${large} 1 ${x2.toFixed(3)} ${y2.toFixed(3)}`;
-}
-
-const TASK_DATA = [
-  { label: 'Overdue',       value: 2, color: 'var(--theme-color-error-60)' },
-  { label: 'Due Today',     value: 3, color: 'var(--theme-color-yellow-60)' },
-  { label: 'Due This Week', value: 5, color: 'var(--theme-color-primary-40)' },
-  { label: 'Due Later',     value: 0, color: 'var(--theme-color-grey-20)' },
-];
-
-function DonutChart() {
-  const cx = 44, cy = 44, r = 33;
-  const total = TASK_DATA.reduce((s, d) => s + d.value, 0);
-  let angle = 0;
-  return (
-    <svg width={88} height={88} viewBox="0 0 88 88" style={{ flexShrink: 0 }}>
-      <circle cx={cx} cy={cy} r={r} fill="none" stroke="var(--theme-color-grey-10)" strokeWidth={11} />
-      {TASK_DATA.map((seg, i) => {
-        if (seg.value === 0) return null;
-        const sweep = (seg.value / total) * 359.99;
-        const path = describeArc(cx, cy, r, angle, angle + sweep);
-        angle += sweep;
-        return <path key={i} d={path} fill="none" stroke={seg.color} strokeWidth={11} strokeLinecap="butt" />;
-      })}
-      <text x={cx} y={cy - 5} textAnchor="middle" style={{ fontSize: 19, fontWeight: 700, fill: 'var(--theme-color-grey-100)' }}>{total}</text>
-      <text x={cx} y={cy + 13} textAnchor="middle" style={{ fontSize: 10, fill: 'var(--theme-color-grey-50)' }}>Tasks</text>
-    </svg>
-  );
-}
-
-function TasksSummaryCard() {
-  return (
-    <OverviewCard
-      title="Tasks Summary"
-      cta={<Button variant="link" size="sm" style={{ marginRight: -4 }}>View All Tasks →</Button>}
-      style={{ flex: 1 }}
-    >
-      <div style={{ display: 'flex', gap: 16, alignItems: 'center' }}>
-        <DonutChart />
-        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 9 }}>
-          {TASK_DATA.map((seg) => (
-            <div key={seg.label} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
-                <span style={{ width: 8, height: 8, borderRadius: 2, background: seg.color, display: 'inline-block', flexShrink: 0 }} />
-                <Text variant="body" size="sm" style={{ color: 'var(--theme-color-grey-70)' }}>{seg.label}</Text>
-              </div>
-              <Text variant="body" size="sm" weight="semibold" style={{ color: 'var(--theme-color-grey-100)' }}>{seg.value}</Text>
-            </div>
+function BookingDetailsCard() {
+  const content = (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+      {/* Cargo */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+        <SectionLabel>Cargo</SectionLabel>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px 24px' }}>
+          {BOOKING_CARGO_FIELDS.map(({ label, value }) => (
+            <FieldItem key={label} label={label} value={value} />
           ))}
         </div>
       </div>
-      <div style={{ borderTop: '1px solid var(--theme-color-grey-10)', paddingTop: 12, display: 'flex', justifyContent: 'space-between' }}>
-        <div>
-          <Text variant="body" size="sm" style={{ color: 'var(--theme-color-grey-50)', display: 'block', marginBottom: 2 }}>Most Urgent</Text>
-          <Text variant="body" size="sm" weight="semibold" style={{ color: 'var(--theme-color-error-100)' }}>SI Cutoff</Text>
-        </div>
-        <div style={{ textAlign: 'right' }}>
-          <Text variant="body" size="sm" style={{ color: 'var(--theme-color-grey-50)', display: 'block', marginBottom: 2 }}>Due In</Text>
-          <Text variant="body" size="sm" weight="semibold" style={{ color: 'var(--theme-color-error-100)' }}>4h 15m</Text>
+
+      <div style={{ height: 1, background: 'var(--theme-color-grey-10)' }} />
+
+      {/* Carrier & Terms */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+        <SectionLabel>Carrier & Terms</SectionLabel>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px 24px' }}>
+          <FieldItem label="Carrier Booking Ref" value={
+            <Text variant="body" size="md" style={{ color: 'var(--theme-color-primary-60)' }}>MSCUUK048912</Text>
+          } />
+          <FieldItem label="Contract / Rate Ref" value={
+            <Text variant="body" size="md" style={{ color: 'var(--theme-color-primary-60)' }}>EINBRIT-MSC-2026</Text>
+          } />
+          <FieldItem label="BL Numbers" value={
+            <Text variant="body" size="md" style={{ color: 'var(--theme-color-grey-40)', fontStyle: 'italic' }}>Awaiting BL draft</Text>
+          } />
+          <FieldItem label="Vessel / Voyage" value="MSC MIRIAM · AE6/PEX · V26023" />
+          <FieldItem label="Movement Type"    value="Door to Door" />
+          <FieldItem label="Service Mode"     value="CY-CY (Merchant Haulage)" />
+          <FieldItem label="Freight Terms"    value="Prepaid" />
+          <FieldItem label="Booking Date"     value="19 Feb 2026, 08:16" />
+          <FieldItem label="Booked By"        value="Ravi Arora" />
+          <FieldItem label="Assigned To"      value="Sahil Kala" />
+          <FieldItem label="Created"          value="14 Jan 2026" />
         </div>
       </div>
-    </OverviewCard>
+    </div>
+  );
+
+  return (
+    <Collapse
+      defaultActiveKey={[]}
+      items={[{
+        key: 'booking-details',
+        label: 'Booking Details',
+                children: content,
+      }]}
+    />
   );
 }
 
-const BL_LIST = [
-  { id: 'MSCUUK048912', isPrimary: true,  containers: '4 (2 × 40GP, 2 × 20GP)', status: 'Draft' },
-  { id: 'MSCUUK048913', isPrimary: false, containers: '2 (2 × 40GP)',            status: 'Draft' },
-];
+function ContainerSummaryCard() {
+  const content = (
+    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px 24px' }}>
+      {BOOKING_CONTAINER_FIELDS.map(({ label, value }) => (
+        <FieldItem key={label} label={label} value={value} />
+      ))}
+    </div>
+  );
 
-function BLSummaryCard() {
   return (
-    <OverviewCard
-      title="BL Summary"
-      cta={<Button variant="link" size="sm" style={{ marginRight: -4 }}>View All BLs →</Button>}
-      style={{ flex: 1 }}
-    >
-      {/* Totals */}
-      <div style={{ display: 'flex', gap: 20 }}>
-        {[
-          { label: 'Total BLs',        value: '2' },
-          { label: 'Total Containers', value: '6' },
-          { label: 'Total Weight',     value: '36 MT' },
-        ].map(({ label, value }) => (
-          <div key={label}>
-            <Text variant="body" size="sm" style={{ color: 'var(--theme-color-grey-50)', display: 'block', marginBottom: 2 }}>{label}</Text>
-            <Text variant="body" size="sm" weight="semibold" style={{ color: 'var(--theme-color-grey-100)' }}>{value}</Text>
-          </div>
-        ))}
+    <Collapse
+      defaultActiveKey={[]}
+      items={[{
+        key: 'container-summary',
+        label: 'Container Summary',
+                children: content,
+      }]}
+    />
+  );
+}
+
+function TasksSummaryCard({ stage }: { stage: PreviewStage }) {
+  const [view, setView] = useState<'mine' | 'all'>('mine');
+
+  const visibleTasks = TASKS_BY_STAGE[stage].filter(t =>
+    view === 'all' || t.assignee?.initials === CURRENT_USER_INITIALS || t.assignee === null
+  );
+  const overdueCount  = visibleTasks.filter(t => t.urgency === 'overdue').length;
+  const dueTodayCount = visibleTasks.filter(t => t.urgency === 'due-today').length;
+  const nextTask      = visibleTasks.find(t => t.urgency === 'overdue' || t.urgency === 'due-today') ?? null;
+
+  return (
+    <div style={{ background: 'var(--theme-color-pure-100)', border: '1px solid var(--theme-color-grey-10)', borderRadius: 12, padding: 20, display: 'flex', flexDirection: 'column', gap: 0, flex: 1 }}>
+      {/* Card heading + toggle */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingBottom: 16 }}>
+        <Text variant="body" size="md" weight="medium" style={{ color: 'var(--theme-color-grey-100)', fontSize: 16 }}>Tasks to Complete</Text>
+        {React.createElement(ChipsComponent as React.ComponentType<any>, {
+          size: 'sm',
+          theme: 'line',
+          mandatory: true,
+          items: [{ key: 'mine', label: 'Mine' }, { key: 'all', label: 'All' }],
+          selected: view,
+          setSelected: (key: string) => setView(key as 'mine' | 'all'),
+        })}
       </div>
 
-      {/* BL rows */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-        {BL_LIST.map((bl) => (
-          <div key={bl.id} style={{
-            background: 'var(--theme-color-grey-5)',
-            borderRadius: 8,
-            padding: '10px 12px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            gap: 8,
-          }}>
-            <div style={{ flex: 1, minWidth: 0 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 2 }}>
-                <Text variant="body" size="sm" weight="semibold" style={{ color: 'var(--theme-color-primary-60)' }}>
-                  {bl.id}
-                </Text>
-                {bl.isPrimary && (
-                  <div style={{ background: 'var(--theme-color-primary-20)', borderRadius: 32, padding: '0 7px', height: 18, display: 'inline-flex', alignItems: 'center' }}>
-                    <Text variant="body" size="sm" style={{ color: 'var(--theme-color-primary-80)', fontSize: 11 }}>Primary</Text>
-                  </div>
-                )}
-              </div>
-              <Text variant="body" size="sm" style={{ color: 'var(--theme-color-grey-50)' }}>
-                Containers: {bl.containers}
-              </Text>
+      {/* Count + urgency breakdown */}
+      <div style={{ display: 'flex', flexDirection: 'column', paddingBottom: 16 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+          <Text variant="body" size="sm" style={{ color: 'var(--theme-color-grey-50)' }}>Pending</Text>
+          <span style={{ fontSize: 36, fontWeight: 700, lineHeight: 1, color: 'var(--theme-color-grey-100)', fontFamily: 'var(--font-inter)' }}>
+            {visibleTasks.length}
+          </span>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginTop: 10 }}>
+          {overdueCount > 0 && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+              <span style={{ width: 7, height: 7, borderRadius: '50%', background: 'var(--theme-color-error-60)', flexShrink: 0 }} />
+              <Text variant="body" size="sm" style={{ color: 'var(--theme-color-error-100)' }}>{overdueCount} overdue</Text>
             </div>
-            <InlineBadge label={bl.status} bg="var(--theme-color-grey-20)" color="var(--theme-color-grey-70)" />
-          </div>
-        ))}
-      </div>
-    </OverviewCard>
-  );
-}
-
-function CarrierFeedbackCard() {
-  return (
-    <OverviewCard
-      title="Carrier Feedback"
-      badge={<InlineBadge label="1 Pending" bg="var(--theme-color-yellow-20)" color="var(--theme-color-yellow-120)" />}
-      cta={<Button variant="link" size="sm" style={{ marginRight: -4 }}>Review in Booking Tab →</Button>}
-      style={{ flex: 1 }}
-    >
-      <Text variant="body" size="sm" weight="semibold" style={{ color: 'var(--theme-color-grey-100)' }}>
-        MSC has requested an update
-      </Text>
-
-      <div style={{
-        background: 'var(--theme-color-grey-5)',
-        borderRadius: 8,
-        padding: '12px 14px',
-        display: 'flex',
-        flexDirection: 'column',
-        gap: 10,
-      }}>
-        {[
-          { label: 'Field',     value: 'Place of Receipt' },
-          { label: 'Original',  value: 'Mumbai Factory' },
-          { label: 'Requested', value: 'Mumbai ICD' },
-          { label: 'Reason',    value: 'Carrier operational requirement' },
-        ].map(({ label, value }) => (
-          <div key={label} style={{ display: 'flex', gap: 12 }}>
-            <Text variant="body" size="sm" style={{ color: 'var(--theme-color-grey-50)', width: 72, flexShrink: 0 }}>{label}</Text>
-            <Text variant="body" size="sm" weight="medium" style={{ color: 'var(--theme-color-grey-100)' }}>{value}</Text>
-          </div>
-        ))}
-      </div>
-
-      <Text variant="body" size="sm" style={{ color: 'var(--theme-color-grey-40)' }}>
-        Received on 23 Apr 2026, 14:44 by MSC
-      </Text>
-    </OverviewCard>
-  );
-}
-
-function ChargesSummaryCard() {
-  return (
-    <OverviewCard
-      title="Charges Summary"
-      cta={<Button variant="link" size="sm" style={{ marginRight: -4 }}>View Charges →</Button>}
-      style={{ flex: 1 }}
-    >
-      <div style={{ display: 'flex', gap: 20 }}>
-        <div style={{ flex: 1 }}>
-          <Text variant="body" size="sm" style={{ color: 'var(--theme-color-grey-50)', display: 'block', marginBottom: 3 }}>
-            Total Revenue
-          </Text>
-          <Text variant="body" size="md" weight="semibold" style={{ color: 'var(--theme-color-grey-100)' }}>
-            USD 15,240.00
-          </Text>
-        </div>
-        <div style={{ flex: 1 }}>
-          <Text variant="body" size="sm" style={{ color: 'var(--theme-color-grey-50)', display: 'block', marginBottom: 3 }}>
-            Total Margin
-          </Text>
-          <div style={{ display: 'flex', alignItems: 'baseline', gap: 5 }}>
-            <Text variant="body" size="md" weight="semibold" style={{ color: 'var(--theme-color-success-120)' }}>
-              USD 2,860.00
-            </Text>
-            <Text variant="body" size="sm" style={{ color: 'var(--theme-color-success-100)' }}>
-              (18.8%)
-            </Text>
-          </div>
+          )}
+          {dueTodayCount > 0 && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+              <span style={{ width: 7, height: 7, borderRadius: '50%', background: 'var(--theme-color-orange-60)', flexShrink: 0 }} />
+              <Text variant="body" size="sm" style={{ color: 'var(--theme-color-orange-120)' }}>{dueTodayCount} due today</Text>
+            </div>
+          )}
+          {overdueCount === 0 && dueTodayCount === 0 && (
+            <Text variant="body" size="sm" style={{ color: 'var(--theme-color-success-100)' }}>All caught up</Text>
+          )}
         </div>
       </div>
 
-      <div style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        background: 'var(--theme-color-yellow-10)',
-        border: '1px solid var(--theme-color-yellow-30)',
-        borderRadius: 8,
-        padding: '8px 12px',
-      }}>
-        <Text variant="body" size="sm" style={{ color: 'var(--theme-color-yellow-120)' }}>
-          Pending Approvals
-        </Text>
-        <div style={{
-          width: 22, height: 22, borderRadius: '50%',
-          background: 'var(--theme-color-yellow-60)',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          flexShrink: 0,
-        }}>
-          <Text variant="body" size="sm" weight="semibold" style={{ color: '#fff', fontSize: 11, lineHeight: 1 }}>1</Text>
+      <div style={{ height: 1, background: 'var(--theme-color-grey-10)' }} />
+
+      {/* Most Urgent task — or spacer to fill height when no urgent task */}
+      {nextTask ? (
+        <div style={{ paddingTop: 12, display: 'flex', flexDirection: 'column', gap: 10, flex: 1 }}>
+          <Text variant="body" size="sm" style={{ color: 'var(--theme-color-grey-50)' }}>
+            Most Urgent
+          </Text>
+          <TaskCard task={nextTask} completed={false} onToggleComplete={() => {}} hideMenu />
         </div>
+      ) : (
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: 4, paddingTop: 12 }}>
+          <Text variant="body" size="sm" style={{ color: 'var(--theme-color-grey-30)' }}>No pending tasks</Text>
+          <Text variant="body" size="sm" style={{ color: 'var(--theme-color-grey-20)', fontSize: 11 }}>All tasks are completed</Text>
+        </div>
+      )}
+
+      {/* Footer */}
+      <div style={{ paddingTop: 12, borderTop: '1px solid var(--theme-color-grey-10)', marginTop: nextTask ? 12 : 0 }}>
+        <Button variant="link" size="sm" icon={<ChevronRight width={10} height={10} />} iconPosition="end" style={{ marginLeft: -4 }}>View all tasks</Button>
       </div>
-    </OverviewCard>
+    </div>
   );
 }
 
@@ -1157,16 +884,18 @@ function RecentActivityCard() {
                 {item.description}
               </Text>
             </div>
-            <Text variant="body" size="sm" style={{ color: 'var(--theme-color-grey-40)', flexShrink: 0, whiteSpace: 'nowrap', marginTop: 1 }}>
-              {item.time}
-            </Text>
+            <div style={{ marginTop: 1, flexShrink: 0 }}>
+              <Text variant="body" size="sm" style={{ color: 'var(--theme-color-grey-40)', whiteSpace: 'nowrap' }}>
+                {item.time}
+              </Text>
+            </div>
           </div>
         ))}
       </div>
 
       {/* Footer */}
       <div style={{ display: 'flex', justifyContent: 'flex-end', borderTop: '1px solid var(--theme-color-grey-10)', paddingTop: 12 }}>
-        <Button variant="link" size="sm" style={{ marginRight: -4 }}>View all communications →</Button>
+        <Button variant="link" size="sm" icon={<ChevronRight width={10} height={10} />} iconPosition="end" style={{ marginRight: -4 }}>View all communications</Button>
       </div>
     </div>
   );
@@ -1179,38 +908,181 @@ function RecentActivityCard() {
         key: 'recent-activity',
         label: 'Recent Activity',
         extra: <Button variant="link" size="sm" style={{ marginRight: -4 }}>View all →</Button>,
-        showArrow: false,
-        collapsible: 'icon',
+                collapsible: 'icon',
         children: content,
       }]}
     />
   );
 }
 
-function OverviewContent() {
-  const showCarrierFeedback = true;
+type PreviewStage = 'booking' | 'pre-shipment' | 'cargo-ready' | 'in-transit' | 'completed';
+
+const PREVIEW_STAGES: { key: PreviewStage; label: string }[] = [
+  { key: 'booking',      label: 'Booking' },
+  { key: 'pre-shipment', label: 'Pre-Shipment' },
+  { key: 'cargo-ready',  label: 'Cargo Ready' },
+  { key: 'in-transit',   label: 'In Transit' },
+  { key: 'completed',    label: 'Completed' },
+];
+
+type ChargesData = {
+  pill: { label: string; color: string };
+  sales: number | null;
+  purchase: number | null;
+  grossMarginAmt: number | null;
+  invoicesRaised: number;
+  disputed: number; // 0 = no disputes, >0 = show amount in error color
+};
+
+const CHARGES_BY_STAGE: Record<PreviewStage, ChargesData> = {
+  booking: {
+    pill: { label: 'Not Started', color: 'default' },
+    sales: null, purchase: null, grossMarginAmt: null, invoicesRaised: 0, disputed: 0,
+  },
+  'pre-shipment': {
+    pill: { label: '~ Estimated', color: 'yellow' },
+    sales: 5040, purchase: 4371, grossMarginAmt: 669, invoicesRaised: 0, disputed: 0,
+  },
+  'cargo-ready': {
+    pill: { label: '~ Estimated', color: 'yellow' },
+    sales: 5040, purchase: 4320, grossMarginAmt: 720, invoicesRaised: 1, disputed: 0,
+  },
+  'in-transit': {
+    pill: { label: '~ Estimated', color: 'yellow' },
+    sales: 5040, purchase: 4371, grossMarginAmt: 669, invoicesRaised: 2, disputed: 420,
+  },
+  completed: {
+    pill: { label: 'Confirmed', color: 'success' },
+    sales: 5040, purchase: 4371, grossMarginAmt: 669, invoicesRaised: 7, disputed: 0,
+  },
+};
+
+function ChargesCard({ stage }: { stage: PreviewStage }) {
+  const data = CHARGES_BY_STAGE[stage];
+  const fmt = (n: number) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(n);
+  const empty = data.sales === null;
+
+  return (
+    <div style={{ background: 'var(--theme-color-pure-100)', border: '1px solid var(--theme-color-grey-10)', borderRadius: 12, padding: 20, display: 'flex', flexDirection: 'column', gap: 0, flex: 1 }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingBottom: 16 }}>
+        <Text variant="body" size="md" weight="medium" style={{ color: 'var(--theme-color-grey-100)', fontSize: 16 }}>Charges Summary</Text>
+        <Pill color={data.pill.color} theme="light" size="sm" showIcon={false}>{data.pill.label}</Pill>
+      </div>
+
+      <div style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            <Text variant="body" size="sm" style={{ color: 'var(--theme-color-grey-50)' }}>Gross Margin</Text>
+            <span style={{ fontSize: 36, fontWeight: 700, lineHeight: 1, color: empty ? 'var(--theme-color-grey-100)' : 'var(--theme-color-success-100)', fontFamily: 'var(--font-inter)' }}>
+              {empty ? '—' : fmt(data.grossMarginAmt!)}
+            </span>
+          </div>
+          <div style={{ display: 'flex', gap: 16 }}>
+            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 8 }}>
+              <Text variant="body" size="sm" style={{ color: 'var(--theme-color-grey-50)' }}>Sales</Text>
+              <span style={{ fontSize: 20, fontWeight: 700, lineHeight: 1, color: 'var(--theme-color-grey-100)', fontFamily: 'var(--font-inter)' }}>{empty ? '—' : fmt(data.sales!)}</span>
+            </div>
+            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 8 }}>
+              <Text variant="body" size="sm" style={{ color: 'var(--theme-color-grey-50)' }}>Purchase</Text>
+              <span style={{ fontSize: 20, fontWeight: 700, lineHeight: 1, color: 'var(--theme-color-grey-100)', fontFamily: 'var(--font-inter)' }}>{empty ? '—' : fmt(data.purchase!)}</span>
+            </div>
+          </div>
+        </div>
+
+        <div style={{ height: 1, background: 'var(--theme-color-grey-10)', marginTop: 16 }} />
+
+        <div style={{ display: 'flex', gap: 16, marginTop: 16 }}>
+          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 2 }}>
+            <Text variant="body" size="sm" style={{ color: 'var(--theme-color-grey-50)' }}>Invoices Raised</Text>
+            <Text variant="body" size="md" style={{ color: 'var(--theme-color-grey-100)' }}>{empty || data.invoicesRaised === 0 ? '—' : data.invoicesRaised}</Text>
+          </div>
+          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 2 }}>
+            <Text variant="body" size="sm" style={{ color: 'var(--theme-color-grey-50)' }}>Disputed</Text>
+            <Text variant="body" size="md" style={{ color: data.disputed > 0 ? 'var(--theme-color-error-120)' : 'var(--theme-color-grey-100)' }}>{empty || data.disputed === 0 ? '—' : fmt(data.disputed)}</Text>
+          </div>
+        </div>
+
+        <div style={{ flex: 1 }} />
+
+        <div style={{ borderTop: '1px solid var(--theme-color-grey-10)', paddingTop: 12 }}>
+          <Button variant="link" size="sm" icon={<ChevronRight width={10} height={10} />} iconPosition="end" style={{ marginLeft: -4 }}>View all charges</Button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function OverviewContent({ previewStage, setPreviewStage }: { previewStage: PreviewStage; setPreviewStage: (s: PreviewStage) => void }) {
+  const [switcherOpen, setSwitcherOpen] = React.useState(false);
+  const activeStage = PREVIEW_STAGES.find(s => s.key === previewStage)!;
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-      {/* Row 1: Shipment Health + Charges Summary */}
-      <div style={{ display: 'flex', gap: 16 }}>
-        <ShipmentHealthCard />
-        <ChargesSummaryCard />
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, minHeight: 350 }}>
+        <TasksSummaryCard stage={previewStage} />
+        <ChargesCard stage={previewStage} />
       </div>
+      <BookingDetailsCard />
+      <ContainerSummaryCard />
 
-      {/* Row 2: Routing Summary full width */}
-      <RoutingSummaryCard />
-
-      {/* Row 3: 4 summary cards */}
-      <div style={{ display: 'flex', gap: 16 }}>
-        <BookingSummaryCard />
-        <TasksSummaryCard />
-        <BLSummaryCard />
-        {showCarrierFeedback && <CarrierFeedbackCard />}
+      <div style={{
+        position: 'fixed',
+        bottom: 24,
+        left: '50%',
+        transform: 'translateX(-50%)',
+        background: 'var(--theme-color-grey-90)',
+        borderRadius: 999,
+        boxShadow: '0 8px 24px rgba(0,0,0,0.2)',
+        zIndex: 1000,
+      }}>
+        {switcherOpen ? (
+          <div style={{ display: 'flex', alignItems: 'center', padding: '7px 7px 7px 14px', gap: 10 }}>
+            <span style={{ color: 'var(--theme-color-grey-50)', fontSize: 10, fontFamily: 'var(--font-inter)', letterSpacing: '0.06em', textTransform: 'uppercase', whiteSpace: 'nowrap' }}>
+              Stage
+            </span>
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+              {PREVIEW_STAGES.map((s, i) => (
+                <React.Fragment key={s.key}>
+                  {i > 0 && <span style={{ color: 'var(--theme-color-grey-60)', fontSize: 10, padding: '0 2px' }}>·</span>}
+                  <button
+                    onClick={() => { setPreviewStage(s.key); setSwitcherOpen(false); }}
+                    style={{
+                      padding: '3px 6px',
+                      border: 'none',
+                      cursor: 'pointer',
+                      background: 'transparent',
+                      color: previewStage === s.key ? 'var(--theme-color-pure-100)' : 'var(--theme-color-grey-50)',
+                      fontSize: 12,
+                      fontWeight: previewStage === s.key ? 600 : 400,
+                      fontFamily: 'var(--font-inter)',
+                      lineHeight: 1,
+                    }}
+                  >
+                    {s.label}
+                  </button>
+                </React.Fragment>
+              ))}
+            </div>
+            <button
+              onClick={() => setSwitcherOpen(false)}
+              style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 26, height: 26, borderRadius: 999, border: 'none', cursor: 'pointer', background: 'var(--theme-color-grey-80)', flexShrink: 0 }}
+            >
+              <Chevrondown width={11} height={11} style={{ color: 'var(--theme-color-grey-30)', transform: 'rotate(180deg)' }} />
+            </button>
+          </div>
+        ) : (
+          <button
+            onClick={() => setSwitcherOpen(true)}
+            style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '7px 7px 7px 14px', border: 'none', cursor: 'pointer', background: 'transparent', borderRadius: 999 }}
+          >
+            <span style={{ color: 'var(--theme-color-grey-50)', fontSize: 10, fontFamily: 'var(--font-inter)', letterSpacing: '0.06em', textTransform: 'uppercase' }}>Stage</span>
+            <span style={{ color: 'var(--theme-color-pure-100)', fontSize: 12, fontWeight: 600, fontFamily: 'var(--font-inter)' }}>{activeStage.label}</span>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 26, height: 26, borderRadius: 999, background: 'var(--theme-color-grey-80)' }}>
+              <Chevrondown width={11} height={11} style={{ color: 'var(--theme-color-grey-30)' }} />
+            </div>
+          </button>
+        )}
       </div>
-
-      {/* Row 4: Recent Activity */}
-      <RecentActivityCard />
     </div>
   );
 }
@@ -1245,6 +1117,33 @@ const TASKS_DATA: Task[] = [
   { id: 6, title: 'Notify Customer — Departure',      urgency: 'upcoming',  stage: 'On the Water', dateLabel: 'Due 18 May 26',                  assignee: { initials: 'AM', name: 'Amir Mohsin',  color: '#D32F2F' }, category: 'communication', linkedCTA: 'Send Mail'      },
   { id: 7, title: 'File Export Customs Declaration',  urgency: 'upcoming',  stage: 'Pre-Shipment', dateLabel: 'Due 20 May 26',                  assignee: null,                                                   category: 'customs'                         },
 ];
+
+const TASKS_BY_STAGE: Record<PreviewStage, Task[]> = {
+  booking: [
+    { id: 101, title: 'Confirm Carrier Booking',                 urgency: 'due-today', stage: 'Booking', dateLabel: 'Due today, 18:00',   assignee: { initials: 'SK', name: 'Sahil Kala',  color: '#1D3A5F' }, category: 'booking'                       },
+    { id: 102, title: 'Send Quotation to Customer',              urgency: 'this-week', stage: 'Booking', dateLabel: 'Due 20 Apr 26',      assignee: { initials: 'SK', name: 'Sahil Kala',  color: '#1D3A5F' }, category: 'communication', linkedCTA: 'Send Mail' },
+    { id: 103, title: 'Collect Commercial Invoice & Packing List', urgency: 'this-week', stage: 'Booking', dateLabel: 'Due 22 Apr 26',  assignee: null,                                                    category: 'document'                      },
+    { id: 104, title: 'Set Up Shipment File',                    urgency: 'upcoming',  stage: 'Booking', dateLabel: 'Due 25 Apr 26',      assignee: { initials: 'AM', name: 'Amir Mohsin', color: '#D32F2F' }, category: 'booking'                       },
+  ],
+  'pre-shipment': [
+    { id: 1,   title: 'Submit Shipping Instructions',            urgency: 'overdue',   stage: 'Pre-Shipment', dateLabel: 'Overdue since 05 May 26, 17:00', assignee: { initials: 'SK', name: 'Sahil Kala',   color: '#1D3A5F' }, category: 'document',  linkedCTA: 'Submit SI'  },
+    { id: 2,   title: 'Upload VGM Certificate',                  urgency: 'overdue',   stage: 'Pre-Shipment', dateLabel: 'Overdue since 03 May 26, 23:59', assignee: { initials: 'PS', name: 'Priya Sharma', color: '#4A90D9' }, category: 'document'                      },
+    { id: 3,   title: 'BL Draft Review & Approval',              urgency: 'due-today', stage: 'Pre-Shipment', dateLabel: 'Due today, 17:00',               assignee: { initials: 'SK', name: 'Sahil Kala',   color: '#1D3A5F' }, category: 'document',  linkedCTA: 'Review BL' },
+    { id: 4,   title: 'Confirm Cargo Ready Date',                urgency: 'this-week', stage: 'Pre-Shipment', dateLabel: 'Due 09 May 26',                  assignee: { initials: 'SK', name: 'Sahil Kala',   color: '#1D3A5F' }, category: 'logistics'                     },
+    { id: 7,   title: 'File Export Customs Declaration',         urgency: 'upcoming',  stage: 'Pre-Shipment', dateLabel: 'Due 20 May 26',                  assignee: null,                                                    category: 'customs'                       },
+  ],
+  'cargo-ready': [
+    { id: 201, title: 'Confirm Cargo Handover at CY',            urgency: 'due-today', stage: 'Cargo Ready', dateLabel: 'Due today, 12:00',  assignee: { initials: 'SK', name: 'Sahil Kala',  color: '#1D3A5F' }, category: 'logistics'                         },
+    { id: 5,   title: 'Arrange Inland Transport to Port',        urgency: 'this-week', stage: 'Cargo Ready', dateLabel: 'Due 10 May 26',     assignee: null,                                                   category: 'logistics'                         },
+    { id: 202, title: 'Notify Customer — Cargo Ready',           urgency: 'this-week', stage: 'Cargo Ready', dateLabel: 'Due 11 May 26',     assignee: { initials: 'AM', name: 'Amir Mohsin', color: '#D32F2F' }, category: 'communication', linkedCTA: 'Send Mail' },
+  ],
+  'in-transit': [
+    { id: 301, title: 'Prepare Import Documentation',            urgency: 'due-today', stage: 'In Transit', dateLabel: 'Due today, 17:00',  assignee: { initials: 'SK', name: 'Sahil Kala',  color: '#1D3A5F' }, category: 'document'                          },
+    { id: 302, title: 'Monitor Vessel ETA',                      urgency: 'this-week', stage: 'In Transit', dateLabel: 'Due 14 May 26',     assignee: { initials: 'SK', name: 'Sahil Kala',  color: '#1D3A5F' }, category: 'logistics'                         },
+    { id: 6,   title: 'Notify Customer — ETA Update',            urgency: 'upcoming',  stage: 'In Transit', dateLabel: 'Due 18 May 26',     assignee: { initials: 'AM', name: 'Amir Mohsin', color: '#D32F2F' }, category: 'communication', linkedCTA: 'Send Mail' },
+  ],
+  completed: [],
+};
 
 function getCategoryIcon(category: TaskCategory, color: string): React.ReactNode {
   const p = { width: 12, height: 12, color };
@@ -1318,8 +1217,8 @@ function FilterDropdownChip({
   );
 }
 
-function TaskCard({ task, completed, onToggleComplete }: {
-  task: Task; completed: boolean; onToggleComplete: () => void;
+function TaskCard({ task, completed, onToggleComplete, hideMenu = false }: {
+  task: Task; completed: boolean; onToggleComplete: () => void; hideMenu?: boolean;
 }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const cfg = URGENCY_CONFIG[task.urgency];
@@ -1339,30 +1238,33 @@ function TaskCard({ task, completed, onToggleComplete }: {
     <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8 }}>
 
       {/* Content */}
-      <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 2 }}>
+      <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 8 }}>
 
-        {/* Row 1 — task name */}
-        <Text variant="body" size="sm" weight="medium" style={{
-          color: completed ? 'var(--theme-color-grey-40)' : 'var(--theme-color-grey-100)',
-          textDecoration: completed ? 'line-through' : 'none',
-          display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
-        }}>
-          {task.title}
-        </Text>
-
-        {/* Row 2 — icon + date */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-          {getCategoryIcon(task.category, completed ? 'var(--theme-color-grey-30)' : cfg.dateColor)}
-          <Text variant="body" size="sm" style={{
-            color: completed ? 'var(--theme-color-grey-30)' : cfg.dateColor,
-            fontSize: 11,
+        {/* Rows 1+2 container */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+          {/* Row 1 — task name */}
+          <Text variant="body" size="sm" weight="medium" style={{
+            color: completed ? 'var(--theme-color-grey-40)' : 'var(--theme-color-grey-100)',
+            textDecoration: completed ? 'line-through' : 'none',
+            display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
           }}>
-            {completed ? 'Completed' : task.dateLabel}
+            {task.title}
           </Text>
+
+          {/* Row 2 — icon + date */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+            {getCategoryIcon(task.category, completed ? 'var(--theme-color-grey-30)' : cfg.dateColor)}
+            <Text variant="body" size="sm" style={{
+              color: completed ? 'var(--theme-color-grey-30)' : cfg.dateColor,
+              fontSize: 11,
+            }}>
+              {completed ? 'Completed' : task.dateLabel}
+            </Text>
+          </div>
         </div>
 
         {/* Row 3 — assignee */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 4 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
           {task.assignee ? (
             <>
               <Avatar size={18} style={{ background: task.assignee.color, fontSize: 9, fontWeight: 600, flexShrink: 0 }}>
@@ -1405,22 +1307,24 @@ function TaskCard({ task, completed, onToggleComplete }: {
         )}
 
       {/* Three-dot menu */}
-      <Dropdown
-        trigger={['click']}
-        open={menuOpen}
-        onOpenChange={(v: boolean) => setMenuOpen(v)}
-        placement="bottomRight"
-        items={menuItems}
-        onAction={handleMenuAction}
-        showTick={false}
-      >
-        <button
-          onClick={(e) => e.stopPropagation()}
-          style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 2, display: 'flex', alignItems: 'center', flexShrink: 0 }}
+      {!hideMenu && (
+        <Dropdown
+          trigger={['click']}
+          open={menuOpen}
+          onOpenChange={(v: boolean) => setMenuOpen(v)}
+          placement="bottomRight"
+          items={menuItems}
+          onAction={handleMenuAction}
+          showTick={false}
         >
-          <MoreVert width={14} height={14} color="var(--theme-color-grey-100)" />
-        </button>
-      </Dropdown>
+          <button
+            onClick={(e) => e.stopPropagation()}
+            style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 2, display: 'flex', alignItems: 'center', flexShrink: 0 }}
+          >
+            <MoreVert width={14} height={14} color="var(--theme-color-grey-100)" />
+          </button>
+        </Dropdown>
+      )}
       </div>
 
     </div>
@@ -1594,14 +1498,14 @@ function RightPanelTasks() {
           open={openFilter === 'date'} onOpenChange={v => setOpenFilter(v ? 'date' : null)}
           dropdownContent={
             <div style={{ padding: 14 }} onClick={e => e.stopPropagation()}>
-              <Text variant="body" size="sm" weight="medium" style={{ color: 'var(--theme-color-grey-70)', display: 'block', marginBottom: 12 }}>Date Range</Text>
+              <div style={{ marginBottom: 12 }}><Text variant="body" size="sm" weight="medium" style={{ color: 'var(--theme-color-grey-70)', display: 'block' }}>Date Range</Text></div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                 <div>
-                  <Text variant="body" size="sm" style={{ color: 'var(--theme-color-grey-50)', display: 'block', marginBottom: 4 }}>From</Text>
+                  <div style={{ marginBottom: 4 }}><Text variant="body" size="sm" style={{ color: 'var(--theme-color-grey-50)', display: 'block' }}>From</Text></div>
                   <input type="date" value={dateFrom} onChange={e => setDateFrom(e.target.value)} style={{ width: '100%', height: 32, border: '1px solid var(--theme-color-grey-20)', borderRadius: 6, padding: '0 8px', fontSize: 12, fontFamily: 'inherit', color: 'var(--theme-color-grey-80)', outline: 'none', background: 'var(--theme-color-pure-100)', boxSizing: 'border-box' }} />
                 </div>
                 <div>
-                  <Text variant="body" size="sm" style={{ color: 'var(--theme-color-grey-50)', display: 'block', marginBottom: 4 }}>To</Text>
+                  <div style={{ marginBottom: 4 }}><Text variant="body" size="sm" style={{ color: 'var(--theme-color-grey-50)', display: 'block' }}>To</Text></div>
                   <input type="date" value={dateTo} onChange={e => setDateTo(e.target.value)} style={{ width: '100%', height: 32, border: '1px solid var(--theme-color-grey-20)', borderRadius: 6, padding: '0 8px', fontSize: 12, fontFamily: 'inherit', color: 'var(--theme-color-grey-80)', outline: 'none', background: 'var(--theme-color-pure-100)', boxSizing: 'border-box' }} />
                 </div>
                 {(dateFrom || dateTo) && (
@@ -1619,9 +1523,11 @@ function RightPanelTasks() {
       {/* ── Flat task list ── */}
       <div style={{ padding: 16 }}>
         {filtered.length === 0 ? (
-          <Text variant="body" size="sm" style={{ color: 'var(--theme-color-grey-40)', display: 'block', textAlign: 'center', marginTop: 24 }}>
-            No tasks match the selected filters
-          </Text>
+          <div style={{ marginTop: 24, textAlign: 'center' }}>
+            <Text variant="body" size="sm" style={{ color: 'var(--theme-color-grey-40)', display: 'block' }}>
+              No tasks match the selected filters
+            </Text>
+          </div>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
             {filtered.map((t, i) => (
@@ -1752,36 +1658,41 @@ function MessageCard({ email }: { email: Email }) {
       </Avatar>
 
       {/* Content */}
-      <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 2 }}>
-        {/* Row 1: Name + direction tag */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6, minWidth: 0 }}>
-          <Text variant="body" size="sm" weight="medium" style={{ color: 'var(--theme-color-grey-100)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flexShrink: 1 }}>
-            {email.otherParty}
+      <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 8 }}>
+        {/* Rows 1+2 container */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+          {/* Row 1: Name + direction tag */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6, minWidth: 0 }}>
+            <Text variant="body" size="sm" weight="medium" style={{ color: 'var(--theme-color-grey-100)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flexShrink: 1 }}>
+              {email.otherParty}
+            </Text>
+            <EmailDirTag direction={email.direction} />
+          </div>
+
+          {/* Row 2: Timestamp */}
+          <Text variant="body" size="sm" style={{ color: 'var(--theme-color-grey-50)', fontSize: 11 }}>
+            {email.time}
           </Text>
-          <EmailDirTag direction={email.direction} />
         </div>
 
-        {/* Row 2: Timestamp */}
-        <Text variant="body" size="sm" style={{ color: 'var(--theme-color-grey-50)', fontSize: 11 }}>
-          {email.time}
-        </Text>
-
         {/* Row 3: Subject */}
-        <Text variant="body" size="sm" style={{ color: 'var(--theme-color-grey-70)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'block', marginTop: 4 }}>
+        <Text variant="body" size="sm" style={{ color: 'var(--theme-color-grey-70)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'block' }}>
           {email.subject}
         </Text>
       </div>
 
-      {/* CTA — same position and style as task card */}
-      <Button
-        variant="link"
-        size="sm"
-        icon={<ChevronRight width={10} height={10} />}
-        iconPosition="end"
-        onClick={(e: React.MouseEvent) => e.stopPropagation()}
-      >
-        View Mail
-      </Button>
+      {/* Right side: CTA — mirrors TaskCard's right-column pattern */}
+      <div style={{ flexShrink: 0 }}>
+        <Button
+          variant="link"
+          size="sm"
+          icon={<ChevronRight width={10} height={10} />}
+          iconPosition="end"
+          onClick={(e: React.MouseEvent) => e.stopPropagation()}
+        >
+          View Mail
+        </Button>
+      </div>
     </div>
   );
 }
@@ -1814,11 +1725,20 @@ function RightPanelMessages() {
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
+const HEADER_PILL_MAP: Record<PreviewStage, { booking: { label: string; color: string }; stage: { label: string; color: string } }> = {
+  booking:       { booking: { label: 'Booking Pending',   color: 'yellow'   }, stage: { label: 'Booking',      color: 'default' } },
+  'pre-shipment':{ booking: { label: 'Booking Confirmed', color: 'success'  }, stage: { label: 'Pre-Shipment', color: 'blue'    } },
+  'cargo-ready': { booking: { label: 'Booking Confirmed', color: 'success'  }, stage: { label: 'Cargo Ready',  color: 'blue'    } },
+  'in-transit':  { booking: { label: 'Booking Confirmed', color: 'success'  }, stage: { label: 'In Transit',   color: 'blue'    } },
+  completed:     { booking: { label: 'Booking Confirmed', color: 'success'  }, stage: { label: 'Completed',    color: 'success' } },
+};
+
 export default function ShipmentDetailsPage({ params }: Props) {
   const router = useRouter();
 const [rightPanelOpen, setRightPanelOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('overview');
   const [rightPanelTab, setRightPanelTab] = useState('tasks');
+  const [previewStage, setPreviewStage] = useState<PreviewStage>('in-transit');
 
   const mainTabItems = [
     { key: 'overview',   label: 'Overview',   children: null },
@@ -1895,8 +1815,8 @@ const [rightPanelOpen, setRightPanelOpen] = useState(false);
                   ONH-2026-04821
                 </Text>
                 <div style={{ display: 'flex', gap: 5, alignItems: 'center' }}>
-                  <Pill color="success" theme="light" size="sm" showIcon={false}>Booking Confirmed</Pill>
-                  <Pill color="blue" theme="light" size="sm" showIcon={false}>In Transit</Pill>
+                  <Pill color={HEADER_PILL_MAP[previewStage].booking.color} theme="light" size="sm" showIcon={false}>{HEADER_PILL_MAP[previewStage].booking.label}</Pill>
+                  <Pill color={HEADER_PILL_MAP[previewStage].stage.color} theme="light" size="sm" showIcon={false}>{HEADER_PILL_MAP[previewStage].stage.label}</Pill>
                 </div>
               </div>
               <div style={{ marginTop: 4 }}>
@@ -1945,7 +1865,7 @@ const [rightPanelOpen, setRightPanelOpen] = useState(false);
 
           {/* Tab content */}
           <div style={{ paddingTop: 24, paddingBottom: 40 }}>
-            {activeTab === 'overview' && <OverviewContent />}
+            {activeTab === 'overview' && <OverviewContent previewStage={previewStage} setPreviewStage={setPreviewStage} />}
           </div>
 
         </div>
