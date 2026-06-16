@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import BreadcrumbComponent from '@/components/Breadcrumb';
 import ButtonComponent from '@/components/Button';
@@ -15,7 +15,9 @@ import DrawerComponent from '@/components/Drawer';
 import ChipsComponent from '@/components/Chips';
 import DropdownComponent from '@/components/Dropdown';
 import CheckboxComponent from '@/components/Checkbox';
-import { MoreVert, DocIcon, HelpIcon, NotificationIcon, EditPencil, Add, Delete, Leftpanelopen, Leftpanelclose, User, Block, Bulkadd, Upload, Tick, Building, ShipmentIcon, MailOutline, Attachment, FilterIcon, Chevrondown, ChevronRight } from '@/icons';
+import { MoreVert, DocIcon, HelpIcon, NotificationIcon, EditPencil, Add, Delete, Leftpanelopen, Leftpanelclose, User, Block, Bulkadd, Upload, Tick, Building, ShipmentIcon, MailOutline, Attachment, FilterIcon, Chevrondown, ChevronRight, Redirect } from '@/icons';
+import InputNumberComponent from '@/components/InputNumber';
+import DatePickerComponent from '@/components/DatePicker';
 import './shipment-details.css';
 
 const Breadcrumb = BreadcrumbComponent as React.ComponentType<any>;
@@ -27,6 +29,8 @@ const Select = SelectComponent as React.ComponentType<any>;
 const Input = InputComponent as React.ComponentType<any>;
 const Drawer = DrawerComponent as React.ComponentType<any>;
 const Dropdown = DropdownComponent as React.ComponentType<any>;
+const InputNumber = InputNumberComponent as React.ComponentType<any>;
+const DatePicker  = DatePickerComponent  as React.ComponentType<any>;
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -1442,35 +1446,6 @@ const DROPDOWN_PANEL: React.CSSProperties = {
   overflow: 'hidden',
 };
 
-function FilterDropdownChip({
-  label, active, open, onOpenChange, dropdownContent,
-}: {
-  label: string; active: boolean; open: boolean;
-  onOpenChange: (v: boolean) => void; dropdownContent: React.ReactNode;
-}) {
-  return (
-    <Dropdown
-      trigger={['click']}
-      open={open}
-      onOpenChange={onOpenChange}
-      placement="bottomLeft"
-      overlay={<div style={DROPDOWN_PANEL}>{dropdownContent}</div>}
-    >
-      <div>
-        <Button
-          variant="secondary"
-          size="sm"
-          style={active ? { background: 'var(--theme-color-primary-10)', borderColor: 'var(--theme-color-primary-20)', color: 'var(--theme-color-primary-60)' } : {}}
-        >
-          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5 }}>
-            {label}
-            <Chevrondown width={10} height={10} color={active ? 'var(--theme-color-primary-60)' : 'var(--theme-color-grey-40)'} />
-          </span>
-        </Button>
-      </div>
-    </Dropdown>
-  );
-}
 
 function TaskCard({ task, completed, onToggleComplete, hideMenu = false }: {
   task: Task; completed: boolean; onToggleComplete: () => void; hideMenu?: boolean;
@@ -1586,15 +1561,195 @@ function TaskCard({ task, completed, onToggleComplete, hideMenu = false }: {
   );
 }
 
+type GroupBy = 'none' | 'urgency' | 'stage' | 'assignee';
+
+const GROUP_BY_OPTIONS = [
+  { value: 'none',     label: 'No Grouping' },
+  { value: 'urgency',  label: 'Urgency' },
+  { value: 'stage',    label: 'Stage' },
+  { value: 'assignee', label: 'Assignee' },
+];
+
+const URGENCY_GROUP_ORDER = ['overdue', 'due-today', 'this-week', 'upcoming'];
+const URGENCY_GROUP_LABELS: Record<string, string> = {
+  'overdue':   'Overdue',
+  'due-today': 'Due Today',
+  'this-week': 'This Week',
+  'upcoming':  'Upcoming',
+};
+
+function TaskGroup({ label, count, tasks, completedIds, onToggleComplete }: {
+  label: string; count: number; tasks: Task[];
+  completedIds: Set<number>; onToggleComplete: (id: number) => void;
+}) {
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 10 }}>
+        <Text variant="body" size="sm" style={{ color: 'var(--theme-color-grey-50)', fontSize: 10, fontWeight: 600, letterSpacing: '0.6px', textTransform: 'uppercase' as const }}>
+          {label}
+        </Text>
+        <div style={{ width: 16, height: 16, borderRadius: 4, background: 'var(--theme-color-grey-10)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <Text variant="body" size="sm" style={{ color: 'var(--theme-color-grey-50)', fontSize: 10, fontWeight: 600, lineHeight: 1 }}>{count}</Text>
+        </div>
+      </div>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+        {tasks.map((t, i) => (
+          <React.Fragment key={t.id}>
+            {i > 0 && <div style={{ height: 1, background: 'var(--theme-color-grey-5)' }} />}
+            <TaskCard task={t} completed={completedIds.has(t.id)} onToggleComplete={() => onToggleComplete(t.id)} />
+          </React.Fragment>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ─── Add Task Drawer ──────────────────────────────────────────────────────────
+
+const TASK_TYPE_OPTIONS = [
+  { value: 'document',      label: 'Document' },
+  { value: 'booking',       label: 'Booking' },
+  { value: 'communication', label: 'Communication' },
+  { value: 'logistics',     label: 'Logistics' },
+  { value: 'customs',       label: 'Customs' },
+  { value: 'finance',       label: 'Finance' },
+  { value: 'custom',        label: 'Custom' },
+];
+
+const STAGE_OPTIONS = LIFECYCLE_STAGES.map(s => ({ value: s, label: s }));
+
+const ASSIGNEE_OPTIONS = [
+  { value: '',   label: 'Unassigned' },
+  ...PANEL_ASSIGNEES.map(a => ({ value: a.initials, label: a.name })),
+];
+
+interface AddTaskForm {
+  title: string;
+  type: string;
+  stage: string;
+  dueDate: Date | null;
+  assignee: string;
+  notes: string;
+}
+
+const EMPTY_TASK_FORM: AddTaskForm = { title: '', type: '', stage: '', dueDate: null, assignee: '', notes: '' };
+
+function AddTaskDrawer({ open, onClose }: { open: boolean; onClose: () => void }) {
+  const [form, setForm] = useState<AddTaskForm>(EMPTY_TASK_FORM);
+
+  const set = (key: keyof AddTaskForm) => (val: string) =>
+    setForm(prev => ({ ...prev, [key]: val }));
+
+  const handleClose = () => {
+    setForm(EMPTY_TASK_FORM);
+    onClose();
+  };
+
+  const canSubmit = form.title.trim().length > 0;
+
+  return (
+    <Drawer
+      open={open}
+      onClose={handleClose}
+      icon={Add}
+      title="Add Task"
+      subtitle="Create a new task for shipment ONH-2026-04821"
+      width={560}
+      footer={
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 8 }}>
+          <Button variant="secondary" onClick={handleClose}>Cancel</Button>
+          <Button variant="primary" disabled={!canSubmit} onClick={handleClose}>Add Task</Button>
+        </div>
+      }
+    >
+      <div style={{ paddingTop: 20, paddingBottom: 20, display: 'flex', flexDirection: 'column', gap: 32 }}>
+
+        {/* Section header */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+          <Text variant="body" size="sm" weight="medium" style={{ color: 'var(--theme-color-grey-100)', textTransform: 'uppercase' }}>
+            Task Details
+          </Text>
+          <Text variant="body" size="sm" weight="regular" style={{ color: 'var(--theme-color-grey-50)' }}>
+            Assign and schedule this task for the shipment
+          </Text>
+        </div>
+
+        {/* Fields */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+
+          <Input
+            placeholder="Task Title"
+            value={form.title}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => set('title')(e.target.value)}
+          />
+
+          <div style={{ display: 'flex', gap: 16 }}>
+            <div style={{ flex: 1 }}>
+              <Select
+                placeholder="Task Type"
+                floatLabel
+                clearable={false}
+                value={form.type || undefined}
+                options={TASK_TYPE_OPTIONS}
+                onChange={set('type')}
+              />
+            </div>
+            <div style={{ flex: 1 }}>
+              <Select
+                placeholder="Stage"
+                floatLabel
+                clearable={false}
+                value={form.stage || undefined}
+                options={STAGE_OPTIONS}
+                onChange={set('stage')}
+              />
+            </div>
+          </div>
+
+          <div style={{ display: 'flex', gap: 16 }}>
+            <div style={{ flex: 1 }}>
+              <DatePicker
+                placeholder="Due Date"
+                value={form.dueDate}
+                onChange={(date: Date | null) => setForm(prev => ({ ...prev, dueDate: date }))}
+              />
+            </div>
+            <div style={{ flex: 1 }}>
+              <Select
+                placeholder="Assignee"
+                floatLabel
+                clearable={false}
+                value={form.assignee || undefined}
+                options={ASSIGNEE_OPTIONS}
+                onChange={set('assignee')}
+              />
+            </div>
+          </div>
+
+          <Input
+            type="textarea"
+            placeholder="Notes"
+            rows={4}
+            value={form.notes}
+            onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => set('notes')(e.target.value)}
+          />
+
+        </div>
+      </div>
+    </Drawer>
+  );
+}
+
 function RightPanelTasks() {
-  const [openFilter, setOpenFilter]       = useState<string | null>(null);
-  const [urgencyFilter, setUrgencyFilter] = useState('all');
-  const [assigneeFilter, setAssigneeFilter] = useState('all');
-  const [typeFilter, setTypeFilter]       = useState<string[]>([]);
-  const [stageFilter, setStageFilter]     = useState<string[]>([]);
-  const [dateFrom, setDateFrom]           = useState('');
-  const [dateTo, setDateTo]               = useState('');
-  const [completedIds, setCompletedIds]   = useState<Set<number>>(new Set());
+  const [urgencyFilter, setUrgencyFilter]   = useState<string[]>([]);
+  const [assigneeFilter, setAssigneeFilter] = useState<string[]>([]);
+  const [typeFilter, setTypeFilter]         = useState<string[]>([]);
+  const [stageFilter, setStageFilter]       = useState<string[]>([]);
+  const [dateFrom, setDateFrom]             = useState<Date | null>(null);
+  const [dateTo, setDateTo]                 = useState<Date | null>(null);
+  const [completedIds, setCompletedIds]     = useState<Set<number>>(new Set());
+  const [groupBy, setGroupBy]               = useState<GroupBy>('none');
+  const [addTaskOpen, setAddTaskOpen]       = useState(false);
 
   const toggleComplete = (id: number) => setCompletedIds(prev => {
     const next = new Set(prev);
@@ -1602,28 +1757,26 @@ function RightPanelTasks() {
     return next;
   });
 
-  const toggleFilter  = (key: string) => setOpenFilter(p => p === key ? null : key);
-  const toggleType    = (v: string) => setTypeFilter(p => p.includes(v) ? p.filter(x => x !== v) : [...p, v]);
-  const toggleStage   = (v: string) => setStageFilter(p => p.includes(v) ? p.filter(x => x !== v) : [...p, v]);
+  const toggleUrgency  = (v: string) => setUrgencyFilter(p => p.includes(v) ? p.filter(x => x !== v) : [...p, v]);
+  const toggleAssignee = (v: string) => setAssigneeFilter(p => p.includes(v) ? p.filter(x => x !== v) : [...p, v]);
+  const toggleType     = (v: string) => setTypeFilter(p => p.includes(v) ? p.filter(x => x !== v) : [...p, v]);
+  const toggleStage    = (v: string) => setStageFilter(p => p.includes(v) ? p.filter(x => x !== v) : [...p, v]);
+
+  const activeFilterCount =
+    urgencyFilter.length +
+    assigneeFilter.length +
+    typeFilter.length +
+    stageFilter.length +
+    ((dateFrom || dateTo) ? 1 : 0);
 
   const filtered = TASKS_DATA.filter(t => {
-    const done = completedIds.has(t.id);
-    if (urgencyFilter === 'completed') return done;
-    if (done) return false;
-    if (urgencyFilter !== 'all' && t.urgency !== urgencyFilter) return false;
-    if (assigneeFilter !== 'all' && assigneeFilter !== 'mine' && t.assignee?.initials !== assigneeFilter) return false;
+    if (urgencyFilter.length > 0 && !urgencyFilter.includes(t.urgency)) return false;
+    if (assigneeFilter.length > 0 && !assigneeFilter.includes(t.assignee?.initials ?? '')) return false;
     if (typeFilter.length > 0 && !typeFilter.includes(t.title)) return false;
     if (stageFilter.length > 0 && !stageFilter.includes(t.stage)) return false;
     return true;
   });
 
-  const urgencyLabel  = 'Urgency';
-  const assigneeLabel = 'Assignee';
-  const typeLabel     = 'Type';
-  const stageLabel    = 'Stage';
-  const dateLabel     = 'Date Range';
-
-  // Row style for single-select dropdown items
   const ddRow = (active: boolean): React.CSSProperties => ({
     display: 'flex', alignItems: 'center', justifyContent: 'space-between',
     padding: '8px 14px', cursor: 'pointer', fontSize: 12, fontFamily: 'inherit',
@@ -1632,7 +1785,6 @@ function RightPanelTasks() {
     transition: 'background 0.1s',
   });
 
-  // Row style for multi-select dropdown items
   const ddCheckRow = (active: boolean): React.CSSProperties => ({
     display: 'flex', alignItems: 'center', gap: 9,
     padding: '7px 14px', cursor: 'pointer',
@@ -1650,138 +1802,244 @@ function RightPanelTasks() {
     </div>
   );
 
+  const activeGroupLabel = GROUP_BY_OPTIONS.find(o => o.value === groupBy)?.label ?? 'Group by';
+
+  // Build grouped sections
+  const taskGroups: { key: string; label: string; tasks: Task[] }[] | null = (() => {
+    if (groupBy === 'none') return null;
+    if (groupBy === 'urgency') {
+      return URGENCY_GROUP_ORDER
+        .map(u => ({ key: u, label: URGENCY_GROUP_LABELS[u], tasks: filtered.filter(t => t.urgency === u) }))
+        .filter(g => g.tasks.length > 0);
+    }
+    if (groupBy === 'stage') {
+      const stages = [...new Set(filtered.map(t => t.stage))];
+      return stages.map(s => ({ key: s, label: s, tasks: filtered.filter(t => t.stage === s) }));
+    }
+    // assignee
+    const named = PANEL_ASSIGNEES.map(a => ({
+      key: a.initials,
+      label: a.name,
+      tasks: filtered.filter(t => t.assignee?.initials === a.initials),
+    })).filter(g => g.tasks.length > 0);
+    const unassigned = filtered.filter(t => !t.assignee);
+    return unassigned.length > 0
+      ? [...named, { key: 'unassigned', label: 'Unassigned', tasks: unassigned }]
+      : named;
+  })();
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
 
-      {/* ── Filter chips row ── */}
-      <div className="sd-tab-content" style={{ display: 'flex', gap: 6, padding: '10px 16px', minHeight: 48, borderBottom: '1px solid var(--theme-color-grey-10)', flexShrink: 0, overflowX: 'auto' }}>
+      {/* ── Row 2: Count | spacer | Group by | Filter | Add ── */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '0 16px', height: 48, borderBottom: '1px solid var(--theme-color-grey-10)', flexShrink: 0 }}>
 
-        {/* Urgency Tier */}
-        <FilterDropdownChip
-          label={urgencyLabel} active={urgencyFilter !== 'all'}
-          open={openFilter === 'urgency'} onOpenChange={v => setOpenFilter(v ? 'urgency' : null)}
-          dropdownContent={
-            <div style={{ padding: '6px 0' }}>
-              {[{ key: 'all', label: 'All' }, { key: 'overdue', label: 'Overdue' }, { key: 'due-today', label: 'Due Today' }, { key: 'this-week', label: 'This Week' }, { key: 'upcoming', label: 'Upcoming' }, { key: 'completed', label: 'Completed' }].map(opt => (
-                <div key={opt.key} style={ddRow(urgencyFilter === opt.key)} onClick={() => { setUrgencyFilter(opt.key); setOpenFilter(null); }}>
-                  <Text variant="body" size="sm" style={{ color: 'inherit' }}>{opt.label}</Text>
-                  {urgencyFilter === opt.key && <Tick width={12} height={12} color="var(--theme-color-primary-60)" />}
-                </div>
-              ))}
-            </div>
-          }
-        />
+        {/* Count */}
+        <Text variant="body" size="sm" style={{ color: 'var(--theme-color-grey-50)', whiteSpace: 'nowrap' }}>
+          {activeFilterCount > 0
+            ? `${filtered.length} of ${TASKS_DATA.length} tasks`
+            : `${TASKS_DATA.length} tasks`}
+        </Text>
 
-        {/* Assignee */}
-        <FilterDropdownChip
-          label={assigneeLabel} active={assigneeFilter !== 'all'}
-          open={openFilter === 'assignee'} onOpenChange={v => setOpenFilter(v ? 'assignee' : null)}
-          dropdownContent={
-            <div style={{ padding: '6px 0' }}>
-              {[{ key: 'all', label: 'All', initials: null as string | null, color: null as string | null }, { key: 'mine', label: 'Mine', initials: null, color: null }, ...PANEL_ASSIGNEES.map(a => ({ key: a.initials, label: a.name, initials: a.initials, color: a.color }))].map(opt => (
-                <div key={opt.key} style={ddRow(assigneeFilter === opt.key)} onClick={() => { setAssigneeFilter(opt.key); setOpenFilter(null); }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
-                    {opt.initials && (
-                      <span style={{ width: 18, height: 18, borderRadius: '50%', background: opt.color!, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: 9, fontWeight: 600, color: '#fff', flexShrink: 0 }}>
-                        {opt.initials}
-                      </span>
-                    )}
-                    <Text variant="body" size="sm" style={{ color: 'inherit' }}>{opt.label}</Text>
+        <div style={{ flex: 1 }} />
+
+        {/* Group by */}
+        <Dropdown
+          items={GROUP_BY_OPTIONS.map(o => ({ key: o.value, label: o.label }))}
+          selectedKeys={[groupBy]}
+          onChange={(keys: string[]) => setGroupBy(keys[0] as GroupBy)}
+          showTick
+          trigger={['click']}
+          placement="bottomRight"
+        >
+          <div>
+            <Button variant="secondary" size="sm">
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5 }}>
+                {groupBy !== 'none' ? activeGroupLabel : 'Group by'}
+                <Chevrondown width={10} height={10} color="var(--theme-color-grey-40)" />
+              </span>
+            </Button>
+          </div>
+        </Dropdown>
+
+        {/* Filter */}
+        <Dropdown
+          trigger={['click']}
+          placement="bottomRight"
+          overlay={
+            <div style={{ ...DROPDOWN_PANEL, padding: '6px 0', minWidth: 160 }}>
+
+              {/* Urgency */}
+              <Dropdown trigger={['click']} placement="rightTop"
+                overlay={
+                  <div style={DROPDOWN_PANEL}>
+                    <div style={{ padding: '4px 0' }}>
+                      {[{ key: 'overdue', label: 'Overdue' }, { key: 'due-today', label: 'Due Today' }, { key: 'this-week', label: 'This Week' }, { key: 'upcoming', label: 'Upcoming' }, { key: 'completed', label: 'Completed' }].map(opt => {
+                        const on = urgencyFilter.includes(opt.key);
+                        return (
+                          <div key={opt.key} style={ddCheckRow(on)} onClick={() => toggleUrgency(opt.key)}>
+                            <CustomCheckbox checked={on} />
+                            <Text variant="body" size="sm" style={{ color: on ? 'var(--theme-color-grey-100)' : 'var(--theme-color-grey-70)' }}>{opt.label}</Text>
+                          </div>
+                        );
+                      })}
+                    </div>
                   </div>
-                  {assigneeFilter === opt.key && <Tick width={12} height={12} color="var(--theme-color-primary-60)" />}
+                }
+              >
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '8px 14px', cursor: 'pointer', color: 'var(--theme-color-grey-80)' }}>
+                  <Text variant="body" size="sm" style={{ color: 'inherit' }}>Urgency</Text>
+                  <ChevronRight width={10} height={10} color="var(--theme-color-grey-40)" />
                 </div>
-              ))}
-            </div>
-          }
-        />
+              </Dropdown>
 
-        {/* Task Type */}
-        <FilterDropdownChip
-          label={typeLabel} active={typeFilter.length > 0}
-          open={openFilter === 'type'} onOpenChange={v => setOpenFilter(v ? 'type' : null)}
-          dropdownContent={
-            <div>
-              {typeFilter.length > 0 && (
-                <div style={{ display: 'flex', justifyContent: 'flex-end', padding: '6px 14px', borderBottom: '1px solid var(--theme-color-grey-10)' }}>
-                  <button onClick={() => setTypeFilter([])} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, fontSize: 12, color: 'var(--theme-color-primary-60)', fontFamily: 'inherit' }}>Clear</button>
-                </div>
-              )}
-              <div className="sd-tab-content" style={{ maxHeight: 240, overflowY: 'auto', padding: '4px 0' }}>
-                {TASK_TYPES.map(type => {
-                  const on = typeFilter.includes(type);
-                  return (
-                    <div key={type} style={ddCheckRow(on)} onClick={() => toggleType(type)}>
-                      <CustomCheckbox checked={on} />
-                      <Text variant="body" size="sm" style={{ color: on ? 'var(--theme-color-grey-100)' : 'var(--theme-color-grey-70)' }}>{type}</Text>
+              {/* Assignee */}
+              <Dropdown trigger={['click']} placement="rightTop"
+                overlay={
+                  <div style={DROPDOWN_PANEL}>
+                    <div style={{ padding: '4px 0' }}>
+                      {PANEL_ASSIGNEES.map(a => {
+                        const on = assigneeFilter.includes(a.initials);
+                        return (
+                          <div key={a.initials} style={ddCheckRow(on)} onClick={() => toggleAssignee(a.initials)}>
+                            <CustomCheckbox checked={on} />
+                            <span style={{ width: 18, height: 18, borderRadius: '50%', background: a.color, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: 9, fontWeight: 600, color: '#fff', flexShrink: 0 }}>
+                              {a.initials}
+                            </span>
+                            <Text variant="body" size="sm" style={{ color: on ? 'var(--theme-color-grey-100)' : 'var(--theme-color-grey-70)' }}>{a.name}</Text>
+                          </div>
+                        );
+                      })}
                     </div>
-                  );
-                })}
-              </div>
-            </div>
-          }
-        />
-
-        {/* Stage */}
-        <FilterDropdownChip
-          label={stageLabel} active={stageFilter.length > 0}
-          open={openFilter === 'stage'} onOpenChange={v => setOpenFilter(v ? 'stage' : null)}
-          dropdownContent={
-            <div>
-              {stageFilter.length > 0 && (
-                <div style={{ display: 'flex', justifyContent: 'flex-end', padding: '6px 14px', borderBottom: '1px solid var(--theme-color-grey-10)' }}>
-                  <button onClick={() => setStageFilter([])} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, fontSize: 12, color: 'var(--theme-color-primary-60)', fontFamily: 'inherit' }}>Clear</button>
+                  </div>
+                }
+              >
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '8px 14px', cursor: 'pointer', color: 'var(--theme-color-grey-80)' }}>
+                  <Text variant="body" size="sm" style={{ color: 'inherit' }}>Assignee</Text>
+                  <ChevronRight width={10} height={10} color="var(--theme-color-grey-40)" />
                 </div>
-              )}
-              <div style={{ padding: '4px 0' }}>
-                {LIFECYCLE_STAGES.map(s => {
-                  const on = stageFilter.includes(s);
-                  return (
-                    <div key={s} style={ddCheckRow(on)} onClick={() => toggleStage(s)}>
-                      <CustomCheckbox checked={on} />
-                      <Text variant="body" size="sm" style={{ color: on ? 'var(--theme-color-grey-100)' : 'var(--theme-color-grey-70)' }}>{s}</Text>
+              </Dropdown>
+
+              {/* Type */}
+              <Dropdown trigger={['click']} placement="rightTop"
+                overlay={
+                  <div style={DROPDOWN_PANEL}>
+                    <div className="sd-tab-content" style={{ maxHeight: 240, overflowY: 'auto', padding: '4px 0' }}>
+                      {TASK_TYPES.map(type => {
+                        const on = typeFilter.includes(type);
+                        return (
+                          <div key={type} style={ddCheckRow(on)} onClick={() => toggleType(type)}>
+                            <CustomCheckbox checked={on} />
+                            <Text variant="body" size="sm" style={{ color: on ? 'var(--theme-color-grey-100)' : 'var(--theme-color-grey-70)' }}>{type}</Text>
+                          </div>
+                        );
+                      })}
                     </div>
-                  );
-                })}
-              </div>
+                  </div>
+                }
+              >
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '8px 14px', cursor: 'pointer', color: 'var(--theme-color-grey-80)' }}>
+                  <Text variant="body" size="sm" style={{ color: 'inherit' }}>Type</Text>
+                  <ChevronRight width={10} height={10} color="var(--theme-color-grey-40)" />
+                </div>
+              </Dropdown>
+
+              {/* Stage */}
+              <Dropdown trigger={['click']} placement="rightTop"
+                overlay={
+                  <div style={DROPDOWN_PANEL}>
+                    <div style={{ padding: '4px 0' }}>
+                      {LIFECYCLE_STAGES.map(s => {
+                        const on = stageFilter.includes(s);
+                        return (
+                          <div key={s} style={ddCheckRow(on)} onClick={() => toggleStage(s)}>
+                            <CustomCheckbox checked={on} />
+                            <Text variant="body" size="sm" style={{ color: on ? 'var(--theme-color-grey-100)' : 'var(--theme-color-grey-70)' }}>{s}</Text>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                }
+              >
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '8px 14px', cursor: 'pointer', color: 'var(--theme-color-grey-80)' }}>
+                  <Text variant="body" size="sm" style={{ color: 'inherit' }}>Stage</Text>
+                  <ChevronRight width={10} height={10} color="var(--theme-color-grey-40)" />
+                </div>
+              </Dropdown>
+
+              {/* Date Range */}
+              <Dropdown trigger={['click']} placement="rightTop"
+                overlay={
+                  <div style={{ ...DROPDOWN_PANEL, padding: 14, minWidth: 200 }} onClick={(e: React.MouseEvent) => e.stopPropagation()}>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                      <DatePicker
+                        placeholder="From"
+                        value={dateFrom}
+                        onChange={(d: Date | null) => setDateFrom(d)}
+                      />
+                      <DatePicker
+                        placeholder="To"
+                        value={dateTo}
+                        onChange={(d: Date | null) => setDateTo(d)}
+                      />
+                      {(dateFrom || dateTo) && (
+                        <button onClick={() => { setDateFrom(null); setDateTo(null); }} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, fontSize: 12, color: 'var(--theme-color-primary-60)', fontFamily: 'inherit', textAlign: 'left' }}>Clear dates</button>
+                      )}
+                    </div>
+                  </div>
+                }
+              >
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '8px 14px', cursor: 'pointer', color: 'var(--theme-color-grey-80)' }}>
+                  <Text variant="body" size="sm" style={{ color: 'inherit' }}>Date Range</Text>
+                  <ChevronRight width={10} height={10} color="var(--theme-color-grey-40)" />
+                </div>
+              </Dropdown>
+
             </div>
           }
-        />
-
-        {/* Date Range */}
-        <FilterDropdownChip
-          label={dateLabel} active={!!(dateFrom || dateTo)}
-          open={openFilter === 'date'} onOpenChange={v => setOpenFilter(v ? 'date' : null)}
-          dropdownContent={
-            <div style={{ padding: 14 }} onClick={e => e.stopPropagation()}>
-              <div style={{ marginBottom: 12 }}><Text variant="body" size="sm" weight="medium" style={{ color: 'var(--theme-color-grey-70)', display: 'block' }}>Date Range</Text></div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                <div>
-                  <div style={{ marginBottom: 4 }}><Text variant="body" size="sm" style={{ color: 'var(--theme-color-grey-50)', display: 'block' }}>From</Text></div>
-                  <input type="date" value={dateFrom} onChange={e => setDateFrom(e.target.value)} style={{ width: '100%', height: 32, border: '1px solid var(--theme-color-grey-20)', borderRadius: 6, padding: '0 8px', fontSize: 12, fontFamily: 'inherit', color: 'var(--theme-color-grey-80)', outline: 'none', background: 'var(--theme-color-pure-100)', boxSizing: 'border-box' }} />
-                </div>
-                <div>
-                  <div style={{ marginBottom: 4 }}><Text variant="body" size="sm" style={{ color: 'var(--theme-color-grey-50)', display: 'block' }}>To</Text></div>
-                  <input type="date" value={dateTo} onChange={e => setDateTo(e.target.value)} style={{ width: '100%', height: 32, border: '1px solid var(--theme-color-grey-20)', borderRadius: 6, padding: '0 8px', fontSize: 12, fontFamily: 'inherit', color: 'var(--theme-color-grey-80)', outline: 'none', background: 'var(--theme-color-pure-100)', boxSizing: 'border-box' }} />
-                </div>
-                {(dateFrom || dateTo) && (
-                  <button onClick={() => { setDateFrom(''); setDateTo(''); }} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, fontSize: 12, color: 'var(--theme-color-primary-60)', fontFamily: 'inherit', textAlign: 'left' }}>
-                    Clear dates
-                  </button>
+        >
+          <div>
+            <Button variant="secondary" size="sm" icon={<FilterIcon width={12} height={12} />}>
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5 }}>
+                Filter
+                {activeFilterCount > 0 && (
+                  <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 16, height: 16, borderRadius: '50%', background: 'var(--theme-color-primary-60)', fontSize: 9, fontWeight: 700, color: '#fff', lineHeight: 1 }}>
+                    {activeFilterCount}
+                  </span>
                 )}
-              </div>
-            </div>
-          }
-        />
+              </span>
+            </Button>
+          </div>
+        </Dropdown>
+
+        {/* Add */}
+        <Button variant="secondary" size="sm" icon={<Add width={12} height={12} />} onClick={() => setAddTaskOpen(true)}>
+          Add
+        </Button>
 
       </div>
 
-      {/* ── Flat task list ── */}
+      {/* ── Task list ── */}
       <div style={{ padding: 16 }}>
         {filtered.length === 0 ? (
           <div style={{ marginTop: 24, textAlign: 'center' }}>
             <Text variant="body" size="sm" style={{ color: 'var(--theme-color-grey-40)', display: 'block' }}>
               No tasks match the selected filters
             </Text>
+          </div>
+        ) : taskGroups ? (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+            {taskGroups.map(group => (
+              <TaskGroup
+                key={group.key}
+                label={group.label}
+                count={group.tasks.length}
+                tasks={group.tasks}
+                completedIds={completedIds}
+                onToggleComplete={toggleComplete}
+              />
+            ))}
           </div>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
@@ -1794,6 +2052,8 @@ function RightPanelTasks() {
           </div>
         )}
       </div>
+
+      <AddTaskDrawer open={addTaskOpen} onClose={() => setAddTaskOpen(false)} />
 
     </div>
   );
@@ -1978,6 +2238,670 @@ function RightPanelMessages() {
   );
 }
 
+// ─── Booking Tab ──────────────────────────────────────────────────────────────
+
+type BookingState =
+  | 'draft'
+  | 'submitted'
+  | 'revision-requested'
+  | 'confirmed-p1'
+  | 'awaiting-carrier'
+  | 'booking-confirmed'
+  | 'pending-update';
+
+const BOOKING_STATE_OPTIONS = [
+  { value: 'draft',              label: 'Draft' },
+  { value: 'submitted',          label: 'Submitted to Ops' },
+  { value: 'revision-requested', label: 'Revision Requested' },
+  { value: 'confirmed-p1',       label: 'Part 1 Confirmed' },
+  { value: 'awaiting-carrier',   label: 'Awaiting Carrier' },
+  { value: 'booking-confirmed',  label: 'Booking Confirmed' },
+  { value: 'pending-update',     label: 'Pending Update' },
+];
+
+const MOVEMENT_TYPE_OPTIONS = [
+  { value: 'port-to-port', label: 'Port to Port' },
+  { value: 'door-to-door', label: 'Door to Door' },
+  { value: 'door-to-port', label: 'Door to Port' },
+  { value: 'port-to-door', label: 'Port to Door' },
+];
+
+interface BookingFormState {
+  movementType: string;
+}
+
+function ViewField({ label, value }: { label: string; value?: React.ReactNode }) {
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+      <Text variant="body" size="sm" style={{ color: 'var(--theme-color-grey-50)', fontSize: 12, lineHeight: '16px' }}>
+        {label}
+      </Text>
+      <Text variant="body" size="md" style={{ color: 'var(--theme-color-grey-100)', lineHeight: '20px' }}>
+        {value || '—'}
+      </Text>
+    </div>
+  );
+}
+
+function DCSACard({ statusLabel, statusColor, refs }: { statusLabel: string; statusColor: string; refs: { label: string; value: string }[] }) {
+  return (
+    <div style={{ border: '1px solid var(--theme-color-grey-10)', borderRadius: 12, overflow: 'hidden' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 20px', borderBottom: '1px solid var(--theme-color-grey-5)' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <div style={{ width: 40, height: 40, borderRadius: 8, background: '#102B46', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+            <Text variant="body" size="sm" weight="semibold" style={{ color: 'white', fontSize: 11 }}>MSC</Text>
+          </div>
+          <div>
+            <Text variant="body" size="md" weight="semibold" style={{ color: 'var(--theme-color-grey-100)' }}>MSC Mediterranean Shipping Company</Text>
+            <Text variant="body" size="sm" style={{ color: 'var(--theme-color-grey-40)' }}>DCSA v2.2 · Carrier Booking API</Text>
+          </div>
+        </div>
+        <Pill color={statusColor} theme="light" size="sm" showIcon={false}>{statusLabel}</Pill>
+      </div>
+      <div style={{ padding: '14px 20px', display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '14px 40px' }}>
+        {refs.map((r) => <ViewField key={r.label} label={r.label} value={r.value} />)}
+      </div>
+    </div>
+  );
+}
+
+function StepCircle({ index, current }: { index: number; current: number }) {
+  const done   = index < current;
+  const active = index === current;
+  const bg     = done ? 'var(--theme-color-success-60)' : active ? 'var(--theme-color-primary-60)' : 'var(--theme-color-grey-10)';
+  return (
+    <div style={{ width: 32, height: 32, borderRadius: '50%', background: bg, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      {done ? (
+        <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2 6.5L5.5 10L11 3" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
+      ) : (
+        <Text variant="caption" size="sm" weight="semibold" style={{ color: active ? 'white' : 'var(--theme-color-grey-40)', lineHeight: 1 }}>
+          {index + 1}
+        </Text>
+      )}
+    </div>
+  );
+}
+
+function BookingJourney({
+  steps, current, viewingStep, onStepClick,
+}: {
+  steps: { title: string; description: string; cta?: string }[];
+  current: number;
+  viewingStep: number;
+  onStepClick: (i: number) => void;
+}) {
+  const clampedCurrent = Math.min(current, steps.length - 1);
+  return (
+    <div>
+      <Text variant="body" size="sm" weight="medium" style={{ color: 'var(--theme-color-grey-50)', textTransform: 'uppercase', display: 'block', marginBottom: 20 }}>
+        Booking Journey
+      </Text>
+      {steps.map((step, i) => {
+        const isDone    = i < current;
+        const isCurrent = i === clampedCurrent;
+        const showCta   = step.cta && (isDone || (isCurrent && viewingStep !== i));
+        return (
+          <div key={i} style={{ display: 'flex', gap: 12 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flexShrink: 0 }}>
+              <StepCircle index={i} current={current} />
+              {i < steps.length - 1 && (
+                <div style={{ width: 1, flex: 1, minHeight: 16, background: isDone ? 'var(--theme-color-success-40)' : 'var(--theme-color-grey-10)', margin: '4px 0' }} />
+              )}
+            </div>
+            <div style={{ paddingBottom: i < steps.length - 1 ? 48 : 0, flex: 1, minWidth: 0 }}>
+              <Text variant="body" size="sm" weight={isCurrent ? 'semibold' : 'medium'} style={{ color: i > current ? 'var(--theme-color-grey-40)' : 'var(--theme-color-grey-100)', display: 'block', marginBottom: 2 }}>
+                {step.title}
+              </Text>
+              <Text variant="body" size="sm" style={{ color: 'var(--theme-color-grey-50)', display: 'block', marginBottom: showCta ? 6 : 0 }}>
+                {step.description}
+              </Text>
+              {showCta && (
+                <Button variant="link" size="sm" style={{ marginLeft: -4 }} onClick={(e: React.MouseEvent) => { e.stopPropagation(); onStepClick(i); }}>
+                  {step.cta}
+                </Button>
+              )}
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+function CustomerRefContent({ readonly }: { readonly: boolean }) {
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 32, paddingTop: 4, paddingBottom: 4 }}>
+      <div style={{ display: 'flex', gap: 16 }}>
+        <div style={{ flex: 1 }}><Select placeholder="Customer" floatLabel clearable={false} disabled={readonly} value="Voltas India Limited" options={[{ value: 'Voltas India Limited', label: 'Voltas India Limited' }]} /></div>
+        <div style={{ flex: 1 }}><Input placeholder="Customer Reference" disabled={readonly} value="VIL-EXP-2026-112" /></div>
+      </div>
+      <div style={{ display: 'flex', gap: 16 }}>
+        <div style={{ flex: 1 }}><Select placeholder="Assigned Ops Executive" floatLabel clearable={false} disabled={readonly} value="Sahil Kala" options={[{ value: 'Sahil Kala', label: 'Sahil Kala' }]} /></div>
+        <div style={{ flex: 1 }}><Input placeholder="Internal Notes" disabled={readonly} value="Customer requires pre-alert 48 hrs before departure." /></div>
+      </div>
+    </div>
+  );
+}
+
+function RouteContent({ formState, setFormState, readonly }: { formState: BookingFormState; setFormState: React.Dispatch<React.SetStateAction<BookingFormState>>; readonly: boolean }) {
+  const showReceipt  = formState.movementType === 'door-to-door' || formState.movementType === 'door-to-port';
+  const showDelivery = formState.movementType === 'door-to-door' || formState.movementType === 'port-to-door';
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 32, paddingTop: 4, paddingBottom: 4 }}>
+      <div style={{ display: 'flex', gap: 16 }}>
+        <div style={{ flex: 1 }}>
+          <Select placeholder="Movement Type" floatLabel clearable={false} disabled={readonly} value={formState.movementType} options={MOVEMENT_TYPE_OPTIONS} onChange={(v: string) => setFormState((s) => ({ ...s, movementType: v }))} />
+        </div>
+        <div style={{ flex: 1 }} />
+      </div>
+      {showReceipt && (
+        <div style={{ display: 'flex', gap: 16 }}>
+          <div style={{ flex: 1 }}><Input placeholder="Place of Receipt" disabled={readonly} value="Ferozabad, IN" /></div>
+          <div style={{ flex: 1 }} />
+        </div>
+      )}
+      <div style={{ display: 'flex', gap: 16 }}>
+        <div style={{ flex: 1 }}><Select placeholder="Port of Loading (POL)" floatLabel clearable={false} disabled={readonly} value="INMUN" options={[{ value: 'INMUN', label: 'INMUN — Mumbai (Nhava Sheva)' }]} /></div>
+        <div style={{ flex: 1 }}><Select placeholder="Port of Discharge (POD)" floatLabel clearable={false} disabled={readonly} value="AEJEA" options={[{ value: 'AEJEA', label: 'AEJEA — Jebel Ali' }]} /></div>
+      </div>
+      {showDelivery && (
+        <div style={{ display: 'flex', gap: 16 }}>
+          <div style={{ flex: 1 }}><Input placeholder="Place of Delivery" disabled={readonly} value="Dubai, AE" /></div>
+          <div style={{ flex: 1 }} />
+        </div>
+      )}
+      <div style={{ display: 'flex', gap: 16 }}>
+        <div style={{ flex: 1 }}><Input placeholder="ETD Window — From" disabled={readonly} value="25 Apr 2026" /></div>
+        <div style={{ flex: 1 }}><Input placeholder="ETD Window — To" disabled={readonly} value="10 May 2026" /></div>
+      </div>
+    </div>
+  );
+}
+
+function CargoEquipmentContent({ readonly }: { readonly: boolean }) {
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 32, paddingTop: 4, paddingBottom: 4 }}>
+      <div style={{ display: 'flex', gap: 16 }}>
+        <div style={{ flex: 1 }}><Input placeholder="Commodity Description" disabled={readonly} value="Metal Scrap (HMS 1&2)" /></div>
+        <div style={{ flex: 1 }}><Input placeholder="HS Code" disabled={readonly} value="7204.49" /></div>
+      </div>
+      <div style={{ display: 'flex', gap: 16 }}>
+        <div style={{ flex: 1 }}><Select placeholder="UN Number (if DG)" floatLabel clearable={false} disabled={readonly} value="" options={[{ value: '', label: 'Not applicable' }]} /></div>
+        <div style={{ flex: 1 }}><Input placeholder="Special Requirements" disabled={readonly} value="None" /></div>
+      </div>
+      <div style={{ borderTop: '1px solid var(--theme-color-grey-5)', paddingTop: 24, display: 'flex', flexDirection: 'column', gap: 16 }}>
+        <Text variant="body" size="sm" style={{ color: 'var(--theme-color-grey-40)', textTransform: 'uppercase', fontSize: 11, letterSpacing: '0.5px' }}>
+          Equipment
+        </Text>
+        <div style={{ display: 'flex', gap: 16 }}>
+          <div style={{ flex: 1 }}>
+            <Select placeholder="Container Type" floatLabel clearable={false} disabled={readonly} value="40GP" options={[
+              { value: '20GP', label: "20' General Purpose" },
+              { value: '40GP', label: "40' General Purpose" },
+              { value: '40HC', label: "40' High Cube" },
+              { value: '20RF', label: "20' Reefer" },
+            ]} />
+          </div>
+          <div style={{ width: 120 }}>
+            <InputNumber placeholder="Quantity" floated disabled={readonly} value={2} min={1} max={99} />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function CustomerRefView() {
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 20, paddingTop: 4, paddingBottom: 4 }}>
+      <div style={{ display: 'flex', gap: 16 }}>
+        <div style={{ flex: 1 }}><ViewField label="Customer" value="Voltas India Limited" /></div>
+        <div style={{ flex: 1 }}><ViewField label="Customer Reference" value="VIL-EXP-2026-112" /></div>
+      </div>
+      <div style={{ display: 'flex', gap: 16 }}>
+        <div style={{ flex: 1 }}><ViewField label="Assigned Ops Executive" value="Sahil Kala" /></div>
+        <div style={{ flex: 1 }}><ViewField label="Internal Notes" value="Customer requires pre-alert 48 hrs before departure." /></div>
+      </div>
+    </div>
+  );
+}
+
+function RouteView({ formState }: { formState: BookingFormState }) {
+  const showReceipt  = formState.movementType === 'door-to-door' || formState.movementType === 'door-to-port';
+  const showDelivery = formState.movementType === 'door-to-door' || formState.movementType === 'port-to-door';
+  const movementLabel = MOVEMENT_TYPE_OPTIONS.find((o) => o.value === formState.movementType)?.label ?? formState.movementType;
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 20, paddingTop: 4, paddingBottom: 4 }}>
+      <div style={{ display: 'flex', gap: 16 }}>
+        <div style={{ flex: 1 }}><ViewField label="Movement Type" value={movementLabel} /></div>
+        <div style={{ flex: 1 }} />
+      </div>
+      {showReceipt && (
+        <div style={{ display: 'flex', gap: 16 }}>
+          <div style={{ flex: 1 }}><ViewField label="Place of Receipt" value="Ferozabad, IN" /></div>
+          <div style={{ flex: 1 }} />
+        </div>
+      )}
+      <div style={{ display: 'flex', gap: 16 }}>
+        <div style={{ flex: 1 }}><ViewField label="Port of Loading (POL)" value="INMUN — Mumbai (Nhava Sheva)" /></div>
+        <div style={{ flex: 1 }}><ViewField label="Port of Discharge (POD)" value="AEJEA — Jebel Ali" /></div>
+      </div>
+      {showDelivery && (
+        <div style={{ display: 'flex', gap: 16 }}>
+          <div style={{ flex: 1 }}><ViewField label="Place of Delivery" value="Dubai, AE" /></div>
+          <div style={{ flex: 1 }} />
+        </div>
+      )}
+      <div style={{ display: 'flex', gap: 16 }}>
+        <div style={{ flex: 1 }}><ViewField label="ETD Window — From" value="25 Apr 2026" /></div>
+        <div style={{ flex: 1 }}><ViewField label="ETD Window — To" value="10 May 2026" /></div>
+      </div>
+    </div>
+  );
+}
+
+function CargoEquipmentView() {
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 20, paddingTop: 4, paddingBottom: 4 }}>
+      <div style={{ display: 'flex', gap: 16 }}>
+        <div style={{ flex: 1 }}><ViewField label="Commodity Description" value="Metal Scrap (HMS 1&2)" /></div>
+        <div style={{ flex: 1 }}><ViewField label="HS Code" value="7204.49" /></div>
+      </div>
+      <div style={{ display: 'flex', gap: 16 }}>
+        <div style={{ flex: 1 }}><ViewField label="UN Number (if DG)" value="Not applicable" /></div>
+        <div style={{ flex: 1 }}><ViewField label="Special Requirements" value="None" /></div>
+      </div>
+      <div style={{ borderTop: '1px solid var(--theme-color-grey-5)', paddingTop: 20, display: 'flex', flexDirection: 'column', gap: 16 }}>
+        <Text variant="body" size="sm" style={{ color: 'var(--theme-color-grey-40)', textTransform: 'uppercase', fontSize: 11, letterSpacing: '0.5px' }}>
+          Equipment
+        </Text>
+        <div style={{ display: 'flex', gap: 16 }}>
+          <div style={{ flex: 1 }}><ViewField label="Container Type" value="40' General Purpose (40GP)" /></div>
+          <div style={{ flex: 1 }}><ViewField label="Quantity" value="2" /></div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function CarrierPrefsView() {
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 20, paddingTop: 4, paddingBottom: 4 }}>
+      <div style={{ display: 'flex', gap: 16 }}>
+        <div style={{ flex: 1 }}><ViewField label="Preferred Shipping Lines" value="MSC" /></div>
+        <div style={{ flex: 1 }}><ViewField label="Booking Priority" value="Preferred carrier only" /></div>
+      </div>
+      <div style={{ display: 'flex', gap: 16 }}>
+        <div style={{ flex: 1 }}><ViewField label="Contract / Rate Reference" value="EINBRIT-MSC-2026" /></div>
+        <div style={{ flex: 1 }} />
+      </div>
+    </div>
+  );
+}
+
+function CarrierPrefsContent({ readonly }: { readonly: boolean }) {
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 32, paddingTop: 4, paddingBottom: 4 }}>
+      <div style={{ display: 'flex', gap: 16 }}>
+        <div style={{ flex: 1 }}>
+          <Select placeholder="Preferred Shipping Lines" floatLabel clearable={false} disabled={readonly} value="msc" options={[
+            { value: 'msc',    label: 'MSC' },
+            { value: 'maersk', label: 'Maersk' },
+            { value: 'cma',    label: 'CMA CGM' },
+            { value: 'hapag',  label: 'Hapag-Lloyd' },
+          ]} />
+        </div>
+        <div style={{ flex: 1 }}>
+          <Select placeholder="Booking Priority" floatLabel clearable={false} disabled={readonly} value="preferred" options={[
+            { value: 'cheapest',  label: 'Cheapest rate available' },
+            { value: 'fastest',   label: 'Fastest transit time' },
+            { value: 'preferred', label: 'Preferred carrier only' },
+          ]} />
+        </div>
+      </div>
+      <div style={{ display: 'flex', gap: 16 }}>
+        <div style={{ flex: 1 }}><Input placeholder="Contract / Rate Reference" disabled={readonly} value="EINBRIT-MSC-2026" /></div>
+        <div style={{ flex: 1 }} />
+      </div>
+    </div>
+  );
+}
+
+function CarrierBookingContent({ state }: { state: BookingState }) {
+  if (state === 'confirmed-p1') {
+    return (
+      <div style={{ border: '1px solid var(--theme-color-grey-10)', borderRadius: 12, overflow: 'hidden' }}>
+        <div style={{ display: 'flex', alignItems: 'center', padding: '14px 20px', borderBottom: '1px solid var(--theme-color-grey-5)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            <div style={{ width: 40, height: 40, borderRadius: 8, background: '#102B46', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <Text variant="body" size="sm" weight="semibold" style={{ color: 'white', fontSize: 11 }}>MSC</Text>
+            </div>
+            <div>
+              <Text variant="body" size="md" weight="semibold" style={{ color: 'var(--theme-color-grey-100)' }}>MSC Mediterranean Shipping Company</Text>
+              <Text variant="body" size="sm" style={{ color: 'var(--theme-color-grey-40)' }}>DCSA v2.2 · Ready to submit</Text>
+            </div>
+          </div>
+        </div>
+        <div style={{ padding: '12px 20px', background: 'var(--theme-color-grey-2)' }}>
+          <Text variant="body" size="sm" style={{ color: 'var(--theme-color-grey-50)' }}>
+            Part 1 confirmed. Submit to MSC via DCSA API. Contract ref:{' '}
+            <strong style={{ color: 'var(--theme-color-grey-70)' }}>EINBRIT-MSC-2026</strong>
+          </Text>
+        </div>
+      </div>
+    );
+  }
+  return (
+    <DCSACard
+      statusLabel={['booking-confirmed', 'pending-update'].includes(state) ? 'Received' : 'Sent'}
+      statusColor={['booking-confirmed', 'pending-update'].includes(state) ? 'blue' : 'yellow'}
+      refs={[
+        { label: 'Booking Channel Ref', value: 'BCH-INB-20260423-001' },
+        { label: 'Carrier Request Ref', value: 'INB20260423A' },
+        { label: 'Submitted',           value: '23 Apr 2026, 10:32' },
+      ]}
+    />
+  );
+}
+
+function CarrierResponseContent({ state }: { state: BookingState }) {
+  if (state === 'awaiting-carrier') {
+    return (
+      <div style={{ padding: '24px 0', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8, textAlign: 'center' }}>
+        <Text variant="body" size="md" weight="semibold" style={{ color: 'var(--theme-color-grey-100)' }}>Awaiting carrier confirmation</Text>
+        <Text variant="body" size="sm" style={{ color: 'var(--theme-color-grey-50)', maxWidth: 360 }}>
+          Booking request sent to MSC via DCSA. Carriers typically respond within 24 hours.
+        </Text>
+      </div>
+    );
+  }
+  if (state === 'pending-update') {
+    return (
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+        <div style={{ padding: '12px 16px', borderRadius: 8, background: 'var(--theme-color-orange-10)', border: '1px solid var(--theme-color-orange-40)' }}>
+          <Text variant="body" size="sm" style={{ color: 'var(--theme-color-grey-70)' }}>
+            MSC has responded with changes. Review and amend to proceed.
+          </Text>
+        </div>
+        <DCSACard
+          statusLabel="Pending Update"
+          statusColor="orange"
+          refs={[
+            { label: 'Carrier Booking Ref', value: 'MSCUUK987654' },
+            { label: 'Amendment Reason',    value: 'Vessel / ETD change' },
+            { label: 'Carrier Response',    value: '26 Apr 2026, 09:15' },
+          ]}
+        />
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+          {[
+            { field: 'ETD',    original: '25 Apr 2026', updated: '28 Apr 2026' },
+            { field: 'Vessel', original: 'MSC DIANA',   updated: 'MSC MIRIAM'  },
+          ].map((a) => (
+            <div key={a.field} style={{ display: 'flex', alignItems: 'center', gap: 16, padding: '10px 16px', borderRadius: 8, border: '1px solid var(--theme-color-orange-30)', background: 'var(--theme-color-orange-10)' }}>
+              <Text variant="body" size="sm" weight="medium" style={{ color: 'var(--theme-color-grey-60)', width: 64, flexShrink: 0 }}>{a.field}</Text>
+              <Text variant="body" size="sm" style={{ color: 'var(--theme-color-grey-40)', textDecoration: 'line-through' }}>{a.original}</Text>
+              <Text variant="body" size="sm" style={{ color: 'var(--theme-color-grey-30)' }}>→</Text>
+              <Text variant="body" size="sm" weight="semibold" style={{ color: 'var(--theme-color-orange-120)' }}>{a.updated}</Text>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+      <DCSACard
+        statusLabel="Confirmed"
+        statusColor="success"
+        refs={[
+          { label: 'Carrier Booking Ref', value: 'MSCUUK987654' },
+          { label: 'Vessel / Voyage',     value: 'MSC MIRIAM · AE6/PEX · V26023' },
+          { label: 'Confirmed on',        value: '24 Apr 2026, 13:44' },
+        ]}
+      />
+      <div>
+        <Text variant="body" size="sm" weight="medium" style={{ color: 'var(--theme-color-grey-50)', textTransform: 'uppercase', fontSize: 11, letterSpacing: '0.5px', marginBottom: 8, display: 'block' }}>
+          Cut-off Dates
+        </Text>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 10 }}>
+          {[
+            { label: 'CY Cutoff',  date: '14 May 2026', time: '06:00', overdue: false },
+            { label: 'SI Cutoff',  date: '12 May 2026', time: '15:00', overdue: true  },
+            { label: 'VGM Cutoff', date: '13 May 2026', time: '15:00', overdue: false },
+          ].map((c) => (
+            <div key={c.label} style={{ padding: '12px 14px', borderRadius: 8, border: `1px solid ${c.overdue ? 'var(--theme-color-error-40)' : 'var(--theme-color-grey-10)'}`, background: c.overdue ? 'var(--theme-color-error-20)' : 'var(--theme-color-grey-2)', display: 'flex', flexDirection: 'column', gap: 3 }}>
+              <Text variant="body" size="sm" style={{ color: c.overdue ? 'var(--theme-color-error-80)' : 'var(--theme-color-grey-50)', fontSize: 11 }}>{c.label}</Text>
+              <Text variant="body" size="md" weight="semibold" style={{ color: c.overdue ? 'var(--theme-color-error-100)' : 'var(--theme-color-grey-100)' }}>{c.date}</Text>
+              <Text variant="body" size="sm" style={{ color: c.overdue ? 'var(--theme-color-error-60)' : 'var(--theme-color-grey-40)' }}>{c.time}{c.overdue ? ' · Overdue' : ''}</Text>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function BookingTabContent() {
+  const [bookingState, setBookingState] = useState<BookingState>('draft');
+  const [formState, setFormState] = useState<BookingFormState>({ movementType: 'port-to-port' });
+  const [viewingStep, setViewingStep] = useState<number>(0);
+
+  const isEditing   = ['draft', 'revision-requested'].includes(bookingState);
+  const isSubmitted = bookingState === 'submitted';
+  const readonly    = isSubmitted;
+  const isConfirmed = !['draft', 'submitted', 'revision-requested'].includes(bookingState);
+
+  const stepperCurrent: Record<BookingState, number> = {
+    'draft':              0,
+    'submitted':          0,
+    'revision-requested': 0,
+    'confirmed-p1':       1,
+    'awaiting-carrier':   2,
+    'booking-confirmed':  3,
+    'pending-update':     2,
+  };
+
+  const stepperDescription: Record<BookingState, [string, string, string]> = {
+    'draft':              ['Draft — in progress',         'Not started yet',                    'Not started yet'],
+    'submitted':          ['Submitted · Awaiting confirm', 'Not started yet',                    'Not started yet'],
+    'revision-requested': ['Revision requested by Ops',   'Not started yet',                    'Not started yet'],
+    'confirmed-p1':       ['Confirmed by Ops',             'Ready to place carrier booking',     'Not started yet'],
+    'awaiting-carrier':   ['Confirmed by Ops',             'Sent to MSC · 23 Apr 2026',          'Awaiting MSC confirmation'],
+    'booking-confirmed':  ['Confirmed by Ops',             'Received · 24 Apr 2026',             'Confirmed by MSC · 24 Apr 2026'],
+    'pending-update':     ['Confirmed by Ops',             'Received · 24 Apr 2026',             'Pending amendment from MSC'],
+  };
+
+  const stepperItems = [
+    {
+      title: 'Internal Booking Request',
+      description: stepperDescription[bookingState][0],
+      cta: isConfirmed ? 'View Submitted Request →' : undefined,
+    },
+    {
+      title: 'Carrier Booking Sent',
+      description: stepperDescription[bookingState][1],
+      cta: ['awaiting-carrier', 'booking-confirmed', 'pending-update'].includes(bookingState)
+        ? 'View Carrier Payload →'
+        : bookingState === 'confirmed-p1' ? 'Go to Carrier Booking →' : undefined,
+    },
+    {
+      title: 'Carrier Response',
+      description: stepperDescription[bookingState][2],
+      cta: bookingState === 'booking-confirmed'
+        ? 'View Carrier Response →'
+        : ['awaiting-carrier', 'pending-update'].includes(bookingState) ? 'Go to Carrier Response →' : undefined,
+    },
+  ];
+
+  useEffect(() => {
+    setViewingStep(Math.min(stepperCurrent[bookingState], 2));
+  }, [bookingState]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const collapseItems = useMemo(() => {
+    if (!isConfirmed) {
+      return [
+        { key: 'customer',        label: 'Customer & Reference', subLabel: 'Who is booking and internal references',        children: <CustomerRefContent readonly={readonly} /> },
+        { key: 'route',           label: 'Route',                subLabel: 'Ports, movement type and ETD window',           children: <RouteContent formState={formState} setFormState={setFormState} readonly={readonly} /> },
+        { key: 'cargo-equipment', label: 'Cargo & Equipment',    subLabel: 'Commodity, HS code and container requirements', children: <CargoEquipmentContent readonly={readonly} /> },
+        { key: 'carrier-prefs',   label: 'Carrier Preferences',  subLabel: 'Preferred lines, priority and contract',        children: <CarrierPrefsContent readonly={readonly} /> },
+      ];
+    }
+    if (viewingStep === 0) {
+      return [
+        { key: 'customer',        label: 'Customer & Reference', subLabel: 'Who is booking and internal references',        completed: true, children: <CustomerRefView /> },
+        { key: 'route',           label: 'Route',                subLabel: 'Ports, movement type and ETD window',           completed: true, children: <RouteView formState={formState} /> },
+        { key: 'cargo-equipment', label: 'Cargo & Equipment',    subLabel: 'Commodity, HS code and container requirements', completed: true, children: <CargoEquipmentView /> },
+        { key: 'carrier-prefs',   label: 'Carrier Preferences',  subLabel: 'Preferred lines, priority and contract',        completed: true, children: <CarrierPrefsView /> },
+      ];
+    }
+    const step1Completed = ['awaiting-carrier', 'booking-confirmed', 'pending-update'].includes(bookingState);
+    if (viewingStep === 1) {
+      return [{
+        key: 'carrier-booking',
+        label: 'Carrier Booking',
+        subLabel: bookingState === 'confirmed-p1' ? 'Ready to place with MSC' : 'Submitted to MSC via DCSA',
+        completed: step1Completed,
+        showArrow: false,
+        collapsible: 'icon',
+        children: <CarrierBookingContent state={bookingState} />,
+      }];
+    }
+    const step2Completed = bookingState === 'booking-confirmed';
+    return ['awaiting-carrier', 'booking-confirmed', 'pending-update'].includes(bookingState)
+      ? [{
+          key: 'carrier-response',
+          label: 'Carrier Response',
+          subLabel: bookingState === 'booking-confirmed' ? 'Confirmed by MSC · 24 Apr 2026' : bookingState === 'pending-update' ? 'Pending amendment' : 'Awaiting carrier',
+          completed: step2Completed,
+          showArrow: false,
+          collapsible: 'icon',
+          children: <CarrierResponseContent state={bookingState} />,
+        }]
+      : [];
+  }, [bookingState, formState, readonly, isConfirmed, viewingStep]);
+
+  const collapseType = (() => {
+    if (!isConfirmed || viewingStep === 0) return 'numbered';
+    if (viewingStep === 1) return ['awaiting-carrier', 'booking-confirmed', 'pending-update'].includes(bookingState) ? 'numbered' : 'default';
+    return bookingState === 'booking-confirmed' ? 'numbered' : 'default';
+  })();
+
+  const defaultOpenKeys = useMemo((): string[] => {
+    if (!isConfirmed) return ['customer'];
+    if (viewingStep === 0) return ['customer', 'route', 'cargo-equipment', 'carrier-prefs'];
+    if (viewingStep === 1) return ['carrier-booking'];
+    return ['carrier-response'];
+  }, [isConfirmed, viewingStep]);
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
+      {/* Header row */}
+      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 16, marginBottom: 32 }}>
+        <div>
+          <Text variant="heading" size="lg" weight="semibold" style={{ color: 'var(--theme-color-grey-100)' }}>
+            Manage Booking
+          </Text>
+          <div style={{ marginTop: 4 }}>
+            <Text variant="body" size="md" style={{ color: 'var(--theme-color-grey-50)' }}>
+              Carrier booking · 2 × 40GP · MSC Mediterranean ·{' '}
+              <span style={{ color: 'var(--theme-color-orange-120)', fontWeight: 500 }}>INMUN</span>
+              {' → '}
+              <span style={{ color: 'var(--theme-color-orange-120)', fontWeight: 500 }}>AEJEA</span>
+            </Text>
+          </div>
+        </div>
+        <div style={{ display: 'flex', gap: 8, flexShrink: 0, alignItems: 'center', paddingTop: 4 }}>
+          {isEditing && <Button variant="secondary" size="md">Save Draft</Button>}
+          {isEditing && (
+            <Button variant="primary" size="md" icon={<Redirect width={14} height={14} />}>
+              {bookingState === 'revision-requested' ? 'Re-submit to Ops' : 'Submit to Ops'}
+            </Button>
+          )}
+          {isSubmitted && (
+            <>
+              <Button variant="secondary" size="md">Request Revision</Button>
+              <Button variant="primary" size="md">Confirm Part 1</Button>
+            </>
+          )}
+          {bookingState === 'confirmed-p1' && (
+            <Button variant="primary" size="md" icon={<Redirect width={14} height={14} />}>Place Carrier Booking</Button>
+          )}
+          {bookingState === 'booking-confirmed' && (
+            <>
+              <Button variant="tertiary" size="md" error={true} icon={<Block width={14} height={14} />}>Cancel Booking</Button>
+              <Button variant="primary" size="md">Amend Booking</Button>
+            </>
+          )}
+          {bookingState === 'pending-update' && (
+            <Button variant="primary" size="md">Amend Booking</Button>
+          )}
+        </div>
+      </div>
+
+      {/* Two-column layout */}
+      <div style={{ display: 'flex', alignItems: 'flex-start', gap: 32 }}>
+        {/* Left: sticky journey */}
+        <div style={{ width: 260, flexShrink: 0, position: 'sticky', top: 40 }}>
+          <div style={{ background: 'var(--theme-color-grey-2)', border: '1px solid var(--theme-color-grey-10)', borderRadius: 8, padding: '20px 16px' }}>
+            <BookingJourney
+              steps={stepperItems}
+              current={stepperCurrent[bookingState]}
+              viewingStep={viewingStep}
+              onStepClick={setViewingStep}
+            />
+          </div>
+        </div>
+
+        {/* Right: form */}
+        <div style={{ flex: 1, minWidth: 0 }}>
+          {isSubmitted && (
+            <div style={{ marginBottom: 24, padding: '14px 16px', borderRadius: 8, background: 'var(--theme-color-yellow-10)', border: '1px solid var(--theme-color-yellow-40)' }}>
+              <Text variant="body" size="sm" style={{ color: 'var(--theme-color-grey-70)' }}>
+                Submitted by <strong>Ramesh K.</strong> on 22 Apr 2026, 10:15 — awaiting ops confirmation.
+              </Text>
+            </div>
+          )}
+          {bookingState === 'revision-requested' && (
+            <div style={{ marginBottom: 24, padding: '14px 16px', borderRadius: 8, background: 'var(--theme-color-orange-10)', border: '1px solid var(--theme-color-orange-40)' }}>
+              <Text variant="body" size="sm" weight="medium" style={{ color: 'var(--theme-color-orange-120)', display: 'block', marginBottom: 4 }}>
+                Revision requested by Ops · 22 Apr 2026, 11:40
+              </Text>
+              <Text variant="body" size="sm" style={{ color: 'var(--theme-color-grey-60)' }}>
+                &ldquo;Please clarify the HS code and confirm whether DG goods are included in this shipment.&rdquo;
+              </Text>
+            </div>
+          )}
+          <Collapse
+            key={`${bookingState}-${viewingStep}`}
+            type={collapseType}
+            items={collapseItems}
+            defaultActiveKey={defaultOpenKeys}
+          />
+        </div>
+      </div>
+
+      {/* Floating state preview switcher */}
+      <div style={{
+        position: 'fixed', bottom: 24, right: 24, zIndex: 200,
+        background: 'var(--theme-color-pure-100)',
+        border: '1px solid var(--theme-color-grey-10)',
+        borderRadius: 12, padding: '12px 16px',
+        boxShadow: '0 4px 24px rgba(0,0,0,0.10)',
+        display: 'flex', flexDirection: 'column', gap: 10,
+        width: 240,
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+          <div style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--theme-color-primary-60)', flexShrink: 0 }} />
+          <Text variant="body" size="sm" weight="medium" style={{ color: 'var(--theme-color-grey-60)', textTransform: 'uppercase', fontSize: 10, letterSpacing: '0.6px' }}>
+            Preview State
+          </Text>
+        </div>
+        <Select value={bookingState} options={BOOKING_STATE_OPTIONS} onChange={(val: BookingState) => setBookingState(val)} floatLabel={false} clearable={false} />
+      </div>
+    </div>
+  );
+}
+
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 const HEADER_PILL_MAP: Record<PreviewStage, { booking: { label: string; color: string }; stage: { label: string; color: string } }> = {
@@ -2121,6 +3045,7 @@ const [rightPanelOpen, setRightPanelOpen] = useState(false);
           {/* Tab content */}
           <div style={{ paddingTop: 24, paddingBottom: 40 }}>
             {activeTab === 'overview' && <OverviewContent previewStage={previewStage} setPreviewStage={setPreviewStage} />}
+            {activeTab === 'booking'  && <BookingTabContent />}
           </div>
 
         </div>

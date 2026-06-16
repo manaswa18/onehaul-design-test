@@ -32,6 +32,9 @@ These are non-negotiable constraints. Violating them breaks consistency.
 - Import from `react-icons`, `@mui/icons-material`, or any other icon library directly in pages/components
 - Build custom UI elements (toggles, switches, chips, etc.) inline before checking `components/` — always check the components folder first
 - Use Tabulator's built-in native formatters for UI elements that have design system equivalents (e.g. `formatter: 'rowSelection'` for checkboxes) — these render unstyled raw HTML elements
+- Use raw `<input type="date">` for date inputs — use `@/components/DatePicker` (`onChange` returns `Date | null`, float label is built-in via `placeholder` prop)
+- Use raw `<textarea>` for multiline text — use `<Input type="textarea" rows={N} />` from `@/components/Input`
+- Create custom float-label helper components — `DatePicker` and `Input` handle their own labels internally
 
 **ALWAYS:**
 - Import UI components exclusively from `@/components/<ComponentName>`
