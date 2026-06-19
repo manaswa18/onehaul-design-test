@@ -5,7 +5,9 @@
       "mcp__claude_ai_Figma__get_design_context",
       "Bash(npm run *)",
       "mcp__claude_ai_Figma__get_screenshot",
-      "mcp__claude_ai_Figma__get_metadata"
+      "mcp__claude_ai_Figma__get_metadata",
+      "Bash('/Applications/Google Chrome.app/Contents/MacOS/Google Chrome' --headless --disable-gpu --hide-scrollbars --window-size=1440,900 --screenshot=/tmp/v3-strip13.png http://localhost:3000/shipments/ONH-2026-04821/v3)",
+      "Bash(echo \"exit:$?\")"
     ]
   }
 }

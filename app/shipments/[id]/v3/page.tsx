@@ -12,7 +12,7 @@ import DropdownComponent from '@/components/Dropdown';
 import DrawerComponent from '@/components/Drawer';
 import CollapseComponent from '@/components/Collapse';
 import SelectComponent from '@/components/Select';
-import { MoreVert, DocIcon, HelpIcon, NotificationIcon, Add, Bulkadd, User, Block, ChevronRight, Leftpanelopen, Success, Attachment, EditPencil, Delete, Building, MailOutline, ShipmentIcon } from '@/icons';
+import { MoreVert, DocIcon, HelpIcon, NotificationIcon, Add, Bulkadd, User, Block, ChevronRight, Leftpanelopen, Success, Attachment, EditPencil, Delete, Building, MailOutline, ShipmentIcon, LocationIcon, ContainerIcon } from '@/icons';
 import './shipment-details.css';
 
 const Breadcrumb = BreadcrumbComponent as React.ComponentType<any>;
@@ -160,6 +160,7 @@ type TaskCategory = 'document' | 'booking' | 'communication' | 'logistics' | 'cu
 interface OverviewTask {
   id: number; title: string; urgency: string; dateLabel: string;
   category: TaskCategory; linkedCTA?: string;
+  assignee: { initials: string; name: string; color: string } | null;
 }
 
 function getCategoryIcon(category: TaskCategory, color: string): React.ReactNode {
@@ -173,10 +174,12 @@ function getCategoryIcon(category: TaskCategory, color: string): React.ReactNode
   }
 }
 
+const SK_ASSIGNEE = { initials: 'SK', name: 'Sahil Kala', color: '#1D3A5F' };
+
 const OVERVIEW_TASKS: OverviewTask[] = [
-  { id: 1, title: 'Submit Shipping Instructions', urgency: 'overdue',   dateLabel: 'Overdue since 05 May 26, 17:00', category: 'document',  linkedCTA: 'Submit SI' },
-  { id: 2, title: 'Submit VGM Declaration',       urgency: 'due-today', dateLabel: 'Due today, 23:59',               category: 'document' },
-  { id: 3, title: 'Pick empty container',         urgency: 'this-week', dateLabel: 'Due 09 May 26',                  category: 'logistics' },
+  { id: 1, title: 'Submit Shipping Instructions', urgency: 'overdue',   dateLabel: 'Overdue since 05 May 26, 17:00', category: 'document',  linkedCTA: 'Submit SI', assignee: SK_ASSIGNEE },
+  { id: 2, title: 'Submit VGM Declaration',       urgency: 'due-today', dateLabel: 'Due today, 23:59',               category: 'document',  assignee: SK_ASSIGNEE },
+  { id: 3, title: 'Pick empty container',         urgency: 'this-week', dateLabel: 'Due 09 May 26',                  category: 'logistics', assignee: SK_ASSIGNEE },
 ];
 
 function TaskCard({ task, completed, onToggleComplete }: { task: OverviewTask; completed: boolean; onToggleComplete: () => void }) {
@@ -198,22 +201,48 @@ function TaskCard({ task, completed, onToggleComplete }: { task: OverviewTask; c
   return (
     <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8 }}>
       {/* Content */}
-      <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 2 }}>
-        {/* Row 1 — task name */}
-        <Text variant="body" size="sm" weight="medium" style={{
-          color: completed ? 'var(--theme-color-grey-40)' : 'var(--theme-color-grey-100)',
-          textDecoration: completed ? 'line-through' : 'none',
-          display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
-        }}>
-          {task.title}
-        </Text>
-
-        {/* Row 2 — icon + date */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-          {getCategoryIcon(task.category, completed ? 'var(--theme-color-grey-30)' : cfg.dateColor)}
-          <Text variant="body" size="sm" style={{ color: completed ? 'var(--theme-color-grey-30)' : cfg.dateColor, fontSize: 11 }}>
-            {completed ? 'Completed' : task.dateLabel}
+      <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 8 }}>
+        {/* Rows 1+2 */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+          {/* Row 1 — task name */}
+          <Text variant="body" size="sm" weight="medium" style={{
+            color: completed ? 'var(--theme-color-grey-40)' : 'var(--theme-color-grey-100)',
+            textDecoration: completed ? 'line-through' : 'none',
+            display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+          }}>
+            {task.title}
           </Text>
+
+          {/* Row 2 — icon + date */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+            {getCategoryIcon(task.category, completed ? 'var(--theme-color-grey-30)' : cfg.dateColor)}
+            <Text variant="body" size="sm" style={{ color: completed ? 'var(--theme-color-grey-30)' : cfg.dateColor, fontSize: 11 }}>
+              {completed ? 'Completed' : task.dateLabel}
+            </Text>
+          </div>
+        </div>
+
+        {/* Row 3 — assignee */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+          {task.assignee ? (
+            <>
+              <Avatar size={18} style={{ background: task.assignee.color, fontSize: 9, fontWeight: 600, flexShrink: 0 }}>
+                {task.assignee.initials}
+              </Avatar>
+              <Text variant="body" size="sm" style={{ color: 'var(--theme-color-grey-50)', fontSize: 11 }}>
+                {displayName(task.assignee.name, task.assignee.initials)}
+              </Text>
+            </>
+          ) : (
+            <>
+              <div style={{ width: 18, height: 18, flexShrink: 0, borderRadius: '50%', border: '1.5px dashed var(--theme-color-grey-30)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <User width={10} height={10} color="var(--theme-color-grey-30)" />
+              </div>
+              <Text variant="body" size="sm" style={{ color: 'var(--theme-color-grey-30)', fontSize: 11 }}>
+                Unassigned
+              </Text>
+            </>
+          )}
         </div>
       </div>
 
@@ -259,14 +288,14 @@ function TasksToCompleteContent() {
   const toggle = (id: number) => setCompleted((prev) => ({ ...prev, [id]: !prev[id] }));
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 12, flex: 1 }}>
       {OVERVIEW_TASKS.map((t, i) => (
         <React.Fragment key={t.id}>
           {i > 0 && <div style={{ height: 1, background: 'var(--theme-color-grey-5)' }} />}
           <TaskCard task={t} completed={!!completed[t.id]} onToggleComplete={() => toggle(t.id)} />
         </React.Fragment>
       ))}
-      <div style={{ marginTop: 4 }}>
+      <div style={{ marginTop: 'auto', paddingTop: 4 }}>
         <Button variant="secondary" size="md">View all tasks</Button>
       </div>
     </div>
@@ -300,7 +329,7 @@ const RECENT_ACTIVITY: { cat: ActivityCat; title: string; detail: string; actor:
 
 function RecentActivityContent() {
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 12, flex: 1 }}>
       {RECENT_ACTIVITY.slice(0, 3).map((a, i) => {
         const { Icon, color } = ACTIVITY_ICON[a.cat];
         return (
@@ -323,7 +352,7 @@ function RecentActivityContent() {
           </React.Fragment>
         );
       })}
-      <div style={{ marginTop: 4 }}>
+      <div style={{ marginTop: 'auto', paddingTop: 4 }}>
         <Button variant="secondary" size="md">View all activity</Button>
       </div>
     </div>
@@ -1569,17 +1598,108 @@ function BookingContent() {
   );
 }
 
+// ─── Shipment summary strip (between header and tabs) ──────────────────────────
+
+interface SummaryItemData { Icon?: React.ComponentType<any>; logo?: string; title: string; subtitle: string }
+
+// Grouped to match the design: Origin + Destination share one group (no divider
+// between them); Cargo and Shipping Line each get their own divider-separated group.
+// Groups are content-sized and laid out with a uniform 64px gap (see the strip),
+// mirroring the design's even rhythm rather than stretching columns.
+const SUMMARY_GROUPS: { items: SummaryItemData[]; connector?: boolean; grow?: boolean }[] = [
+  {
+    connector: true,
+    items: [
+      { Icon: LocationIcon, title: 'Mumbai, IN',    subtitle: 'INMUN, Mumbai' },
+      { Icon: LocationIcon, title: 'Jebel Ali, AE', subtitle: 'AEJEA, Jebel Ali' },
+    ],
+  },
+  {
+    grow: true,
+    items: [{ Icon: ContainerIcon, title: '20GP × 2, 40GP × 1', subtitle: 'Metal Scrap' }],
+  },
+  {
+    grow: true,
+    items: [{ logo: '/msc-logo.svg', title: 'MSC', subtitle: 'Shipping Line' }],
+  },
+];
+
+function SummaryItem({ Icon, logo, title, subtitle }: SummaryItemData) {
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 4, minWidth: 0 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+        {logo
+          ? <img src={logo} alt="" style={{ height: 18, width: 'auto', display: 'block', flexShrink: 0 }} />
+          : Icon && <Icon width={14} height={14} color="var(--theme-color-grey-50)" />}
+        <Text variant="body" size="md" weight="semibold" style={{ color: 'var(--theme-color-grey-100)', whiteSpace: 'nowrap' }}>{title}</Text>
+      </div>
+      <Text variant="body" size="sm" style={{ color: 'var(--theme-color-grey-50)', whiteSpace: 'nowrap' }}>{subtitle}</Text>
+    </div>
+  );
+}
+
+// Origin → destination link: dot — dashed line — dot. Fixed 156px wide per the
+// design; the dashed line grows to fill the span between the two dots.
+function RouteConnector() {
+  const dot = { width: 8, height: 8, borderRadius: '50%', background: 'var(--theme-color-grey-30)', flexShrink: 0 } as const;
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 8, width: 156, flexShrink: 0 }}>
+      <span style={dot} />
+      <div style={{ flex: 1, borderTop: '1px dashed var(--theme-color-grey-30)', minWidth: 0 }} />
+      <span style={dot} />
+    </div>
+  );
+}
+
+function ShipmentSummaryStrip() {
+  return (
+    <div style={{
+      display: 'flex', alignItems: 'stretch',
+      background: 'var(--theme-color-grey-2)',
+      border: '1px solid var(--theme-color-grey-10)',
+      borderRadius: 8, padding: '16px 21px', marginBottom: 24, gap: 64,
+    }}>
+      {SUMMARY_GROUPS.map((group, i) => {
+        return (
+          <React.Fragment key={i}>
+            {i > 0 && <div style={{ width: 1, background: 'var(--theme-color-grey-10)', alignSelf: 'stretch', flexShrink: 0 }} />}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 20, flex: group.grow ? 1 : '0 0 auto', minWidth: 0 }}>
+              {group.connector ? (
+                <>
+                  <SummaryItem {...group.items[0]} />
+                  <RouteConnector />
+                  <SummaryItem {...group.items[1]} />
+                </>
+              ) : (
+                group.items.map((item, j) => <SummaryItem key={j} {...item} />)
+              )}
+            </div>
+          </React.Fragment>
+        );
+      })}
+    </div>
+  );
+}
+
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 const MAIN_TABS = [
   { key: 'overview',             label: 'Overview' },
-  { key: 'booking-instructions', label: 'Booking & Instructions' },
+  { key: 'booking-instructions', label: 'Booking & SI' },
   { key: 'containers',           label: 'Containers' },
   { key: 'documents',            label: 'Documents' },
   { key: 'charges',              label: 'Charges' },
   { key: 'services',             label: 'Services' },
   { key: 'parties',              label: 'Parties' },
   { key: 'activity',             label: 'Activity' },
+];
+
+const HEADER_META = [
+  'Voltas India Limited',
+  'Rohan More',
+  'FCL',
+  'Created on 12/02/2025 by Sahil Kala',
+  'Source: RFQ',
 ];
 
 export default function ShipmentDetailsV3Page({ params }: Props) {
@@ -1626,21 +1746,25 @@ export default function ShipmentDetailsV3Page({ params }: Props) {
         </div>
 
         {/* Title row */}
-        <div style={{ display: 'flex', alignItems: 'flex-start', gap: 16, marginBottom: 32 }}>
+        <div style={{ display: 'flex', alignItems: 'flex-start', gap: 16, marginBottom: 16 }}>
           <div style={{ flex: 1, minWidth: 0 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
               <Text variant="heading" size="lg" weight="semibold" style={{ color: 'var(--theme-color-grey-100)' }}>
                 ONH-2026-04821
               </Text>
-              <Pill color="blue" theme="light" size="sm" showIcon={false}>In Transit</Pill>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                <Pill color="success" theme="light" size="sm">Active</Pill>
+                <Pill color="blue" theme="light" size="sm" showIcon={false}>In Transit</Pill>
+              </div>
             </div>
             <div style={{ marginTop: 4 }}>
               <Text variant="body" size="md" style={{ color: 'var(--theme-color-grey-50)' }}>
-                {'Voltas India Limited • '}
-                <span style={{ color: 'var(--theme-color-orange-120)', fontWeight: 500 }}>INMUN</span>
-                {', Mumbai → '}
-                <span style={{ color: 'var(--theme-color-orange-120)', fontWeight: 500 }}>AEJEA</span>
-                {', Jebel Ali • FCL • Door to Door'}
+                {HEADER_META.map((item, i) => (
+                  <React.Fragment key={i}>
+                    {i > 0 && <span style={{ color: 'var(--theme-color-grey-20)' }}>{'  •  '}</span>}
+                    {item}
+                  </React.Fragment>
+                ))}
               </Text>
             </div>
           </div>
@@ -1666,6 +1790,9 @@ export default function ShipmentDetailsV3Page({ params }: Props) {
             </Dropdown>
           </div>
         </div>
+
+        {/* Shipment summary strip */}
+        <ShipmentSummaryStrip />
 
         {/* Tabs nav */}
         <Tabs
