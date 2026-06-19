@@ -1262,7 +1262,148 @@ function KeyDatesCard() {
   );
 }
 
-function OverviewContent({ previewStage, setPreviewStage }: { previewStage: PreviewStage; setPreviewStage: (s: PreviewStage) => void }) {
+// ─── Key Actions ──────────────────────────────────────────────────────────────
+
+type FormTaskStatus = 'not-started' | 'overdue' | 'in-progress' | 'submitted' | 'confirmed' | 'approved' | 'pending';
+
+interface FormTask {
+  id: string;
+  label: string;
+  role: string;
+  deadline?: string;
+  deadlineUrgency?: 'overdue' | 'due-today' | 'this-week';
+  status: FormTaskStatus;
+  route?: string;
+  tabKey?: string;
+}
+
+const FORM_TASK_STATUS_CONFIG: Record<FormTaskStatus, { label: string; bg: string; color: string }> = {
+  'not-started': { label: 'Not Started', bg: 'var(--theme-color-grey-5)',     color: 'var(--theme-color-grey-50)' },
+  'overdue':     { label: 'Overdue',     bg: 'var(--theme-color-error-20)',   color: 'var(--theme-color-error-100)' },
+  'in-progress': { label: 'In Progress', bg: 'var(--theme-color-primary-10)', color: 'var(--theme-color-primary-80)' },
+  'submitted':   { label: 'Submitted',   bg: 'var(--theme-color-success-20)', color: 'var(--theme-color-success-100)' },
+  'confirmed':   { label: 'Confirmed',   bg: 'var(--theme-color-success-20)', color: 'var(--theme-color-success-100)' },
+  'approved':    { label: 'Approved',    bg: 'var(--theme-color-success-20)', color: 'var(--theme-color-success-100)' },
+  'pending':     { label: 'Pending',     bg: 'var(--theme-color-orange-20)',  color: 'var(--theme-color-orange-120)' },
+};
+
+const DEADLINE_COLOR: Record<string, string> = {
+  overdue:    'var(--theme-color-error-100)',
+  'due-today': 'var(--theme-color-orange-120)',
+  'this-week': 'var(--theme-color-yellow-120)',
+};
+
+const KEY_ACTIONS_BY_STAGE: Record<PreviewStage, FormTask[]> = {
+  booking: [
+    { id: 'booking',   label: 'Carrier Booking Request',      role: 'Ops Executive', status: 'in-progress', tabKey: 'booking' },
+    { id: 'si',        label: 'Submit Shipping Instructions', role: 'Ops Executive', status: 'not-started', route: '/shipments/ONH-2026-04821/submit-si' },
+    { id: 'vgm',       label: 'Submit VGM Declaration',       role: 'Ops Executive', status: 'not-started', route: '/shipments/ONH-2026-04821/submit-vgm' },
+    { id: 'bl-review', label: 'BL Draft Review & Approval',   role: 'Ops Executive', status: 'not-started', route: '/shipments/ONH-2026-04821/review-bl' },
+  ],
+  'pre-shipment': [
+    { id: 'booking',   label: 'Carrier Booking Request',      role: 'Ops Executive', status: 'confirmed',   tabKey: 'booking' },
+    { id: 'si',        label: 'Submit Shipping Instructions', role: 'Ops Executive', status: 'overdue',     deadline: 'Overdue since 05 May 26, 17:00', deadlineUrgency: 'overdue',   route: '/shipments/ONH-2026-04821/submit-si' },
+    { id: 'vgm',       label: 'Submit VGM Declaration',       role: 'Ops Executive', status: 'not-started', deadline: 'Due 10 May 26, 23:59',           deadlineUrgency: 'due-today', route: '/shipments/ONH-2026-04821/submit-vgm' },
+    { id: 'bl-review', label: 'BL Draft Review & Approval',   role: 'Ops Executive', status: 'not-started', route: '/shipments/ONH-2026-04821/review-bl' },
+  ],
+  'cargo-ready': [
+    { id: 'booking',   label: 'Carrier Booking Request',      role: 'Ops Executive', status: 'confirmed',   tabKey: 'booking' },
+    { id: 'si',        label: 'Submit Shipping Instructions', role: 'Ops Executive', status: 'submitted',   route: '/shipments/ONH-2026-04821/submit-si' },
+    { id: 'vgm',       label: 'Submit VGM Declaration',       role: 'Ops Executive', status: 'overdue',     deadline: 'Overdue since 10 May 26, 23:59', deadlineUrgency: 'overdue',   route: '/shipments/ONH-2026-04821/submit-vgm' },
+    { id: 'bl-review', label: 'BL Draft Review & Approval',   role: 'Ops Executive', status: 'pending',     route: '/shipments/ONH-2026-04821/review-bl' },
+  ],
+  'in-transit': [
+    { id: 'booking',   label: 'Carrier Booking Request',      role: 'Ops Executive', status: 'confirmed',  tabKey: 'booking' },
+    { id: 'si',        label: 'Submit Shipping Instructions', role: 'Ops Executive', status: 'submitted',  route: '/shipments/ONH-2026-04821/submit-si' },
+    { id: 'vgm',       label: 'Submit VGM Declaration',       role: 'Ops Executive', status: 'submitted',  route: '/shipments/ONH-2026-04821/submit-vgm' },
+    { id: 'bl-review', label: 'BL Draft Review & Approval',   role: 'Ops Executive', status: 'approved',   route: '/shipments/ONH-2026-04821/review-bl' },
+  ],
+  completed: [
+    { id: 'booking',   label: 'Carrier Booking Request',      role: 'Ops Executive', status: 'confirmed',  tabKey: 'booking' },
+    { id: 'si',        label: 'Submit Shipping Instructions', role: 'Ops Executive', status: 'submitted',  route: '/shipments/ONH-2026-04821/submit-si' },
+    { id: 'vgm',       label: 'Submit VGM Declaration',       role: 'Ops Executive', status: 'submitted',  route: '/shipments/ONH-2026-04821/submit-vgm' },
+    { id: 'bl-review', label: 'BL Draft Review & Approval',   role: 'Ops Executive', status: 'approved',   route: '/shipments/ONH-2026-04821/review-bl' },
+  ],
+};
+
+function KeyActionsCard({ stage, onNavigateToTab }: { stage: PreviewStage; onNavigateToTab: (tab: string) => void }) {
+  const router = useRouter();
+  const tasks = KEY_ACTIONS_BY_STAGE[stage];
+
+  function handleCTA(task: FormTask) {
+    if (task.tabKey) {
+      onNavigateToTab(task.tabKey);
+    } else if (task.route) {
+      router.push(task.route);
+    }
+  }
+
+  function getCTALabel(status: FormTaskStatus): string {
+    if (status === 'not-started' || status === 'overdue') return 'Fill';
+    if (status === 'in-progress') return 'Continue';
+    if (status === 'pending') return 'Review';
+    return 'View / Amend';
+  }
+
+  return (
+    <div style={{ background: 'var(--theme-color-pure-100)', border: '1px solid var(--theme-color-grey-10)', borderRadius: 12, padding: 20, display: 'flex', flexDirection: 'column' }}>
+      <Text variant="body" size="md" weight="medium" style={{ color: 'var(--theme-color-grey-100)', fontSize: 16, paddingBottom: 16 }}>Key Actions</Text>
+
+      {tasks.map((task, idx) => {
+        const statusCfg = FORM_TASK_STATUS_CONFIG[task.status];
+        const isLast = idx === tasks.length - 1;
+
+        return (
+          <div
+            key={task.id}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 12,
+              paddingTop: 12,
+              paddingBottom: isLast ? 0 : 12,
+              borderBottom: isLast ? 'none' : '1px solid var(--theme-color-grey-5)',
+            }}
+          >
+            {/* Task info */}
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <Text variant="body" size="md" style={{ color: 'var(--theme-color-grey-100)', display: 'block' }}>{task.label}</Text>
+              <Text variant="body" size="sm" style={{ color: 'var(--theme-color-grey-40)', fontSize: 11 }}>{task.role}</Text>
+            </div>
+
+            {/* Deadline */}
+            {task.deadline ? (
+              <Text variant="body" size="sm" style={{ color: DEADLINE_COLOR[task.deadlineUrgency ?? ''] ?? 'var(--theme-color-grey-50)', whiteSpace: 'nowrap', flexShrink: 0 }}>
+                {task.deadline}
+              </Text>
+            ) : (
+              <span style={{ flexShrink: 0, width: 1 }} />
+            )}
+
+            {/* Status badge */}
+            <div style={{ background: statusCfg.bg, borderRadius: 32, padding: '2px 10px', display: 'inline-flex', alignItems: 'center', flexShrink: 0 }}>
+              <Text variant="body" size="sm" style={{ color: statusCfg.color, whiteSpace: 'nowrap' }}>{statusCfg.label}</Text>
+            </div>
+
+            {/* CTA */}
+            <Button
+              variant="link"
+              size="sm"
+              icon={<ChevronRight width={10} height={10} />}
+              iconPosition="end"
+              onClick={() => handleCTA(task)}
+              style={{ flexShrink: 0, ...(task.status === 'overdue' ? { color: 'var(--theme-color-error-100)' } : {}) }}
+            >
+              {getCTALabel(task.status)}
+            </Button>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+function OverviewContent({ previewStage, setPreviewStage, setActiveTab }: { previewStage: PreviewStage; setPreviewStage: (s: PreviewStage) => void; setActiveTab: (tab: string) => void }) {
   const [switcherOpen, setSwitcherOpen] = React.useState(false);
   const activeStage = PREVIEW_STAGES.find(s => s.key === previewStage)!;
 
@@ -1450,6 +1591,7 @@ const DROPDOWN_PANEL: React.CSSProperties = {
 function TaskCard({ task, completed, onToggleComplete, hideMenu = false }: {
   task: Task; completed: boolean; onToggleComplete: () => void; hideMenu?: boolean;
 }) {
+  const router = useRouter();
   const [menuOpen, setMenuOpen] = useState(false);
   const cfg = URGENCY_CONFIG[task.urgency];
 
@@ -1530,7 +1672,10 @@ function TaskCard({ task, completed, onToggleComplete, hideMenu = false }: {
             size="sm"
             icon={<ChevronRight width={10} height={10} />}
             iconPosition="end"
-            onClick={(e: React.MouseEvent) => e.stopPropagation()}
+            onClick={(e: React.MouseEvent) => {
+              e.stopPropagation();
+              if (task.linkedCTA === 'Submit SI') router.push('/shipments/ONH-2026-04821/submit-si');
+            }}
           >
             {task.linkedCTA}
           </Button>
@@ -3044,7 +3189,7 @@ const [rightPanelOpen, setRightPanelOpen] = useState(false);
 
           {/* Tab content */}
           <div style={{ paddingTop: 24, paddingBottom: 40 }}>
-            {activeTab === 'overview' && <OverviewContent previewStage={previewStage} setPreviewStage={setPreviewStage} />}
+            {activeTab === 'overview' && <OverviewContent previewStage={previewStage} setPreviewStage={setPreviewStage} setActiveTab={setActiveTab} />}
             {activeTab === 'booking'  && <BookingTabContent />}
           </div>
 

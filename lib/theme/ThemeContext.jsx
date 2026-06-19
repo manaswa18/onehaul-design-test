@@ -2,7 +2,8 @@
 
 import '@ant-design/v5-patch-for-react-19';
 import * as React from 'react';
-import { ConfigProvider } from 'antd';
+import { ConfigProvider, App } from 'antd';
+import { NotificationProvider } from '@/components/Notification';
 import { getTheme } from './getTheme';
 import { defaultTheme } from './defaultTheme';
 
@@ -72,7 +73,12 @@ export const ThemeProvider = ({ children, colors }) => {
 
     return (
         <ThemeContext.Provider value={contextValue}>
-            <ConfigProvider theme={getTheme(currentTheme)}>{children}</ConfigProvider>
+            <ConfigProvider theme={getTheme(currentTheme)}>
+                <App>
+                    <NotificationProvider />
+                    {children}
+                </App>
+            </ConfigProvider>
         </ThemeContext.Provider>
     );
 };

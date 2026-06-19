@@ -1,0 +1,6 @@
+/* ── Submit SI page ─────────────────────────────────────────────────────── */
+
+/* Hide scrollbars in the main scroll container */
+.submit-si-scroll::-webkit-scrollbar {
+  display: none;
+}

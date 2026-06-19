@@ -1,0 +1,125 @@
+/* ── Main tabs — nav only, content rendered manually below ───────────────────── */
+.sd-main-tabs {
+  flex: 1;
+}
+
+.sd-main-tabs > .ant-tabs-nav {
+  margin-bottom: 0;
+  flex-shrink: 0;
+}
+
+.sd-main-tabs .ant-tabs-content-holder {
+  display: none;
+}
+
+/* ── Operations sub-tabs (secondary, pill style) — nav only ──────────────────── */
+.sd-sub-tabs > .ant-tabs-nav {
+  margin-bottom: 0;
+}
+
+.sd-sub-tabs .ant-tabs-content-holder {
+  display: none;
+}
+
+/* ── SI summary accordion ─────────────────────────────────────────────────────── */
+.sd-si-collapse {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sd-si-collapse .ant-collapse-header {
+  padding: 12px 20px !important;
+  align-items: center !important;
+}
+
+.sd-si-collapse .ant-collapse-content-box {
+  padding: 20px !important;
+}
+
+.sd-si-collapse .onehaul-collapse-item {
+  border-radius: 8px !important;
+  overflow: hidden;
+}
+
+/* ── BL file-folder accordion ─────────────────────────────────────────────────── */
+.sd-bl-collapse {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sd-bl-collapse .ant-collapse-header {
+  padding: 12px 20px !important;
+  align-items: center !important;
+}
+
+.sd-bl-collapse .ant-collapse-content-box {
+  padding: 20px !important;
+}
+
+.sd-bl-collapse .onehaul-collapse-item {
+  border-radius: 8px !important;
+  overflow: hidden;
+}
+
+/* ── Booking summary accordion ────────────────────────────────────────────────── */
+.sd-booking-collapse {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sd-booking-collapse .ant-collapse-header {
+  padding: 12px 20px !important;
+  align-items: center !important;
+}
+
+.sd-booking-collapse .ant-collapse-content-box {
+  padding: 20px !important;
+}
+
+.sd-booking-collapse .onehaul-collapse-item {
+  border-radius: 8px !important;
+  overflow: hidden;
+}
+
+/* Booking & SI summaries — always open, no chevron, non-interactive header */
+.sd-booking-collapse .ant-collapse-expand-icon,
+.sd-si-collapse .ant-collapse-expand-icon {
+  display: none !important;
+}
+
+.sd-booking-collapse .ant-collapse-header,
+.sd-si-collapse .ant-collapse-header {
+  cursor: default !important;
+}
+
+/* ── Amendment history accordion (collapsible, keeps chevron) ─────────────────── */
+.sd-history-collapse .ant-collapse-header {
+  padding: 12px 20px !important;
+  align-items: center !important;
+}
+
+.sd-history-collapse .ant-collapse-content-box {
+  padding: 20px !important;
+}
+
+.sd-history-collapse .onehaul-collapse-item {
+  border-radius: 8px !important;
+  overflow: hidden;
+}
+
+.sd-history-collapse .ant-collapse-expand-icon {
+  display: none !important;
+}
+
+.sd-history-collapse .ant-collapse-header {
+  cursor: default !important;
+}
+
+/* Overflow menu — danger item red */
+.sd-overflow-menu .ant-dropdown-menu-item-danger .onehaul-menu-action-label,
+.sd-overflow-menu .ant-dropdown-menu-item-danger .onehaul-menu-action-icon {
+  color: var(--theme-color-error-100) !important;
+}

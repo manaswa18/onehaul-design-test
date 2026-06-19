@@ -1,8 +1,18 @@
 import React from 'react';
-import { notification } from 'antd';
+import { notification, App } from 'antd';
 import Alert from '../Alert';
 import './Notification.css';
 import { Fail } from '@/icons';
+
+// Populated by NotificationProvider (rendered inside antd App context).
+// Falls back to static notification if context isn't available yet.
+let _api = null;
+
+export const NotificationProvider = () => {
+    const { notification: api } = App.useApp();
+    React.useEffect(() => { _api = api; }, [api]);
+    return null;
+};
 
 const NotificationPlacement = {
     TOP_LEFT: 'topLeft',
@@ -44,7 +54,7 @@ const Notification = {
             );
         };
 
-        notification.open({
+        (_api ?? notification).open({
             key,
             message: null,
             description: <Component />,
@@ -63,11 +73,15 @@ const Notification = {
     error: (props) => Notification.open({ ...props, type: 'error' }),
 
     closeAll: () => {
-        notification.destroy();
+        (_api ?? notification).destroy();
     },
 
     close: (key) => {
-        notification.close(key);
+        if (_api) {
+            _api.destroy(key);
+        } else {
+            notification.close(key);
+        }
     },
 };
 
